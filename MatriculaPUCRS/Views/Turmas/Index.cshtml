@@ -1,0 +1,62 @@
+﻿@model IEnumerable<Entidades.Modelos.Turma>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Turmas</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["IdSortParm"]">@Html.DisplayNameFor(model => model.Id)</a>
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NumeroDeVagas)
+            </th>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["TituloSortParm"]">@Html.DisplayNameFor(model => model.Disciplina.Nome)</a>
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Semestre)
+            </th>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["HorarioSortParm"]">@Html.DisplayNameFor(model => model.Horarios)</a>
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NumeroDeVagas)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Disciplina.Nome)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Semestre.Titulo)
+            </td>
+            <td>
+                @foreach (var horario in item.Horarios.OrderBy(h => h.Horario))
+               {
+                    <p>@Html.DisplayFor(modelItem => horario.Horario)</p>
+               }
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

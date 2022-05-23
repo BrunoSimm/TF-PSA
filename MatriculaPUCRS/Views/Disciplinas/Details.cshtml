@@ -1,0 +1,60 @@
+﻿@model Entidades.Modelos.Disciplina
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Disciplina</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Codigo)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Codigo)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Nome)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Nome)
+        </dd>
+        
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Turmas)
+            </dt>
+            <dd class="col-sm-10">
+                <table class="table">
+                    <tr>
+                        <th>Turma</th>
+                        <th>Vagas Ofertadas</th>
+                        <th>Vagas Disponíveis</th>
+                    </tr>
+               
+                    @foreach (var item in Model.Turmas)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Disciplina.Nome)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.NumeroDeVagas)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.VagasRemanescentes)
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </dd>
+        
+
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
