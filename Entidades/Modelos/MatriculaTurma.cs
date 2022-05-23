@@ -4,7 +4,7 @@
     {
         // PK EstudanteId&TurmaId
         public float Nota { get; set; }
-        public bool Aprovado { get; set; }
+        public bool Aprovado { get; private set; }
         public long TurmaId { get; set; }
         public Turma Turma { get; set; }
         public long EstudanteId { get; set; }
