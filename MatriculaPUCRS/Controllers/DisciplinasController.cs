@@ -8,22 +8,26 @@ using Microsoft.EntityFrameworkCore;
 using Entidades.Modelos;
 using Infraestrutura.Data;
 using MatriculaPUCRS.Models;
+using Persistencia.Interfaces.Repositorios;
 
 namespace MatriculaPUCRS.Controllers
 {
     public class DisciplinasController : Controller
     {
-        private readonly MatriculaContext _context;
+        private readonly IDisciplinaRepositorio _disciplinaRepositorio;
+       private readonly MatriculaContext _context;
 
-        public DisciplinasController(MatriculaContext context)
+        public DisciplinasController(IDisciplinaRepositorio disciplinaRepositorio, MatriculaContext matriculaContext)
         {
-            _context = context;
+            _disciplinaRepositorio = disciplinaRepositorio;
+            _context = matriculaContext;
         }
 
         // GET: Disciplinas
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Disciplinas.ToListAsync());
+            return View(await _disciplinaRepositorio.List());
+            //return View(await _context.Disciplinas.ToListAsync());
         }
 
         // GET: Disciplinas/Details/5
@@ -34,8 +38,7 @@ namespace MatriculaPUCRS.Controllers
                 return NotFound();
             }
 
-            var disciplinas = await _context.Disciplinas.Include(d => d.Turmas).ThenInclude(t => t.Matriculas)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var disciplinas = await _disciplinaRepositorio.GetDisciplinaByIdWithMatriculasAndSemestre(id);
             if (disciplinas == null)
             {
                 return NotFound();
