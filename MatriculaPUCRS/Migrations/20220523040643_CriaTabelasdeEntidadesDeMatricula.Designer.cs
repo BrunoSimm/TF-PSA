@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MatriculaPUCRS.Migrations
 {
     [DbContext(typeof(MatriculaContext))]
-    [Migration("20220523012417_CriaTabelasdeEntidadesDeMatricula")]
+    [Migration("20220523040643_CriaTabelasdeEntidadesDeMatricula")]
     partial class CriaTabelasdeEntidadesDeMatricula
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -65,10 +65,10 @@ namespace MatriculaPUCRS.Migrations
                         .HasColumnType("bigint")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Descricao")
+                    b.Property<string>("Codigo")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Titulo")
+                    b.Property<string>("Nome")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
