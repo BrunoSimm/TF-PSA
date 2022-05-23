@@ -34,7 +34,9 @@ namespace MatriculaPUCRS.Controllers
                 return NotFound();
             }
 
-            var disciplinas = await _context.Disciplinas.Include(d => d.Turmas).ThenInclude(t => t.Matriculas)
+            var disciplinas = await _context.Disciplinas
+                .Include(d => d.Turmas).ThenInclude(t => t.Matriculas)
+                .Include(m => m.Turmas).ThenInclude(t => t.Semestre)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (disciplinas == null)
             {

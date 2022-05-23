@@ -30,6 +30,7 @@
                 <table class="table">
                     <tr>
                         <th>Turma</th>
+                        <th>Semestre</th>
                         <th>Vagas Ofertadas</th>
                         <th>Vagas Disponíveis</th>
                     </tr>
@@ -38,7 +39,10 @@
                     {
                         <tr>
                             <td>
-                                @Html.DisplayFor(modelItem => item.Disciplina.Nome)
+                                @Html.DisplayFor(modelItem => item.Id)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Semestre.Titulo)
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.NumeroDeVagas)
