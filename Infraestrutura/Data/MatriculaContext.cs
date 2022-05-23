@@ -19,9 +19,9 @@ namespace Infraestrutura.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Curriculo>().HasIndex("Codigo").IsUnique();
-            modelBuilder.Entity<HorarioGrade>().HasIndex("Horario").IsUnique();
-            modelBuilder.Entity<Semestre>().HasIndex("Titulo").IsUnique();
+            modelBuilder.Entity<Curriculo>().HasAlternateKey("Codigo");
+            modelBuilder.Entity<HorarioGrade>().HasAlternateKey("Horario");
+            modelBuilder.Entity<Semestre>().HasAlternateKey("Titulo");
             modelBuilder.Entity<Turma>().Ignore(t => t.VagasRemanescentes);
 
             modelBuilder.Entity<MatriculaTurma>()
