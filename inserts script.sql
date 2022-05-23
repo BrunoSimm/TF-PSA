@@ -31,15 +31,15 @@ INSERT INTO Semestres (Titulo, DataInicial, DataFinal)
 VALUES ('2020/1', CONVERT(DATETIME,'01/01/2020',103), CONVERT(DATETIME,'30/06/2020',103));
 
 -- Turmas
-INSERT INTO Turma (NumeroDeVagas, DisciplinaId, SemestreId)
+INSERT INTO Turmas (NumeroDeVagas, DisciplinaId, SemestreId)
 VALUES (60, 1, 1);
-INSERT INTO Turma (NumeroDeVagas, DisciplinaId, SemestreId)
+INSERT INTO Turmas (NumeroDeVagas, DisciplinaId, SemestreId)
 VALUES (60, 2, 1);
-INSERT INTO Turma (NumeroDeVagas, DisciplinaId, SemestreId)
+INSERT INTO Turmas (NumeroDeVagas, DisciplinaId, SemestreId)
 VALUES (60, 3, 1);
-INSERT INTO Turma (NumeroDeVagas, DisciplinaId, SemestreId)
+INSERT INTO Turmas (NumeroDeVagas, DisciplinaId, SemestreId)
 VALUES (60, 4, 1);
-INSERT INTO Turma (NumeroDeVagas, DisciplinaId, SemestreId)
+INSERT INTO Turmas (NumeroDeVagas, DisciplinaId, SemestreId)
 VALUES (30, 5, 1);
 
 -- Estudantes
