@@ -9,5 +9,6 @@ namespace Persistencia.Interfaces.Repositorios
 {
     public interface ITurmaRepositorio : ICrud<Turma>
     {
+        IQueryable<Turma> ListTurmasWithDisciplinaAndSemestreAndHorariosAsQueryable();
     }
 }

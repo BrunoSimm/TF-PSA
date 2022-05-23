@@ -7,16 +7,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Entidades.Modelos;
 using Infraestrutura.Data;
+using Persistencia.Interfaces.Repositorios;
 
 namespace MatriculaPUCRS.Controllers
 {
     public class TurmasController : Controller
     {
         private readonly MatriculaContext _context;
+        private ITurmaRepositorio _turmaRepositorio;
 
-        public TurmasController(MatriculaContext context)
+        public TurmasController(MatriculaContext context, ITurmaRepositorio turmaRepositorio)
         {
             _context = context;
+            _turmaRepositorio = turmaRepositorio;
         }
 
         // GET: Turmas
@@ -25,7 +28,7 @@ namespace MatriculaPUCRS.Controllers
             ViewData["TituloSortParm"] = String.IsNullOrEmpty(sortOrder) ? "titulo_asc" : "";
             ViewData["IdSortParm"] = sortOrder == "Id" ? "id_desc" : "Id";
             ViewData["HorarioSortParm"] = sortOrder == "Horario" ? "horario_desc" : "Horario";
-            var turmas = _context.Turmas.Include(t => t.Disciplina).Include(t => t.Semestre).Include(t => t.Horarios).AsQueryable();
+            var turmas = _turmaRepositorio.ListTurmasWithDisciplinaAndSemestreAndHorariosAsQueryable();
             switch (sortOrder)
             {
                 case "titulo_asc":
