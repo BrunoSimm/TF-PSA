@@ -22,6 +22,7 @@ namespace Infraestrutura.Data
             modelBuilder.Entity<Curriculo>().HasIndex("Codigo").IsUnique();
             modelBuilder.Entity<HorarioGrade>().HasIndex("Horario").IsUnique();
             modelBuilder.Entity<Semestre>().HasIndex("Titulo").IsUnique();
+            modelBuilder.Entity<Turma>().Ignore(t => t.VagasRemanescentes);
 
             modelBuilder.Entity<MatriculaTurma>()
                 .HasKey(m => new { m.TurmaId, m.EstudanteId });

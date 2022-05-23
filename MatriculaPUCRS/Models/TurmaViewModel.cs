@@ -1,12 +1,10 @@
-﻿using System;
+using Entidades.Modelos;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Entidades.Modelos
+namespace MatriculaPUCRS.Models
 {
-    public class Turma
+    public class TurmaViewModel : Turma
     {
         public long Id { get; set; }
         public int NumeroDeVagas { get; set; }
@@ -21,8 +19,13 @@ namespace Entidades.Modelos
         {
             get
             {
-                return NumeroDeVagas - Matriculas.Count();
+                return NumeroDeVagas;
+            }
+            set
+            {
+                VagasRemanescentes = value;
             }
         }
+       
     }
 }

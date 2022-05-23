@@ -83,8 +83,7 @@ namespace MatriculaPUCRS.Data
                 new HorarioGrade { Horario = "6LM" },
                 new HorarioGrade { Horario = "6NP" },
             };
-            context.HorariosGrade.AddRange(horariosGrade);
-            context.SaveChanges();
+            
 
             var turmas = new Turma[]
             {
@@ -95,6 +94,20 @@ namespace MatriculaPUCRS.Data
                 new Turma { Disciplina = disciplinas[4], DisciplinaId = disciplinas[4].Id, NumeroDeVagas = 30, Semestre = semestres[0], SemestreId = semestres[0].Id, Horarios = new HorarioGrade[] { horariosGrade[13], horariosGrade[27] },  },
             };
             semestres[0].Turmas = turmas;
+
+            horariosGrade[5].Turmas = new Turma[] { turmas[0] };
+            horariosGrade[19].Turmas = new Turma[] { turmas[0] };
+            horariosGrade[33].Turmas = new Turma[] { turmas[0] };
+            horariosGrade[6].Turmas = new Turma[] { turmas[1] };
+            horariosGrade[13].Turmas = new Turma[] { turmas[1] };
+            horariosGrade[34].Turmas = new Turma[] { turmas[2] };
+            horariosGrade[12].Turmas = new Turma[] { turmas[3] };
+            horariosGrade[26].Turmas = new Turma[] { turmas[3] };
+            horariosGrade[13].Turmas = new Turma[] { turmas[4] };
+            horariosGrade[27].Turmas = new Turma[] { turmas[4] };
+
+            context.HorariosGrade.AddRange(horariosGrade);
+            context.SaveChanges();
 
             var estudantes = new Estudante[]
             {

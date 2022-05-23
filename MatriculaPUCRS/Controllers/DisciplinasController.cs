@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Entidades.Modelos;
 using Infraestrutura.Data;
+using MatriculaPUCRS.Models;
 
 namespace MatriculaPUCRS.Controllers
 {
@@ -33,14 +34,14 @@ namespace MatriculaPUCRS.Controllers
                 return NotFound();
             }
 
-            var disciplina = await _context.Disciplinas
+            var disciplinas = await _context.Disciplinas.Include(d => d.Turmas).ThenInclude(t => t.Matriculas)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (disciplina == null)
+            if (disciplinas == null)
             {
                 return NotFound();
             }
 
-            return View(disciplina);
+            return View(disciplinas);
         }
 
         // GET: Disciplinas/Create
