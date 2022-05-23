@@ -9,6 +9,8 @@ namespace MatriculaPUCRS.Data
     {
         public static void Initialize(MatriculaContext context)
         {
+            context.Database.EnsureCreated();
+            
             // Look for any students.
             if (context.Curriculos.Any())
             {
@@ -28,22 +30,16 @@ namespace MatriculaPUCRS.Data
             {
                 new Curriculo { Codigo = "4/624", Ativo = true, Disciplinas= disciplinas }
             };
-            context.Curriculos.AddRange(curriculos);
-            context.SaveChanges();
 
             foreach(var disciplina in disciplinas)
             {
                 disciplina.Curriculos = new Curriculo[] { curriculos[0] };
             }
-            context.Disciplinas.AddRange(disciplinas);
-            context.SaveChanges();
 
             var semestres = new Semestre[]
             {
                 new Semestre { Titulo = "2020/1", DataInicial = new DateTime(2020,1,1), DataFinal = new DateTime(2020,6,30)}
             };
-            context.Semestres.AddRange(semestres);
-            context.SaveChanges();
 
             var horariosGrade = new HorarioGrade[]
             {
@@ -83,8 +79,6 @@ namespace MatriculaPUCRS.Data
                 new HorarioGrade { Horario = "6LM" },
                 new HorarioGrade { Horario = "6NP" },
             };
-            context.HorariosGrade.AddRange(horariosGrade);
-            context.SaveChanges();
 
             var turmas = new Turma[]
             {
@@ -95,6 +89,24 @@ namespace MatriculaPUCRS.Data
                 new Turma { Disciplina = disciplinas[4], DisciplinaId = disciplinas[4].Id, NumeroDeVagas = 30, Semestre = semestres[0], SemestreId = semestres[0].Id, Horarios = new HorarioGrade[] { horariosGrade[13], horariosGrade[27] },  },
             };
             semestres[0].Turmas = turmas;
+
+            disciplinas[0].Turmas = new Turma[] { turmas[0] }; 
+            disciplinas[1].Turmas = new Turma[] { turmas[1] }; 
+            disciplinas[2].Turmas = new Turma[] { turmas[2] }; 
+            disciplinas[3].Turmas = new Turma[] { turmas[3] }; 
+            disciplinas[4].Turmas = new Turma[] { turmas[4] };
+
+            horariosGrade[5].Turmas = new Turma[] { turmas[0] };
+            horariosGrade[19].Turmas = new Turma[] { turmas[0] };
+            horariosGrade[33].Turmas = new Turma[] { turmas[0] };
+            horariosGrade[6].Turmas = new Turma[] { turmas[1] };
+            horariosGrade[13].Turmas = new Turma[] { turmas[1] };
+            horariosGrade[34].Turmas = new Turma[] { turmas[2] };
+            horariosGrade[12].Turmas = new Turma[] { turmas[3] };
+            horariosGrade[26].Turmas = new Turma[] { turmas[3] };
+            horariosGrade[13].Turmas = new Turma[] { turmas[4] };
+            horariosGrade[27].Turmas = new Turma[] { turmas[4] };
+
 
             var estudantes = new Estudante[]
             {
@@ -145,6 +157,10 @@ namespace MatriculaPUCRS.Data
             turmas[3].Matriculas = new MatriculaTurma[] { matriculaTurmas[3], matriculaTurmas[8], matriculaTurmas[12], matriculaTurmas[17], matriculaTurmas[21] };
             turmas[4].Matriculas = new MatriculaTurma[] { matriculaTurmas[4], matriculaTurmas[13], matriculaTurmas[18] };
 
+            context.Curriculos.AddRange(curriculos);
+            context.Disciplinas.AddRange(disciplinas);
+            context.Semestres.AddRange(semestres); 
+            context.HorariosGrade.AddRange(horariosGrade);
             context.Turmas.AddRange(turmas);
             context.Estudantes.AddRange(estudantes);
             context.MatriculaTurmas.AddRange(matriculaTurmas);
