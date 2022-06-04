@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Persistencia.Interfaces.Repositorios;
+using MatriculaPUCRS.Areas.Roles;
 
 namespace MatriculaPUCRS.Areas.Identity.Pages.Account
 {
@@ -97,10 +98,13 @@ namespace MatriculaPUCRS.Areas.Identity.Pages.Account
                     Estudante estudante = new Estudante() { CPF = Input.CPF, Nome = Input.Nome, EstadoEstudanteEnum = EstadoEstudanteEnum.ATIVO, DigitoVerificador = 0 };
                     await estudanteRepositorio.Add(estudante);
                     user.EstudanteId = estudante.Id;
+                    await _userManager.AddToRoleAsync(user, Roles.Roles.Estudante.ToString()); // Adiciona o usuário a role Estudante.
                     await _userManager.UpdateAsync(user);
 
                     _logger.LogInformation("User created a new account with password.");
-
+                    
+                   
+                    
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                     var callbackUrl = Url.Page(

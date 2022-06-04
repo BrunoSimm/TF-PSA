@@ -1,20 +1,30 @@
 ﻿using Entidades.Modelos;
 using Infraestrutura.Data;
+using MatriculaPUCRS.Areas.Roles;
+using MatriculaPUCRS.Models;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MatriculaPUCRS.Data
 {
     public static class DbInitializer
     {
-        public static void Initialize(MatriculaContext context)
+        public static async Task InitializeAsync(MatriculaContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, ApplicationDbContext contextIdentity)
         {
+            contextIdentity.Database.EnsureCreated();
             context.Database.EnsureCreated();
-            
             // Look for any students.
             if (context.Curriculos.Any())
             {
                 return;   // DB has been seeded
+            }
+
+            if (!contextIdentity.Roles.Any())
+            {
+                await roleManager.CreateAsync(new IdentityRole(Roles.Coordenador.ToString()));
+                await roleManager.CreateAsync(new IdentityRole(Roles.Estudante.ToString()));
             }
 
             var curriculos = new Curriculo[]
@@ -22,7 +32,7 @@ namespace MatriculaPUCRS.Data
                 new Curriculo { Codigo = "4/624", Ativo = true }
             };
             context.Curriculos.AddRange(curriculos);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
 
             var disciplinas = new Disciplina[]
             {
@@ -33,14 +43,14 @@ namespace MatriculaPUCRS.Data
                 new Disciplina { Codigo = "254PF-04", Nome = "Fundamentos Aplicados a Administração", Curriculos = new Curriculo[] { curriculos[0] } },
             };
             context.Disciplinas.AddRange(disciplinas);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
 
             var semestres = new Semestre[]
             {
                 new Semestre { Titulo = "2020/1", DataInicial = new DateTime(2020,1,1), DataFinal = new DateTime(2020,6,30) },
             };
             context.Semestres.AddRange(semestres);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
 
             var horariosGrade = new HorarioGrade[]
             {
@@ -81,7 +91,7 @@ namespace MatriculaPUCRS.Data
                 new HorarioGrade { Horario = "6NP" },
             };
             context.HorariosGrade.AddRange(horariosGrade);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
 
             var turmas = new Turma[]
             {
@@ -92,7 +102,7 @@ namespace MatriculaPUCRS.Data
                 new Turma { Disciplina = disciplinas[4], DisciplinaId = disciplinas[4].Id, NumeroDeVagas = 30, Semestre = semestres[0], SemestreId = semestres[0].Id, Horarios = new HorarioGrade[] { horariosGrade[13], horariosGrade[27] } },
             };
             context.Turmas.AddRange(turmas);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
 
             var estudantes = new Estudante[]
             {
@@ -105,7 +115,7 @@ namespace MatriculaPUCRS.Data
                 new Estudante { Id = 20105486, Nome = "Rafaela", CPF = "000.000.000-07", DigitoVerificador = 6, EstadoEstudanteEnum = EstadoEstudanteEnum.ATIVO },
             };
             context.Estudantes.AddRange(estudantes);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
 
             var matriculaTurmas = new MatriculaTurma[]
             {
@@ -133,7 +143,7 @@ namespace MatriculaPUCRS.Data
                 new MatriculaTurma { Nota = 4.0f, Turma = turmas[3], TurmaId = turmas[3].Id, Estudante = estudantes[6], EstudanteId = estudantes[6].Id },
             };
             context.MatriculaTurmas.AddRange(matriculaTurmas);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
         }
     }
 }

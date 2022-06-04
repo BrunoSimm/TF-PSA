@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace MatriculaPUCRS.Data.Migrations
+namespace MatriculaPUCRS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220604035707_Added Custom Properties")]
-    partial class AddedCustomProperties
+    [Migration("20220604053015_Identity Custom Properties")]
+    partial class IdentityCustomProperties
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

@@ -1,25 +1,28 @@
 using Infraestrutura.Data;
 using MatriculaPUCRS.Data;
+using MatriculaPUCRS.Models;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Threading.Tasks;
 
 namespace MatriculaPUCRS
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var host = CreateHostBuilder(args).Build();
 
-            CreateDbIfNotExists(host);
+            await CreateDbIfNotExistsAsync(host);
 
             host.Run();
         }
 
-        private static void CreateDbIfNotExists(IHost host)
+        private static async Task CreateDbIfNotExistsAsync(IHost host)
         {
             using (var scope = host.Services.CreateScope())
             {
@@ -27,7 +30,11 @@ namespace MatriculaPUCRS
                 try
                 {
                     var context = services.GetRequiredService<MatriculaContext>();
-                    DbInitializer.Initialize(context);
+
+                    var contextIdentity = services.GetRequiredService<ApplicationDbContext>();
+                    var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+                    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+                    await DbInitializer.InitializeAsync(context, userManager, roleManager, contextIdentity);
                 }
                 catch (Exception ex)
                 {
