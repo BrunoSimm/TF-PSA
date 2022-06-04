@@ -1,6 +1,7 @@
 using Infraestrutura.Data;
 using MatriculaPUCRS.Data;
 using MatriculaPUCRS.Data.Persistencia;
+using MatriculaPUCRS.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -35,8 +36,10 @@ namespace MatriculaPUCRS
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddIdentity<ApplicationUser, IdentityRole>()
+             .AddEntityFrameworkStores<ApplicationDbContext>()
+             .AddDefaultUI()
+             .AddDefaultTokenProviders();
 
             services.AddDbContext<MatriculaContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("MatriculaPUCRS")));
             
@@ -44,6 +47,7 @@ namespace MatriculaPUCRS
 
             services.AddScoped<IDisciplinaRepositorio, DisciplinaRepositorio>();
             services.AddScoped<ITurmaRepositorio, TurmaRepositorio>();
+            services.AddScoped<IEstudanteRepositorio, EstudanteRepositorio>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

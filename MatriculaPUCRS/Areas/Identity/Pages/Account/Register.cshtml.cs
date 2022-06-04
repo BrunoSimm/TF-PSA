@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Entidades.Modelos;
+using MatriculaPUCRS.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -13,23 +15,27 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using Persistencia.Interfaces.Repositorios;
 
 namespace MatriculaPUCRS.Areas.Identity.Pages.Account
 {
     [AllowAnonymous]
     public class RegisterModel : PageModel
     {
-        private readonly SignInManager<IdentityUser> _signInManager;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly IEstudanteRepositorio estudanteRepositorio;
 
         public RegisterModel(
-            UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager,
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            IEstudanteRepositorio estudanteRepositorio)
         {
+            this.estudanteRepositorio = estudanteRepositorio;
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
@@ -49,6 +55,16 @@ namespace MatriculaPUCRS.Areas.Identity.Pages.Account
             [EmailAddress]
             [Display(Name = "Email")]
             public string Email { get; set; }
+
+            [Required]
+            [Display(Name = "Nome")]
+            [MinLength(4)]
+            public string Nome { get; set; }
+
+            [Required]
+            [Display(Name = "CPF")]
+            [StringLength(11, ErrorMessage = "O CPF deve ter 11 caracteres.", MinimumLength = 11)]
+            public string CPF { get; set; }
 
             [Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
@@ -74,10 +90,15 @@ namespace MatriculaPUCRS.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new IdentityUser { UserName = Input.Email, Email = Input.Email };
+                ApplicationUser user = new ApplicationUser { UserName = Input.Email, Email = Input.Email };
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
+                    Estudante estudante = new Estudante() { CPF = Input.CPF, Nome = Input.Nome, EstadoEstudanteEnum = EstadoEstudanteEnum.ATIVO, DigitoVerificador = 0 };
+                    await estudanteRepositorio.Add(estudante);
+                    user.EstudanteId = estudante.Id;
+                    await _userManager.UpdateAsync(user);
+
                     _logger.LogInformation("User created a new account with password.");
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
