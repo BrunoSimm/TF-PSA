@@ -48,6 +48,8 @@ namespace MatriculaPUCRS.Data
             var semestres = new Semestre[]
             {
                 new Semestre { Titulo = "2020/1", DataInicial = new DateTime(2020,1,1), DataFinal = new DateTime(2020,6,30) },
+                new Semestre { Titulo = "2022/1", DataInicial = new DateTime(2022,1,1), DataFinal = new DateTime(2022,6,30) },
+                new Semestre { Titulo = "2022/2", DataInicial = new DateTime(2022,7,1), DataFinal = new DateTime(2022,12,31) },                
             };
             context.Semestres.AddRange(semestres);
             await context.SaveChangesAsync();
@@ -100,6 +102,9 @@ namespace MatriculaPUCRS.Data
                 new Turma { Disciplina = disciplinas[2], DisciplinaId = disciplinas[2].Id, NumeroDeVagas = 60, Semestre = semestres[0], SemestreId = semestres[0].Id, Horarios = new HorarioGrade[] { horariosGrade[34] } },
                 new Turma { Disciplina = disciplinas[3], DisciplinaId = disciplinas[3].Id, NumeroDeVagas = 60, Semestre = semestres[0], SemestreId = semestres[0].Id, Horarios = new HorarioGrade[] { horariosGrade[12], horariosGrade[26] } },
                 new Turma { Disciplina = disciplinas[4], DisciplinaId = disciplinas[4].Id, NumeroDeVagas = 30, Semestre = semestres[0], SemestreId = semestres[0].Id, Horarios = new HorarioGrade[] { horariosGrade[13], horariosGrade[27] } },
+                new Turma { Disciplina = disciplinas[4], DisciplinaId = disciplinas[4].Id, NumeroDeVagas = 40, Semestre = semestres[1], SemestreId = semestres[1].Id, Horarios = new HorarioGrade[] { horariosGrade[13], horariosGrade[27] } },
+                new Turma { Disciplina = disciplinas[2], DisciplinaId = disciplinas[2].Id, NumeroDeVagas = 60, Semestre = semestres[1], SemestreId = semestres[1].Id, Horarios = new HorarioGrade[] { horariosGrade[34] } },
+                 new Turma { Disciplina = disciplinas[0], DisciplinaId = disciplinas[0].Id, NumeroDeVagas = 60, Semestre = semestres[1], SemestreId = semestres[1].Id, Horarios = new HorarioGrade[] { horariosGrade[5], horariosGrade[19], horariosGrade[33] } },
             };
             context.Turmas.AddRange(turmas);
             await context.SaveChangesAsync();

@@ -10,5 +10,6 @@ namespace Persistencia.Interfaces.Repositorios
     public interface IDisciplinaRepositorio : ICrud<Disciplina>
     {
         Task<Disciplina> GetDisciplinaByIdWithMatriculasAndSemestre(long? id);
+        Task<List<Disciplina>> GetDisciplinasFromCurrentSemester();
     }
 }

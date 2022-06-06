@@ -2,6 +2,9 @@
 using Infraestrutura.Data;
 using Microsoft.EntityFrameworkCore;
 using Persistencia.Interfaces.Repositorios;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace MatriculaPUCRS.Data.Persistencia
@@ -13,6 +16,26 @@ namespace MatriculaPUCRS.Data.Persistencia
         {
             _matriculaContext = context;
         }
+
+        public Task<List<Disciplina>> GetDisciplinasFromCurrentSemester()
+        {
+            return _matriculaContext.Turmas
+                .Join(
+                    _matriculaContext.Disciplinas,
+                    turma => turma.DisciplinaId,
+                    disc => disc.Id,
+                    (turma, disc) => new { turma, disc })
+                .Join(
+                    _matriculaContext.Semestres,
+                    turmaDisc => turmaDisc.turma.SemestreId,
+                    semestre => semestre.Id,
+                    (turmaDisc, semestre) => new { turmaDisc, semestre})
+                .Where(result => DateTime.Now >= result.semestre.DataInicial && DateTime.Now <= result.semestre.DataFinal)
+                .Select(result => result.turmaDisc.disc)
+                .Include(d => d.Turmas).ThenInclude(t => t.Semestre)
+                .ToListAsync();
+        }
+
         Task<Disciplina> IDisciplinaRepositorio.GetDisciplinaByIdWithMatriculasAndSemestre(long? id)
         {
             return _matriculaContext.Disciplinas

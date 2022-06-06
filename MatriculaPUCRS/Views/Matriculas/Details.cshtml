@@ -1,0 +1,64 @@
+﻿@model IEnumerable<Entidades.Modelos.Turma>
+
+@{
+    ViewData["Title"] = "Matricula";
+}
+
+<h2>@Model.First().Disciplina.Nome</h2>
+<h5 class="text-muted">Turmas Disponíveis - Semestre @Model.First().Semestre.Titulo</h5>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                <a asp-action="Details" asp-route-sortOrder="@ViewData["IdSortParm"]">@Html.DisplayNameFor(model => model.Id)</a>
+            </th>
+             <th>
+                <a asp-action="Details" asp-route-sortOrder="@ViewData["TituloSortParm"]">@Html.DisplayNameFor(model => model.Disciplina.Nome)</a>
+            </th>   
+            <th>
+                @Html.DisplayNameFor(model => model.Semestre)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NumeroDeVagas)
+            </th>
+             <th>
+                @Html.DisplayNameFor(model => model.VagasRemanescentes)
+            </th>
+            <th>
+                <a asp-action="Details" asp-route-sortOrder="@ViewData["HorarioSortParm"]">@Html.DisplayNameFor(model => model.Horarios)</a>
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>       
+            <td>
+                @Html.DisplayFor(modelItem => item.Disciplina.Nome)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Semestre.Titulo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NumeroDeVagas)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.VagasRemanescentes)
+            </td>  
+            <td>
+                @foreach (var horario in item.Horarios.OrderBy(h => h.Horario))
+               {
+                    <p>@Html.DisplayFor(modelItem => horario.Horario)</p>
+               }
+            </td>
+            <td>
+                <a asp-action="Matricular" asp-route-id="@item.Id"><button type="button" class="btn btn-primary">Matricular</button></a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

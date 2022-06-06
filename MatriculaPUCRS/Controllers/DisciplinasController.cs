@@ -9,9 +9,11 @@ using Entidades.Modelos;
 using Infraestrutura.Data;
 using MatriculaPUCRS.Models;
 using Persistencia.Interfaces.Repositorios;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MatriculaPUCRS.Controllers
 {
+    //[Authorize(Roles = "Estudante")]
     public class DisciplinasController : Controller
     {
         private readonly IDisciplinaRepositorio _disciplinaRepositorio;

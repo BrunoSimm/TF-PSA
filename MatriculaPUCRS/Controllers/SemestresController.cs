@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Entidades.Modelos;
 using Infraestrutura.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MatriculaPUCRS.Controllers
 {
+    //[Authorize(Roles ="Coordenador")]
     public class SemestresController : Controller
     {
         private readonly MatriculaContext _context;
