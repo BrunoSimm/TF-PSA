@@ -7,9 +7,7 @@ using System.Threading.Tasks;
 
 namespace Persistencia.Interfaces.Repositorios
 {
-    public interface ITurmaRepositorio : ICrud<Turma>
+    public interface ISemestreRepositorio : ICrud<Semestre>
     {
-        IQueryable<Turma> ListTurmasWithDisciplinaAndSemestreAndHorariosAsQueryable();
-        Task<Turma> GetTurmaById(long id);
     }
 }

@@ -3,6 +3,7 @@ using Infraestrutura.Data;
 using Microsoft.EntityFrameworkCore;
 using Persistencia.Interfaces.Repositorios;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MatriculaPUCRS.Data.Persistencia
 {
@@ -13,9 +14,16 @@ namespace MatriculaPUCRS.Data.Persistencia
         {
             _matriculaContext = context;
         }
+
+        public async Task<Turma> GetTurmaById(long id)
+        {
+            return await _matriculaContext.Turmas.Include(t => t.Horarios).Include(t => t.Disciplina).ThenInclude(d => d.Requisitos).Where(x => x.Id == id).FirstOrDefaultAsync();
+        }
+
         public IQueryable<Turma> ListTurmasWithDisciplinaAndSemestreAndHorariosAsQueryable()
         {
-            return _matriculaContext.Turmas.Include(t => t.Disciplina).Include(t => t.Semestre).Include(t => t.Horarios).AsQueryable();
+            return _matriculaContext.Turmas.Include(t => t.Disciplina).ThenInclude(d => d.Requisitos).Include(t => t.Semestre).Include(t => t.Horarios).AsQueryable();
         }
+
     }
 }

@@ -33,7 +33,7 @@ namespace MatriculaPUCRS.Data.Persistencia
             await _context.SaveChangesAsync();
         }
 
-        public async Task<T> GetEntityById(int Id)
+        public async Task<T> GetEntityById(long Id)
         {
             //using var data = new ApplicationDbContext(_OptionsBuilder);
             return await _context.Set<T>().FindAsync(Id);

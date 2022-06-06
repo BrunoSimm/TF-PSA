@@ -48,6 +48,8 @@ namespace MatriculaPUCRS
             services.AddScoped<IDisciplinaRepositorio, DisciplinaRepositorio>();
             services.AddScoped<ITurmaRepositorio, TurmaRepositorio>();
             services.AddScoped<IEstudanteRepositorio, EstudanteRepositorio>();
+            services.AddScoped<IMatriculaTurmaRepositorio, MatriculaTurmaRepositorio>();
+            services.AddScoped<ISemestreRepositorio, SemestreRepositorio>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -76,7 +78,7 @@ namespace MatriculaPUCRS
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Disciplinas}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
         }
