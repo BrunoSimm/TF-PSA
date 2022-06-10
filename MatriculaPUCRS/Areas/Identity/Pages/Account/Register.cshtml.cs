@@ -66,15 +66,24 @@ namespace MatriculaPUCRS.Areas.Identity.Pages.Account
             [Display(Name = "CPF")]
             [StringLength(11, ErrorMessage = "O CPF deve ter 11 caracteres.", MinimumLength = 11)]
             public string CPF { get; set; }
+            
+            [Required]
+            [StringLength(8, ErrorMessage = "A matricula deve conter 8 caracteres.", MinimumLength = 8)]
+            [Display(Name = "Matricula (Sem digito verificador)")]
+            public int Matricula { get; set; }
+
+            [Required]
+            [Display(Name = "Digito Verificador")]
+            public int DigitoVerificador { get; set; }
 
             [Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
             [DataType(DataType.Password)]
-            [Display(Name = "Password")]
+            [Display(Name = "Senha")]
             public string Password { get; set; }
 
             [DataType(DataType.Password)]
-            [Display(Name = "Confirm password")]
+            [Display(Name = "Confirme a senha")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
         }
@@ -91,11 +100,24 @@ namespace MatriculaPUCRS.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
+                Estudante estud = await estudanteRepositorio.GetEntityById(Input.Matricula);
+
+                if(estud is not null)
+                {
+                    ModelState.AddModelError(string.Empty, "ERRO: Matricula já cadastrada no sistema.");
+                    return Page();
+                }
+
                 ApplicationUser user = new ApplicationUser { UserName = Input.Email, Email = Input.Email };
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
-                    Estudante estudante = new Estudante() { CPF = Input.CPF, Nome = Input.Nome, EstadoEstudanteEnum = EstadoEstudanteEnum.ATIVO, DigitoVerificador = 0 };
+                    Estudante estudante = new Estudante() { 
+                        Id = Input.Matricula, CPF = Input.CPF, Nome = Input.Nome, 
+                        EstadoEstudanteEnum = EstadoEstudanteEnum.ATIVO, 
+                        DigitoVerificador = Input.DigitoVerificador 
+                    };
+
                     await estudanteRepositorio.Add(estudante);
                     user.EstudanteId = estudante.Id;
                     await _userManager.AddToRoleAsync(user, Roles.Roles.Estudante.ToString()); // Adiciona o usuário a role Estudante.
