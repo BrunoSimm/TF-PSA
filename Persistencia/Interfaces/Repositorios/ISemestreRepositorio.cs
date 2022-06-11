@@ -9,5 +9,8 @@ namespace Persistencia.Interfaces.Repositorios
 {
     public interface ISemestreRepositorio : ICrud<Semestre>
     {
+        public Task<Semestre> GetSemestreAtualAsync();
     }
+
+
 }

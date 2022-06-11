@@ -8,20 +8,58 @@ using Microsoft.EntityFrameworkCore;
 using Entidades.Modelos;
 using Infraestrutura.Data;
 using Persistencia.Interfaces.Repositorios;
+using Microsoft.AspNetCore.Authorization;
+using MatriculaPUCRS.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace MatriculaPUCRS.Controllers
 {
+    [Authorize(Roles = "Estudante")]
     public class TurmasController : Controller
     {
         private readonly MatriculaContext _context;
-        private ITurmaRepositorio _turmaRepositorio;
-
-        public TurmasController(MatriculaContext context, ITurmaRepositorio turmaRepositorio)
+        private readonly ITurmaRepositorio _turmaRepositorio;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IMatriculaTurmaRepositorio _matriculaTurmaRepositorio;
+        private readonly IEstudanteRepositorio _estudanteRepositorio;
+        private readonly ISemestreRepositorio _semestreRepositorio;
+        public TurmasController(
+            MatriculaContext matriculaContext,
+            UserManager<ApplicationUser> userManager, 
+            ITurmaRepositorio turmaRepositorio, 
+            IMatriculaTurmaRepositorio matriculaTurmaRepositorio, 
+            IEstudanteRepositorio estudanteRepositorio,
+            ISemestreRepositorio semestreRepositorio)
         {
-            _context = context;
+            _context = matriculaContext;
+            _semestreRepositorio = semestreRepositorio;
+            _estudanteRepositorio = estudanteRepositorio;
+            _matriculaTurmaRepositorio = matriculaTurmaRepositorio;
             _turmaRepositorio = turmaRepositorio;
+            _userManager = userManager;
         }
 
+        // GET: Turmas
+        public async Task<IActionResult> Index(string sortOrder)
+        {
+            ApplicationUser loggedUser = await _userManager.GetUserAsync(User);
+            Estudante estudante = await _estudanteRepositorio.GetById(loggedUser.EstudanteId)
+               .Include(e => e.Matriculas).ThenInclude(m => m.Turma).ThenInclude(t => t.Disciplina)
+               .FirstOrDefaultAsync();
+
+            var semestre = await _semestreRepositorio.GetSemestreAtualAsync();
+
+            if(semestre is null || estudante is null)
+            {
+                return NotFound();
+            }
+
+            List<MatriculaTurma> matriculasTurmas = await _matriculaTurmaRepositorio.GetByEstudanteAndSemestre(estudante, semestre);
+            
+            return View(matriculasTurmas);
+        }        
+
+        /*
         // GET: Turmas
         public async Task<IActionResult> Index(string sortOrder)
         {
@@ -46,6 +84,7 @@ namespace MatriculaPUCRS.Controllers
             } 
             return View(await turmas.AsNoTracking().ToListAsync());
         }
+        */
 
         // GET: Turmas/Details/5
         public async Task<IActionResult> Details(long? id)
