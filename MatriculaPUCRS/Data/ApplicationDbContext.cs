@@ -14,7 +14,5 @@ namespace MatriculaPUCRS.Data
             : base(options)
         {
         }
-
-      
     }
 }

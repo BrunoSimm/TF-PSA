@@ -4,14 +4,16 @@ using Infraestrutura.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace MatriculaPUCRS.Migrations.Matricula
 {
     [DbContext(typeof(MatriculaContext))]
-    partial class MatriculaContextModelSnapshot : ModelSnapshot
+    [Migration("20220611013534_HorarioGrade")]
+    partial class HorarioGrade
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
