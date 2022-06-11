@@ -68,7 +68,8 @@ namespace MatriculaPUCRS.Areas.Identity.Pages.Account
             public string CPF { get; set; }
             
             [Required]
-            [StringLength(8, ErrorMessage = "A matricula deve conter 8 caracteres.", MinimumLength = 8)]
+            [MinLength(8, ErrorMessage = "A matrícula deve conter 8 caracteres.")]
+            [MaxLength(8, ErrorMessage = "A matrícula deve conter 8 caracteres.")]
             [Display(Name = "Matricula (Sem digito verificador)")]
             public int Matricula { get; set; }
 
@@ -114,7 +115,7 @@ namespace MatriculaPUCRS.Areas.Identity.Pages.Account
                 {
                     Estudante estudante = new Estudante() { 
                         Id = Input.Matricula, CPF = Input.CPF, Nome = Input.Nome, 
-                        EstadoEstudanteEnum = EstadoEstudanteEnum.ATIVO, 
+                        Estado = EstadoEstudanteEnum.ATIVO, 
                         DigitoVerificador = Input.DigitoVerificador 
                     };
 

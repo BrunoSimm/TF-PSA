@@ -12,7 +12,7 @@ namespace Entidades.Modelos
         public TipoRequisitoEnum TipoRequisito { get; set; }
         public long DisciplinaId { get; set; }
         public Disciplina Disciplina { get; set; }
-        //public long DisciplinaRequisitoId { get; set; } //rever
-        //public Disciplina DisciplinaRequisito { get; set; } //rever
+        public long DisciplinaOrigemId { get; set; } //rever
+        public Disciplina DisciplinaOrigem { get; set; } //rever
     }
 }

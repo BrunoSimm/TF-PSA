@@ -11,10 +11,17 @@ namespace Entidades.Modelos
         public IEnumerable<Curriculo> Curriculos { get; set; }
         public IEnumerable<Requisito> Requisitos { get; set; }
         public IEnumerable<Turma> Turmas { get; set; }
+        public int Nivel { get; set; }
 
         public override bool Equals(object obj)
         {
-            return ((Disciplina)obj).Codigo == Codigo;
+            return obj is Disciplina disciplina&&
+                   Codigo==disciplina.Codigo;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Codigo);
         }
     }
 }

@@ -9,5 +9,6 @@
         public Turma Turma { get; set; }
         public long EstudanteId { get; set; }
         public Estudante Estudante { get; set; }
+        public EstadoMatriculaTurmaEnum Estado { get; set; }
     }
 }

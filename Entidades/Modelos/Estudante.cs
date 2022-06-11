@@ -8,7 +8,7 @@ namespace Entidades.Modelos
         public int DigitoVerificador { get; set; }
         public string Nome { get; set; }
         public string CPF { get; set; }
-        public EstadoEstudanteEnum EstadoEstudanteEnum { get; set; }
+        public EstadoEstudanteEnum Estado { get; set; }
         public IEnumerable<MatriculaTurma> Matriculas { get; set; }
     }
 }

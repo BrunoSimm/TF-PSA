@@ -31,6 +31,11 @@ namespace Infraestrutura.Data
             modelBuilder.Entity<MatriculaTurma>()
                 .Property(mt => mt.Aprovado)
                 .HasComputedColumnSql("CASE WHEN MatriculaTurmas.Nota >= 5 THEN CAST(1 as BIT) ELSE CAST(0 as BIT) END");
+
+            modelBuilder.Entity<Disciplina>().HasMany<Requisito>().WithOne(r => r.Disciplina).OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<Requisito>().HasAlternateKey(r => new { r.DisciplinaId, r.DisciplinaOrigemId });
+            modelBuilder.Entity<Requisito>().HasOne(r => r.Disciplina);
+            modelBuilder.Entity<Requisito>().HasOne(r => r.DisciplinaOrigem);
         }
     }
 }
