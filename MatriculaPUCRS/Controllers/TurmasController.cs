@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -43,9 +42,7 @@ namespace MatriculaPUCRS.Controllers
         public async Task<IActionResult> Index(string sortOrder)
         {
             ApplicationUser loggedUser = await _userManager.GetUserAsync(User);
-            Estudante estudante = await _estudanteRepositorio.GetById(loggedUser.EstudanteId)
-               .Include(e => e.Matriculas).ThenInclude(m => m.Turma).ThenInclude(t => t.Disciplina)
-               .FirstOrDefaultAsync();
+            Estudante estudante = await _estudanteRepositorio.GetByIdAsync(loggedUser.EstudanteId);
 
             var semestre = await _semestreRepositorio.GetSemestreAtualAsync();
 

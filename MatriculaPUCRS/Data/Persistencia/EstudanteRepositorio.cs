@@ -3,6 +3,7 @@ using Infraestrutura.Data;
 using Microsoft.EntityFrameworkCore;
 using Persistencia.Interfaces.Repositorios;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MatriculaPUCRS.Data.Persistencia
 {
@@ -14,9 +15,13 @@ namespace MatriculaPUCRS.Data.Persistencia
             _matriculaContext = context;
         }
 
-        public IQueryable<Estudante> GetById(long id)
+        public async Task<Estudante> GetByIdAsync(long id)
         {
-            return _matriculaContext.Estudantes.Where(x => x.Id == id);
+            return await _matriculaContext.Estudantes
+                .Include(e => e.Matriculas)
+                    .ThenInclude(m => m.Turma)
+                    .ThenInclude(t => t.Disciplina)
+                .SingleOrDefaultAsync(e => e.Id == id);
         }
     }
 }

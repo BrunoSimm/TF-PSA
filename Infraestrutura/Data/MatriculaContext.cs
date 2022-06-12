@@ -25,14 +25,23 @@ namespace Infraestrutura.Data
             modelBuilder.Entity<Semestre>().HasAlternateKey("Titulo");
             modelBuilder.Entity<Turma>().Ignore(t => t.VagasRemanescentes);
             modelBuilder.Entity<Estudante>().Property(e => e.Id).ValueGeneratedNever();
+            modelBuilder.Entity<Estudante>().Property(e => e.Nome).IsRequired();
+            modelBuilder.Entity<Estudante>().Property(e => e.CPF).IsRequired();
+            modelBuilder.Entity<Estudante>().HasAlternateKey("CPF");
+            modelBuilder.Entity<Estudante>().Property(e => e.Estado).HasConversion<string>();
+            modelBuilder.Entity<Estudante>().Property(e => e.DigitoVerificador)
+                .HasConversion<int>()
+                .HasComputedColumnSql("CONVERT(INT, (Estudantes.Id % 9) + 1)"); // 1-9
 
-            modelBuilder.Entity<MatriculaTurma>()
-                .HasKey(m => new { m.TurmaId, m.EstudanteId });
-            modelBuilder.Entity<MatriculaTurma>()
-                .Property(mt => mt.Aprovado)
+            modelBuilder.Entity<MatriculaTurma>().HasKey(mt => new { mt.TurmaId, mt.EstudanteId });
+            modelBuilder.Entity<MatriculaTurma>().Property(mt => mt.Estado).HasConversion<string>();
+            modelBuilder.Entity<MatriculaTurma>().Property(mt => mt.Aprovado)
                 .HasComputedColumnSql("CASE WHEN MatriculaTurmas.Nota >= 5 THEN CAST(1 as BIT) ELSE CAST(0 as BIT) END");
 
-            modelBuilder.Entity<Disciplina>().HasMany<Requisito>().WithOne(r => r.Disciplina).OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<Disciplina>()
+                .HasMany<Requisito>()
+                .WithOne(r => r.Disciplina)
+                .OnDelete(DeleteBehavior.NoAction);
             modelBuilder.Entity<Requisito>().HasAlternateKey(r => new { r.DisciplinaId, r.DisciplinaOrigemId });
             modelBuilder.Entity<Requisito>().HasOne(r => r.Disciplina);
             modelBuilder.Entity<Requisito>().HasOne(r => r.DisciplinaOrigem);

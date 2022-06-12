@@ -39,8 +39,8 @@ namespace MatriculaPUCRS.Data
                 new Disciplina { Codigo = "4611C-06", Nome = "Fundamentos de Programação", Curriculos = new Curriculo[] { curriculos[0] }, Nivel = 1 },
                 new Disciplina { Codigo = "95300-04", Nome = "Cálculo 1", Curriculos = new Curriculo[] { curriculos[0] }, Nivel = 1 },
                 new Disciplina { Codigo = "4647P-02", Nome = "Fundamentos da Computação", Curriculos = new Curriculo[] { curriculos[0] }, Nivel = 1 },
-                new Disciplina { Codigo = "4636U-04", Nome = "Introdução a Sistemas de Informação", Curriculos = new Curriculo[] { curriculos[0] }, Nivel = 1 },
-                new Disciplina { Codigo = "254PF-04", Nome = "Fundamentos Aplicados a Administração", Curriculos = new Curriculo[] { curriculos[0] }, Nivel = 1 },
+                new Disciplina { Codigo = "4636U-04", Nome = "Introdução à Sistemas de Informação", Curriculos = new Curriculo[] { curriculos[0] }, Nivel = 1 },
+                new Disciplina { Codigo = "254PF-04", Nome = "Fundamentos Aplicados à Administração", Curriculos = new Curriculo[] { curriculos[0] }, Nivel = 1 },
             };
             context.Disciplinas.AddRange(disciplinas);
             await context.SaveChangesAsync();
@@ -111,13 +111,13 @@ namespace MatriculaPUCRS.Data
 
             var estudantes = new Estudante[]
             {
-                new Estudante { Id = 20103549, Nome = "Cleber", CPF = "000.000.000-01", DigitoVerificador = 0, Estado = EstadoEstudanteEnum.SUSPENSO },
-                new Estudante { Id = 20160982, Nome = "Wesley", CPF = "000.000.000-02", DigitoVerificador = 1, Estado = EstadoEstudanteEnum.GRADUADO },
-                new Estudante { Id = 20104575, Nome = "Valdomir", CPF = "000.000.000-03", DigitoVerificador = 2, Estado = EstadoEstudanteEnum.ATIVO },
-                new Estudante { Id = 20189345, Nome = "Vilmar", CPF = "000.000.000-04", DigitoVerificador = 3, Estado = EstadoEstudanteEnum.ATIVO },
-                new Estudante { Id = 20123586, Nome = "Gertrudes", CPF = "000.000.000-05", DigitoVerificador = 4, Estado = EstadoEstudanteEnum.ATIVO },
-                new Estudante { Id = 20167846, Nome = "Ernesto", CPF = "000.000.000-06", DigitoVerificador = 5, Estado = EstadoEstudanteEnum.ATIVO },
-                new Estudante { Id = 20105486, Nome = "Rafaela", CPF = "000.000.000-07", DigitoVerificador = 6, Estado = EstadoEstudanteEnum.ATIVO },
+                new Estudante { Id = 20103549, Nome = "Cleber", CPF = "000.000.000-01", Estado = EstadoEstudanteEnum.SUSPENSO },
+                new Estudante { Id = 20160982, Nome = "Wesley", CPF = "000.000.000-02", Estado = EstadoEstudanteEnum.GRADUADO },
+                new Estudante { Id = 20104575, Nome = "Valdomir", CPF = "000.000.000-03", Estado = EstadoEstudanteEnum.ATIVO },
+                new Estudante { Id = 20189345, Nome = "Vilmar", CPF = "000.000.000-04", Estado = EstadoEstudanteEnum.ATIVO },
+                new Estudante { Id = 20123586, Nome = "Gertrudes", CPF = "000.000.000-05", Estado = EstadoEstudanteEnum.ATIVO },
+                new Estudante { Id = 20167846, Nome = "Ernesto", CPF = "000.000.000-06", Estado = EstadoEstudanteEnum.ATIVO },
+                new Estudante { Id = 20105486, Nome = "Rafaela", CPF = "000.000.000-07", Estado = EstadoEstudanteEnum.ATIVO },
             };
             context.Estudantes.AddRange(estudantes);
             await context.SaveChangesAsync();

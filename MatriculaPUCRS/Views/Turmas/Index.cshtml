@@ -28,7 +28,7 @@
     {
         if (!discColorMap.ContainsKey(mt.Turma.Disciplina))
         {
-            discColorMap.Add(mt.Turma.Disciplina, bootStrapColors[discColorMap.Count > 11 ? bootStrapColors.Count - 1 : discColorMap.Count]);
+            discColorMap.Add(mt.Turma.Disciplina, bootStrapColors[discColorMap.Count % bootStrapColors.Count]);
         }
     });
 }
@@ -54,7 +54,7 @@
                 </tr>
             </thead>
             <tbody>
-                @if (Model.Any(mt => mt.Turma.Horarios.Where(hg => hg.Horario.Contains("A")).Count() > 0))
+                @if (Model.Any(mt => mt.Turma.Horarios.Where(hg => hg.Horario.Contains("AB")).Count() > 0))
                 {
                     <tr>
                         <td class="align-middle">
@@ -112,7 +112,7 @@
                     </tr>
                 }
 
-                @if (Model.Any(mt => mt.Turma.Horarios.Where(hg => hg.Horario.Contains("C")).Count() > 0))
+                @if (Model.Any(mt => mt.Turma.Horarios.Where(hg => hg.Horario.Contains("CD")).Count() > 0))
                 {
                     <tr>
                         <td class="align-middle">
@@ -171,7 +171,7 @@
                     </tr>
                 }
 
-                @if (Model.Any(mt => mt.Turma.Horarios.Where(hg => hg.Horario.Contains("F")).Count() > 0))
+                @if (Model.Any(mt => mt.Turma.Horarios.Where(hg => hg.Horario.Contains("FG")).Count() > 0))
                 {
                     <tr>
                         <td class="align-middle">
@@ -230,7 +230,7 @@
                     </tr>
                 }
 
-                @if (Model.Any(mt => mt.Turma.Horarios.Where(hg => hg.Horario.Contains("H")).Count() > 0))
+                @if (Model.Any(mt => mt.Turma.Horarios.Where(hg => hg.Horario.Contains("HI")).Count() > 0))
                 {
                     <tr>
                         <td class="align-middle">
@@ -288,7 +288,7 @@
                     </tr>
                 }
 
-                @if (Model.Any(mt => mt.Turma.Horarios.Where(hg => hg.Horario.Contains("J")).Count() > 0))
+                @if (Model.Any(mt => mt.Turma.Horarios.Where(hg => hg.Horario.Contains("JK")).Count() > 0))
                 {
                     <tr>
                         <td class="align-middle">
@@ -346,7 +346,7 @@
                     </tr>
                 }
 
-                @if (Model.Any(mt => mt.Turma.Horarios.Where(hg => hg.Horario.Contains("L")).Count() > 0))
+                @if (Model.Any(mt => mt.Turma.Horarios.Where(hg => hg.Horario.Contains("LM")).Count() > 0))
                 {
                     <tr>
                         <td class="align-middle">
@@ -405,7 +405,7 @@
                     </tr>
                 }
 
-                @if (Model.Any(mt => mt.Turma.Horarios.Where(hg => hg.Horario.Contains("N")).Count() > 0))
+                @if (Model.Any(mt => mt.Turma.Horarios.Where(hg => hg.Horario.Contains("NP")).Count() > 0))
                 {
                     <tr>
                         <td class="align-middle">

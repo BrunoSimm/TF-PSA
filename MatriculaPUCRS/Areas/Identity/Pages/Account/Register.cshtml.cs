@@ -66,16 +66,16 @@ namespace MatriculaPUCRS.Areas.Identity.Pages.Account
             [Display(Name = "CPF")]
             [StringLength(11, ErrorMessage = "O CPF deve ter 11 caracteres.", MinimumLength = 11)]
             public string CPF { get; set; }
-            
-            [Required]
-            [MinLength(8, ErrorMessage = "A matrícula deve conter 8 caracteres.")]
-            [MaxLength(8, ErrorMessage = "A matrícula deve conter 8 caracteres.")]
-            [Display(Name = "Matricula (Sem digito verificador)")]
-            public int Matricula { get; set; }
 
             [Required]
-            [Display(Name = "Digito Verificador")]
-            public int DigitoVerificador { get; set; }
+            [StringLength(8, ErrorMessage = "A matrícula deve conter 8 dígitos.")]
+            [RegularExpression(@"^[1-2][0-9][1-2]\d{5}$", ErrorMessage = "Código de matrícula inválido.")]
+            [Display(Name = "Matricula (sem dígito verificador)")]
+            public string Matricula { get; set; }
+
+            //[Required]
+            //[Display(Name = "Digito Verificador")]
+            //public int DigitoVerificador { get; set; }
 
             [Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
@@ -87,6 +87,19 @@ namespace MatriculaPUCRS.Areas.Identity.Pages.Account
             [Display(Name = "Confirme a senha")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
+        }
+
+        private long GetSemestreMin()
+        {
+            long ano = DateTime.Now.Year % 100;
+            long semestre = (DateTime.Now.Month / 7) + 1;
+            long inicio = (ano * 10^6) + (semestre * 10^5); // 22 * 1000000 + 1 * 100000 = 22100000
+            return inicio;
+        }
+
+        private long GetSemestreMax()
+        {
+            return GetSemestreMin() + 99999;
         }
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -101,7 +114,8 @@ namespace MatriculaPUCRS.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                Estudante estud = await estudanteRepositorio.GetEntityById(Input.Matricula);
+                long matriculaId = Convert.ToInt64(Input.Matricula);
+                Estudante estud = await estudanteRepositorio.GetEntityById(matriculaId);
 
                 if(estud is not null)
                 {
@@ -114,9 +128,11 @@ namespace MatriculaPUCRS.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     Estudante estudante = new Estudante() { 
-                        Id = Input.Matricula, CPF = Input.CPF, Nome = Input.Nome, 
+                        Id = matriculaId,
+                        CPF = Input.CPF,
+                        Nome = Input.Nome, 
                         Estado = EstadoEstudanteEnum.ATIVO, 
-                        DigitoVerificador = Input.DigitoVerificador 
+                        //DigitoVerificador = Input.DigitoVerificador 
                     };
 
                     await estudanteRepositorio.Add(estudante);

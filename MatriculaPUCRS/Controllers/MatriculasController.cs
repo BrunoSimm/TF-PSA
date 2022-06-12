@@ -107,9 +107,7 @@ namespace MatriculaPUCRS.Controllers
 
             //verificar se usuário logado pode fazer a matricula
             ApplicationUser loggedUser = await _userManager.GetUserAsync(User);
-            Estudante estudante = await _estudanteRepositorio.GetById(loggedUser.EstudanteId)
-                .Include(e => e.Matriculas).ThenInclude(m => m.Turma).ThenInclude(t => t.Disciplina)
-                .FirstOrDefaultAsync();
+            Estudante estudante = await _estudanteRepositorio.GetByIdAsync(loggedUser.EstudanteId);
 
             if (estudante is not null)
             {

@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MatriculaPUCRS.Migrations.Matricula
 {
     [DbContext(typeof(MatriculaContext))]
-    [Migration("20220611034209_Requisitos")]
-    partial class Requisitos
+    [Migration("20220611213240_UpdateEstudante")]
+    partial class UpdateEstudante
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -87,18 +87,25 @@ namespace MatriculaPUCRS.Migrations.Matricula
                         .HasColumnType("bigint");
 
                     b.Property<string>("CPF")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("DigitoVerificador")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("int")
+                        .HasComputedColumnSql("CONVERT(INT, (Estudantes.Id % 9) + 1)");
 
-                    b.Property<int>("Estado")
-                        .HasColumnType("int");
+                    b.Property<string>("Estado")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Nome")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasAlternateKey("CPF");
 
                     b.ToTable("Estudantes");
                 });
@@ -140,8 +147,9 @@ namespace MatriculaPUCRS.Migrations.Matricula
                         .HasColumnType("bit")
                         .HasComputedColumnSql("CASE WHEN MatriculaTurmas.Nota >= 5 THEN CAST(1 as BIT) ELSE CAST(0 as BIT) END");
 
-                    b.Property<int>("Estado")
-                        .HasColumnType("int");
+                    b.Property<string>("Estado")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<float>("Nota")
                         .HasColumnType("real");

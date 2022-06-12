@@ -4,14 +4,16 @@ using Infraestrutura.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace MatriculaPUCRS.Migrations.Matricula
 {
     [DbContext(typeof(MatriculaContext))]
-    partial class MatriculaContextModelSnapshot : ModelSnapshot
+    [Migration("20220611034209_UpdateRequisitos")]
+    partial class Requisitos
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -85,25 +87,18 @@ namespace MatriculaPUCRS.Migrations.Matricula
                         .HasColumnType("bigint");
 
                     b.Property<string>("CPF")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("DigitoVerificador")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("int")
-                        .HasComputedColumnSql("CONVERT(INT, (Estudantes.Id % 9) + 1)");
-
-                    b.Property<string>("Estado")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("DigitoVerificador")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Estado")
+                        .HasColumnType("int");
+
                     b.Property<string>("Nome")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasAlternateKey("CPF");
 
                     b.ToTable("Estudantes");
                 });
@@ -145,9 +140,8 @@ namespace MatriculaPUCRS.Migrations.Matricula
                         .HasColumnType("bit")
                         .HasComputedColumnSql("CASE WHEN MatriculaTurmas.Nota >= 5 THEN CAST(1 as BIT) ELSE CAST(0 as BIT) END");
 
-                    b.Property<string>("Estado")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Estado")
+                        .HasColumnType("int");
 
                     b.Property<float>("Nota")
                         .HasColumnType("real");
