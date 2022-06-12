@@ -29,18 +29,60 @@ namespace MatriculaPUCRS.Data
 
             var curriculos = new Curriculo[]
             {
-                new Curriculo { Codigo = "4/624", Ativo = true }
+                new Curriculo { NomeDoCurso = "Sistemas de Informação", Codigo = "4/624", Ativo = true }
             };
             context.Curriculos.AddRange(curriculos);
             await context.SaveChangesAsync();
 
             var disciplinas = new Disciplina[]
             {
-                new Disciplina { Codigo = "4611C-06", Nome = "Fundamentos de Programação", Curriculos = new Curriculo[] { curriculos[0] }, Nivel = 1 },
-                new Disciplina { Codigo = "95300-04", Nome = "Cálculo 1", Curriculos = new Curriculo[] { curriculos[0] }, Nivel = 1 },
-                new Disciplina { Codigo = "4647P-02", Nome = "Fundamentos da Computação", Curriculos = new Curriculo[] { curriculos[0] }, Nivel = 1 },
-                new Disciplina { Codigo = "4636U-04", Nome = "Introdução à Sistemas de Informação", Curriculos = new Curriculo[] { curriculos[0] }, Nivel = 1 },
-                new Disciplina { Codigo = "254PF-04", Nome = "Fundamentos Aplicados à Administração", Curriculos = new Curriculo[] { curriculos[0] }, Nivel = 1 },
+                new Disciplina { Nivel = 1, Codigo = "254PF-04", Nome = "Fundamentos Aplicados à Administração", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
+                new Disciplina { Nivel = 1, Codigo = "4611C-06", Nome = "Fundamentos de Programação", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 90 },
+                new Disciplina { Nivel = 1, Codigo = "4636U-04", Nome = "Introdução à Sistemas de Informação", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
+                new Disciplina { Nivel = 1, Codigo = "4637P-02", Nome = "Fundamentos da Computação", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 30 },
+                new Disciplina { Nivel = 1, Codigo = "95300-04", Nome = "Cálculo I", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
+                new Disciplina { Nivel = 2, Codigo = "4115L-02", Nome = "Matemática Discreta (SI)", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
+                new Disciplina { Nivel = 2, Codigo = "4611E-04", Nome = "Lógica para Computação", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
+                new Disciplina { Nivel = 2, Codigo = "4611F-04", Nome = "Programação Orientada a Objetos", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
+                new Disciplina { Nivel = 2, Codigo = "4636F-02", Nome = "Engenharia de Software", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 30 },
+                new Disciplina { Nivel = 2, Codigo = "4636X-04", Nome = "Modelagem de Negócio", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
+                new Disciplina { Nivel = 2, Codigo = "95304-04", Nome = "Probabilidade e Estatística", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
+                new Disciplina { Nivel = 3, Codigo = "4611D-02", Nome = "Laboratório de Banco de Dados", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 30 },
+                new Disciplina { Nivel = 3, Codigo = "4636H-04", Nome = "Fundamentos de Desenvolvimento de Software", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
+                new Disciplina { Nivel = 3, Codigo = "4636T-04", Nome = "Interação Humano-Computador", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
+                new Disciplina { Nivel = 3, Codigo = "4636Z-04", Nome = "Planejamento e Gestão Estratégica de TI", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
+                new Disciplina { Nivel = 3, Codigo = "4637N-02", Nome = "Arquitetura de Computadores", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
+                new Disciplina { Nivel = 3, Codigo = "46506-04", Nome = "Engenharia de Requisitos", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
+                new Disciplina { Nivel = 4, Codigo = "4636K-04", Nome = "Fundamentos de Redes de Computadores", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
+                new Disciplina { Nivel = 4, Codigo = "4636P-04", Nome = "Disicplina Integradora", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
+                new Disciplina { Nivel = 4, Codigo = "4637C-04", Nome = "Projeto e Desenvolvimento de Software", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
+                new Disciplina { Nivel = 5, Codigo = "4611H-02", Nome = "Sistema de Gerenciamento de Banco de Dados", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 30 },
+                new Disciplina { Nivel = 5, Codigo = "4636L-04", Nome = "Gerência de Projeos de TI", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
+                new Disciplina { Nivel = 5, Codigo = "4636M-02", Nome = "Gerência de Redes de Computadores", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 30 },
+                new Disciplina { Nivel = 5, Codigo = "4636R-04", Nome = "Inteligência de Negócio", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
+                new Disciplina { Nivel = 5, Codigo = "4637B-04", Nome = "Programação de Software Aplicado", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
+                new Disciplina { Nivel = 5, Codigo = "4637G-04", Nome = "Sistemas Distribuídos", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
+                new Disciplina { Nivel = 6, Codigo = "254AU-04", Nome = "Governança Estratégica em TI", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
+                new Disciplina { Nivel = 6, Codigo = "4636B-04", Nome = "Arquitetura Organizacional Aplicada a SI", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
+                new Disciplina { Nivel = 6, Codigo = "4636N-04", Nome = "Infraestrutura de Tecnologia da Informação", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
+                new Disciplina { Nivel = 6, Codigo = "4636Q-04", Nome = "Disciplina Integradora II", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
+                new Disciplina { Nivel = 6, Codigo = "4637J-02", Nome = "Teoria da Computação", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 30 },
+                new Disciplina { Nivel = 6, Codigo = "4637K-02", Nome = "Tópicos Avançados em Gestão de Dados", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 30 },
+                new Disciplina { Nivel = 7, Codigo = "11521-04", Nome = "Humanismo e Cultura Religiosa", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
+                new Disciplina { Nivel = 7, Codigo = "2540L-04", Nome = "Empreendimentos Empresariais", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
+                new Disciplina { Nivel = 7, Codigo = "4613Y-08", Nome = "Disciplina Eletiva", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 120 },
+                new Disciplina { Nivel = 7, Codigo = "4636D-02", Nome = "Avaliação e Desempenho de Sistemas", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 30 },
+                new Disciplina { Nivel = 7, Codigo = "4637A-02", Nome = "Prática Profissional (360 Horas)", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 360 },
+                new Disciplina { Nivel = 7, Codigo = "4637E-02", Nome = "Qualidade de Produto", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 30 },
+                new Disciplina { Nivel = 7, Codigo = "4637F-04", Nome = "Sistemas de Informação Integrados", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
+                new Disciplina { Nivel = 7, Codigo = "4637L-04", Nome = "Trabalho de Conclusão I", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 30 },
+                new Disciplina { Nivel = 8, Codigo = "1501A-04", Nome = "Ética e Cidadania", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
+                new Disciplina { Nivel = 8, Codigo = "24135-02", Nome = "Legislação em Informática", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 30 },
+                new Disciplina { Nivel = 8, Codigo = "254PG-02", Nome = "Comportamento Organizacional", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 30 },
+                new Disciplina { Nivel = 8, Codigo = "4612D-00", Nome = "Atividades Complementares", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 120 },
+                new Disciplina { Nivel = 8, Codigo = "4636C-04", Nome = "Auditoria e Segurançaa de Sistemas de Informação", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
+                new Disciplina { Nivel = 8, Codigo = "4637D-04", Nome = "Qualidade de Processo", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
+                new Disciplina { Nivel = 8, Codigo = "4637M-04", Nome = "Trabalho de Conclusão II", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
             };
             context.Disciplinas.AddRange(disciplinas);
             await context.SaveChangesAsync();

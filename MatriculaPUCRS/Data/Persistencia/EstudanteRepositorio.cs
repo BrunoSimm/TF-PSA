@@ -15,9 +15,9 @@ namespace MatriculaPUCRS.Data.Persistencia
             _matriculaContext = context;
         }
 
-        public async Task<Estudante> GetByIdAsync(long id)
+        public Task<Estudante> GetByIdAsync(long id)
         {
-            return await _matriculaContext.Estudantes
+            return _matriculaContext.Estudantes
                 .Include(e => e.Matriculas)
                     .ThenInclude(m => m.Turma)
                     .ThenInclude(t => t.Disciplina)

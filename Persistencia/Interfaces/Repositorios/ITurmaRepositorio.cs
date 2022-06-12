@@ -10,6 +10,6 @@ namespace Persistencia.Interfaces.Repositorios
     public interface ITurmaRepositorio : ICrud<Turma>
     {
         IQueryable<Turma> ListTurmasWithDisciplinaAndSemestreAndHorariosAsQueryable();
-        Task<Turma> GetTurmaById(long id);
+        Task<Turma> GetTurmaByIdAsync(long id);
     }
 }

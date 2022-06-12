@@ -8,10 +8,11 @@ namespace Entidades.Modelos
         public long Id { get; set; }
         public string Codigo { get; set; }
         public string Nome { get; set; }
+        public int Nivel { get; set; }
+        public int CargaHoraria { get; set; }
         public IEnumerable<Curriculo> Curriculos { get; set; }
         public IEnumerable<Requisito> Requisitos { get; set; }
         public IEnumerable<Turma> Turmas { get; set; }
-        public int Nivel { get; set; }
 
         public override bool Equals(object obj)
         {

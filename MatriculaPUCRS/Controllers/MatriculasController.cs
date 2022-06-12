@@ -96,7 +96,7 @@ namespace MatriculaPUCRS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Matricular(long turmaId, long disciplinaId, long semestreId)
         {
-            Turma turma = await _turmaRepositorio.GetTurmaById(turmaId);
+            Turma turma = await _turmaRepositorio.GetTurmaByIdAsync(turmaId);
             Disciplina disciplina = await _disciplinaRepositorio.GetEntityById(disciplinaId);
             Semestre semestre = await _semestreRepositorio.GetEntityById(semestreId);
 

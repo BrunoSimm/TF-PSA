@@ -13,6 +13,8 @@ namespace Entidades.Modelos
         public string Nome { get; set; }
         public string CPF { get; set; }
         public EstadoEstudanteEnum Estado { get; set; }
+        public long? CurriculoId { get; set; }
+        public Curriculo Curriculo { get; set; }
         public IEnumerable<MatriculaTurma> Matriculas { get; set; }
     }
 }

@@ -20,6 +20,7 @@ namespace Infraestrutura.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Curriculo>().HasAlternateKey("Codigo");
+            modelBuilder.Entity<Curriculo>().Property(c => c.NomeDoCurso).IsRequired();
             modelBuilder.Entity<Disciplina>().HasAlternateKey("Codigo");
             modelBuilder.Entity<HorarioGrade>().HasAlternateKey("Horario");
             modelBuilder.Entity<Semestre>().HasAlternateKey("Titulo");
