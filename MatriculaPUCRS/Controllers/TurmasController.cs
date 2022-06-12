@@ -51,6 +51,8 @@ namespace MatriculaPUCRS.Controllers
                 return NotFound();
             }
 
+            ViewBag.MatriculaSuccessMessage = TempData["SuccessMessageTemp"];
+
             List<MatriculaTurma> matriculasTurmas = await _matriculaTurmaRepositorio.GetByEstudanteAndSemestre(estudante, semestre);
             
             return View(matriculasTurmas);

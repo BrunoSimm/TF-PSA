@@ -33,15 +33,18 @@
     });
 
     List<HorarioGrade> horarios = Model.SelectMany(mt => mt.Turma.Horarios).Distinct().ToList();
-    List<string> periodos = horarios.Select(h => h.Periodo()).Distinct().ToList();
+    List<string> periodos = horarios.Select(h => h.Periodo()).Distinct().OrderBy(s => s.Substring(1)).ToList();
 }
 
 <h1>@ViewData["Title"]</h1>
+
+
 
 <div class="container">
     <div class="timetable-img text-center">
         <img src="img/content/timetable.png" alt="">
     </div>
+    <h5 class="alert-success">@(ViewBag.MatriculaSuccessMessage == null ? "" : @ViewBag.MatriculaSuccessMessage)</h5>
     <div class="table-responsive">
         <table class="table table-bordered text-center table-hover">
             <thead>
@@ -62,7 +65,7 @@
                     var horario = horarios.Find(h => h.Periodo().Equals(periodo));
                     <tr>
                         <td class="align-middle">
-                            <p class="bg-light-gray rounded">@horario.Horario</p>
+                            <p class="bg-light-gray rounded">@horario.Horario.Substring(1)</p>
                             <span>@horario.HorarioInicial</span><br />
                             <span>@horario.HorarioFinal</span>
                         </td>
