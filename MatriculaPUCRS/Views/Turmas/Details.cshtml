@@ -4,6 +4,14 @@
     ViewData["Title"] = "Details";
 }
 
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/Turmas">Home</a></li>
+        <li class="breadcrumb-item"><a href="/Turmas">Grade de Horários</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Turma @Model.Id</li>
+    </ol>
+</nav>
+
 <h1>@Model.Disciplina.Nome - @Model.Disciplina.Codigo</h1>
 
 <div>

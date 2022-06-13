@@ -4,6 +4,14 @@
     ViewData["Title"] = "Matrícula";
 }
 
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/Turmas">Home</a></li>
+    <li class="breadcrumb-item"><a href="/Matriculas">Matrículas</a></li>
+    <li class="breadcrumb-item active" aria-current="page">@Model.First().Disciplina.Nome</li>
+  </ol>
+</nav>
+
 <h2>@Model.First().Disciplina.Codigo - @Model.First().Disciplina.Nome</h2>
 <h5 class="text-muted">Turmas Disponíveis - Semestre @Model.First().Semestre.Titulo</h5>
 

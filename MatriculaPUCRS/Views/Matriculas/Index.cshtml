@@ -4,6 +4,13 @@
     ViewData["Title"] = "Index";
 }
 
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/Turmas">Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Matrículas</li>
+  </ol>
+</nav>
+
 <h2>Disciplinas Disponíveis - @Model.First().Turmas.First().Semestre.Titulo</h2>
 
 <span class="alert-success">@(ViewBag.MatriculaSuccessMessage == null ? "" : @ViewBag.MatriculaSuccessMessage)</span>
