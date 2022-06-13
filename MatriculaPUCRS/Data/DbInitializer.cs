@@ -87,6 +87,14 @@ namespace MatriculaPUCRS.Data
             context.Disciplinas.AddRange(disciplinas);
             await context.SaveChangesAsync();
 
+            var requisitos = new Requisito[]
+            {
+                new Requisito { Disciplina = disciplinas[0], DisciplinaId = disciplinas[0].Id, DisciplinaOrigem = disciplinas[9], DisciplinaOrigemId = disciplinas[9].Id, TipoRequisito = TipoRequisitoEnum.PRE_REQUISITO },
+                new Requisito { Disciplina = disciplinas[1], DisciplinaId = disciplinas[1].Id, DisciplinaOrigem = disciplinas[7], DisciplinaOrigemId = disciplinas[7].Id, TipoRequisito = TipoRequisitoEnum.PRE_REQUISITO }
+            };
+            context.Requisitos.AddRange(requisitos);
+            await context.SaveChangesAsync();
+
             var semestres = new Semestre[]
             {
                 new Semestre { Titulo = "2020/1", DataInicial = new DateTime(2020,1,1), DataFinal = new DateTime(2020,6,30) },
@@ -146,7 +154,9 @@ namespace MatriculaPUCRS.Data
                 new Turma { Disciplina = disciplinas[4], DisciplinaId = disciplinas[4].Id, NumeroDeVagas = 30, Semestre = semestres[0], SemestreId = semestres[0].Id, Horarios = new HorarioGrade[] { horariosGrade[13], horariosGrade[27] } },
                 new Turma { Disciplina = disciplinas[4], DisciplinaId = disciplinas[4].Id, NumeroDeVagas = 40, Semestre = semestres[1], SemestreId = semestres[1].Id, Horarios = new HorarioGrade[] { horariosGrade[13], horariosGrade[27] } },
                 new Turma { Disciplina = disciplinas[2], DisciplinaId = disciplinas[2].Id, NumeroDeVagas = 60, Semestre = semestres[1], SemestreId = semestres[1].Id, Horarios = new HorarioGrade[] { horariosGrade[34] } },
-                 new Turma { Disciplina = disciplinas[0], DisciplinaId = disciplinas[0].Id, NumeroDeVagas = 60, Semestre = semestres[1], SemestreId = semestres[1].Id, Horarios = new HorarioGrade[] { horariosGrade[5], horariosGrade[19], horariosGrade[33] } },
+                new Turma { Disciplina = disciplinas[0], DisciplinaId = disciplinas[0].Id, NumeroDeVagas = 60, Semestre = semestres[1], SemestreId = semestres[1].Id, Horarios = new HorarioGrade[] { horariosGrade[5], horariosGrade[19], horariosGrade[33] } },
+                new Turma { Disciplina = disciplinas[7], DisciplinaId = disciplinas[7].Id, NumeroDeVagas = 45, Semestre = semestres[1], SemestreId = semestres[1].Id, Horarios = new HorarioGrade[] { horariosGrade[5], horariosGrade[19], horariosGrade[33] } },
+                new Turma { Disciplina = disciplinas[9], DisciplinaId = disciplinas[9].Id, NumeroDeVagas = 35, Semestre = semestres[1], SemestreId = semestres[1].Id, Horarios = new HorarioGrade[] { horariosGrade[13], horariosGrade[27] } },
             };
             context.Turmas.AddRange(turmas);
             await context.SaveChangesAsync();

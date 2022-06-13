@@ -185,7 +185,7 @@ namespace MatriculaPUCRS.Controllers
                         }
                         else
                         {
-                            TempData["ErrorMessageTemp"] = $"Você não possui o pre requisito {preRequisito.Disciplina.Nome} para esta disciplina.";
+                            TempData["ErrorMessageTemp"] = $"Você não possui o pre requisito '{preRequisito.Disciplina.Nome}' para esta disciplina.";
                             return RedirectToAction("Details", new { id = disciplinaId });
                         }
                     }
