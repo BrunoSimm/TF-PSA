@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace MatriculaPUCRS.Controllers
 {
-    //[Authorize(Roles = "Estudante")]
+    [Authorize(Roles = "Coordenador")]
     public class DisciplinasController : Controller
     {
         private readonly IDisciplinaRepositorio _disciplinaRepositorio;

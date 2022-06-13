@@ -110,7 +110,7 @@ namespace MatriculaPUCRS.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
-            returnUrl ??= Url.Content("~/");
+            returnUrl ??= Url.Content("/Turmas");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
@@ -120,6 +120,14 @@ namespace MatriculaPUCRS.Areas.Identity.Pages.Account
                 if(estud is not null)
                 {
                     ModelState.AddModelError(string.Empty, "ERRO: Matricula já cadastrada no sistema.");
+                    return Page();
+                }
+
+                estud = await estudanteRepositorio.GetByCPF(Input.CPF);
+
+                if(estud is not null)
+                {
+                    ModelState.AddModelError(string.Empty, "ERRO: CPF já cadastrado no sistema.");
                     return Page();
                 }
 

@@ -4,29 +4,45 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<h1>@Model.Disciplina.Nome - @Model.Disciplina.Codigo</h1>
 
 <div>
-    <h4>Turma</h4>
+    <h5>
+        Turma @Model.Id -
+        @if (@ViewBag.IsMatriculated)
+        {
+            <span class=text-success small font-weight-bold">
+                Você está matriculado(a) nesta turma!
+            </span>
+
+        }
+        else
+        {
+            <span class="text-info small font-weight-bold">
+                Você não está matriculado(a) nesta turma!
+            </span>
+        }
+    </h5>
+    <h5 class="alert-success">@(ViewBag.CancelarMatriculaStatus == null ? "" : @ViewBag.CancelarMatriculaStatus)</h5>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.NumeroDeVagas)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.NumeroDeVagas)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Disciplina)
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.VagasRemanescentes)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Disciplina.Id)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.VagasRemanescentes)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Semestre)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Semestre.Id)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Semestre.Titulo)
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Horarios)
@@ -34,7 +50,9 @@
         <dd class="col-sm-10">
             <table class="table">
                 <tr>
-                    <th>Horários</th>
+                    <th></th>
+                    <th>Horário Inicial</th>
+                    <th>Horário Final</th>
                 </tr>
                 @foreach (var item in Model.Horarios)
                 {
@@ -42,13 +60,53 @@
                         <td>
                             @Html.DisplayFor(modelItem => item.Horario)
                         </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.HorarioInicial)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.HorarioFinal)
+                        </td>
                     </tr>
                 }
             </table>
         </dd>
     </dl>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+<div class="float-right">
+    @if (@ViewBag.IsMatriculated)
+    {
+        <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#cancelarMatriculaModal">
+            Cancelar Matrícula
+        </button>
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="cancelarMatriculaModal" tabindex="-1" role="dialog" aria-labelledby="cancelarMatriculaModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="cancelarMatriculaModalLabel">Cancelar Matrícula</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        Você confirma o desejo de CANCELAR seu pedido de matrícula nesta turma?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Voltar</button>
+                        <form asp-action="CancelarMatricula">
+                            <input type="hidden" asp-for="Id" />
+                            <input type="submit" value="Cancelar Matrícula" class="btn btn-danger" />
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <a class="btn btn-outline-info" asp-action="Index">Grade de Horários</a>
+        <a class="btn btn-outline-success" asp-controller="Matriculas" asp-action="Details" asp-route-id="@Model.DisciplinaId">Matricular</a>
+    }
 </div>

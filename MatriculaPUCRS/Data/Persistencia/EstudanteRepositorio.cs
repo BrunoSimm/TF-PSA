@@ -15,6 +15,11 @@ namespace MatriculaPUCRS.Data.Persistencia
             _matriculaContext = context;
         }
 
+        public Task<Estudante> GetByCPF(string cpf)
+        {
+            return _matriculaContext.Estudantes.Where(e => e.CPF.Equals(cpf)).FirstOrDefaultAsync();
+        }
+
         public Task<Estudante> GetByIdAsync(long id)
         {
             return _matriculaContext.Estudantes

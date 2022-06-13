@@ -14,6 +14,7 @@ using Microsoft.Extensions.Logging;
 using MatriculaPUCRS.Models;
 using Persistencia.Interfaces.Repositorios;
 using Entidades.Modelos;
+using Microsoft.EntityFrameworkCore;
 
 namespace MatriculaPUCRS.Areas.Identity.Pages.Account
 {
@@ -51,9 +52,10 @@ namespace MatriculaPUCRS.Areas.Identity.Pages.Account
 
             [Required]
             [DataType(DataType.Password)]
+            [Display(Name = "Senha")]
             public string Password { get; set; }
 
-            [Display(Name = "Remember me?")]
+            [Display(Name = "Lembrar-me?")]
             public bool RememberMe { get; set; }
         }
 
@@ -63,8 +65,6 @@ namespace MatriculaPUCRS.Areas.Identity.Pages.Account
             {
                 ModelState.AddModelError(string.Empty, ErrorMessage);
             }
-
-            returnUrl ??= Url.Content("~/");
 
             // Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
@@ -77,7 +77,7 @@ namespace MatriculaPUCRS.Areas.Identity.Pages.Account
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
-
+            
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         
             if (ModelState.IsValid)
@@ -88,6 +88,18 @@ namespace MatriculaPUCRS.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
+
+                    var userLogged = await _userManager.Users.Where(user => user.Email.Equals(Input.Email)).FirstOrDefaultAsync();
+                    var userRoles = await _userManager.GetRolesAsync(userLogged);
+                    if (userRoles.Any(ur => ur.Equals(Roles.Roles.Estudante.ToString())))
+                    {
+                        returnUrl = Url.Content("~/Turmas");
+                    }
+                    if (userRoles.Any(ur => ur.Equals(Roles.Roles.Coordenador.ToString())))
+                    {
+                        returnUrl = Url.Content("~/Disciplinas");
+                    }
+                    returnUrl = Url.Content("~/Turmas");
                     return LocalRedirect(returnUrl);
                 }
                 if (result.RequiresTwoFactor)

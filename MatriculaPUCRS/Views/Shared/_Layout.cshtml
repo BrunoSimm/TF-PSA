@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity;
+@inject SignInManager<ApplicationUser> SignInManager;
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     @RenderSection("Stylesheets", required: false)
@@ -12,27 +15,42 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">MatriculaPUCRS</a>
+
+                <a class="navbar-brand" asp-area="" asp-controller="Turmas" asp-action="Index">
+                    <img src="~/images/pucrsicon.png" width="50" height="50" alt="PUCRS" />
+                </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Matriculas" asp-action="Index">Matrícula</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Turmas" asp-action="Index">Grade de Horários</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Disciplinas" asp-action="Index">Disciplinas</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Semestres" asp-action="Index">Semestres</a>
-                        </li>
-                    </ul>
-                    <partial name="_LoginPartial" />
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        <ul class="navbar-nav flex-grow-1">
+                            @if (User.IsInRole("Estudante"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Matriculas" asp-action="Index">Matrícula</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Turmas" asp-action="Index">Grade de Horários</a>
+                                </li>
+                            }
+
+                            @if (User.IsInRole("Coordenador"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Disciplinas" asp-action="Index">Disciplinas</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Semestres" asp-action="Index">Semestres</a>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    <div class="float-right">
+                        <partial name="_LoginPartial" />
+                    </div>
                 </div>
             </div>
         </nav>
