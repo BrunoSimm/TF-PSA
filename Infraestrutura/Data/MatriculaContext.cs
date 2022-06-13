@@ -19,11 +19,14 @@ namespace Infraestrutura.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Curriculo>().HasAlternateKey("Codigo");
+            modelBuilder.Entity<Curriculo>().HasAlternateKey(c => c.Codigo);
             modelBuilder.Entity<Curriculo>().Property(c => c.NomeDoCurso).IsRequired();
-            modelBuilder.Entity<Disciplina>().HasAlternateKey("Codigo");
-            modelBuilder.Entity<HorarioGrade>().HasAlternateKey("Horario");
-            modelBuilder.Entity<Semestre>().HasAlternateKey("Titulo");
+            modelBuilder.Entity<Disciplina>().HasAlternateKey(d => d.Codigo);
+            modelBuilder.Entity<HorarioGrade>().HasAlternateKey(hg => hg.Horario);
+            modelBuilder.Entity<Semestre>().HasAlternateKey(s => s.Titulo);
+            modelBuilder.Entity<Semestre>().Property(s => s.DataInicial).IsRequired();
+            modelBuilder.Entity<Semestre>().Property(s => s.DataFinal).IsRequired();
+            
             modelBuilder.Entity<Turma>().Ignore(t => t.VagasRemanescentes);
             modelBuilder.Entity<Estudante>().Property(e => e.Id).ValueGeneratedNever();
             modelBuilder.Entity<Estudante>().Property(e => e.Nome).IsRequired();
@@ -31,7 +34,6 @@ namespace Infraestrutura.Data
             modelBuilder.Entity<Estudante>().HasAlternateKey("CPF");
             modelBuilder.Entity<Estudante>().Property(e => e.Estado).HasConversion<string>();
             modelBuilder.Entity<Estudante>().Property(e => e.DigitoVerificador)
-                .HasConversion<int>()
                 .HasComputedColumnSql("CONVERT(INT, (Estudantes.Id % 9) + 1)"); // 1-9
 
             modelBuilder.Entity<MatriculaTurma>().HasKey(mt => new { mt.TurmaId, mt.EstudanteId });

@@ -36,7 +36,7 @@ namespace MatriculaPUCRS.Data.Persistencia
                 .ToListAsync();
         }
 
-        Task<Disciplina> IDisciplinaRepositorio.GetDisciplinaByIdWithMatriculasAndSemestre(long? id)
+        public Task<Disciplina> GetDisciplinaByIdWithMatriculasAndSemestre(long? id)
         {
             return _matriculaContext.Disciplinas
                  .Include(d => d.Turmas).ThenInclude(t => t.Matriculas)

@@ -17,6 +17,8 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Persistencia.Interfaces.Repositorios;
 using MatriculaPUCRS.Areas.Roles;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Text.RegularExpressions;
 
 namespace MatriculaPUCRS.Areas.Identity.Pages.Account
 {
@@ -27,20 +29,23 @@ namespace MatriculaPUCRS.Areas.Identity.Pages.Account
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
-        private readonly IEstudanteRepositorio estudanteRepositorio;
+        private readonly IEstudanteRepositorio _estudanteRepositorio;
+        private readonly ICurriculoRepositorio _curriculoRepositorio;
 
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
-            IEstudanteRepositorio estudanteRepositorio)
+            IEstudanteRepositorio estudanteRepositorio,
+            ICurriculoRepositorio curriculoRepositorio)
         {
-            this.estudanteRepositorio = estudanteRepositorio;
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _estudanteRepositorio = estudanteRepositorio;
+            _curriculoRepositorio = curriculoRepositorio;
         }
 
         [BindProperty]
@@ -63,8 +68,9 @@ namespace MatriculaPUCRS.Areas.Identity.Pages.Account
             public string Nome { get; set; }
 
             [Required]
+            [StringLength(11)]
+            [RegularExpression(@"^(\d{11})$", ErrorMessage = "O CPF deve ter 11 dígitos.")]
             [Display(Name = "CPF")]
-            [StringLength(11, ErrorMessage = "O CPF deve ter 11 caracteres.", MinimumLength = 11)]
             public string CPF { get; set; }
 
             [Required]
@@ -73,9 +79,9 @@ namespace MatriculaPUCRS.Areas.Identity.Pages.Account
             [Display(Name = "Matricula (sem dígito verificador)")]
             public string Matricula { get; set; }
 
-            //[Required]
-            //[Display(Name = "Digito Verificador")]
-            //public int DigitoVerificador { get; set; }
+            [Required]
+            [Display(Name = "Curriculo")]
+            public long CurriculoID { get; set; }
 
             [Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
@@ -89,23 +95,21 @@ namespace MatriculaPUCRS.Areas.Identity.Pages.Account
             public string ConfirmPassword { get; set; }
         }
 
-        private long GetSemestreMin()
-        {
-            long ano = DateTime.Now.Year % 100;
-            long semestre = (DateTime.Now.Month / 7) + 1;
-            long inicio = (ano * 10^6) + (semestre * 10^5); // 22 * 1000000 + 1 * 100000 = 22100000
-            return inicio;
-        }
+        public SelectList Curriculos { get; set; }
 
-        private long GetSemestreMax()
+        private async Task PopulateCurriculoDropDownList(object selectedCurriculo = null)
         {
-            return GetSemestreMin() + 99999;
+            var curriculos = await _curriculoRepositorio.GetActiveCurriculosAsync();
+            curriculos.OrderBy(c => c.NomeDoCurso).ThenBy(c => c.Codigo);
+
+            Curriculos = new SelectList(curriculos, nameof(Curriculo.Id), nameof(Curriculo.NomeParaListaDropdown), selectedCurriculo);
         }
 
         public async Task OnGetAsync(string returnUrl = null)
         {
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+            await PopulateCurriculoDropDownList();
         }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
@@ -115,11 +119,12 @@ namespace MatriculaPUCRS.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 long matriculaId = Convert.ToInt64(Input.Matricula);
-                Estudante estud = await estudanteRepositorio.GetEntityById(matriculaId);
+                Estudante estud = await _estudanteRepositorio.GetEntityById(matriculaId);
 
                 if(estud is not null)
                 {
-                    ModelState.AddModelError(string.Empty, "ERRO: Matricula já cadastrada no sistema.");
+                    ModelState.AddModelError(string.Empty, "ERRO: Matrícula já cadastrada no sistema.");
+                    await PopulateCurriculoDropDownList(Input.CurriculoID);
                     return Page();
                 }
 
@@ -129,13 +134,13 @@ namespace MatriculaPUCRS.Areas.Identity.Pages.Account
                 {
                     Estudante estudante = new Estudante() { 
                         Id = matriculaId,
-                        CPF = Input.CPF,
+                        CPF = Convert.ToUInt64(Input.CPF).ToString(@"000\.000\.000\-00"),
                         Nome = Input.Nome, 
                         Estado = EstadoEstudanteEnum.ATIVO, 
-                        //DigitoVerificador = Input.DigitoVerificador 
+                        CurriculoId = Input.CurriculoID,
                     };
 
-                    await estudanteRepositorio.Add(estudante);
+                    await _estudanteRepositorio.Add(estudante);
                     user.EstudanteId = estudante.Id;
                     await _userManager.AddToRoleAsync(user, Roles.Roles.Estudante.ToString()); // Adiciona o usuário a role Estudante.
                     await _userManager.UpdateAsync(user);
@@ -172,6 +177,7 @@ namespace MatriculaPUCRS.Areas.Identity.Pages.Account
             }
 
             // If we got this far, something failed, redisplay form
+            await PopulateCurriculoDropDownList(Input.CurriculoID);
             return Page();
         }
     }

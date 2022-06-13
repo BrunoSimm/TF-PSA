@@ -33,7 +33,7 @@
     });
 
     List<HorarioGrade> horarios = Model.SelectMany(mt => mt.Turma.Horarios).Distinct().ToList();
-    List<string> periodos = horarios.Select(h => h.Periodo()).Distinct().ToList();
+    List<string> periodos = horarios.Select(h => h.Periodo).Distinct().ToList();
 }
 
 <h1>@ViewData["Title"]</h1>
@@ -59,7 +59,7 @@
             <tbody>
                 @foreach (string periodo in periodos)
                 {
-                    var horario = horarios.Find(h => h.Periodo().Equals(periodo));
+                    var horario = horarios.Find(h => h.Periodo.Equals(periodo));
                     <tr>
                         <td class="align-middle">
                             <p class="bg-light-gray rounded">@horario.Horario</p>
@@ -68,9 +68,9 @@
                         </td>
                         @for (int i = 2; i <= 6; i++)
                         {
-                            @if (Model.Any(mt => mt.Turma.Horarios.Any(hg => hg.Horario.Equals($"{i}{horario.Periodo()}"))))
+                            @if (Model.Any(mt => mt.Turma.Horarios.Any(hg => hg.Horario.Equals($"{i}{horario.Periodo}"))))
                             {
-                                var turma = Model.FirstOrDefault(mt => mt.Turma.Horarios.Any(hg => hg.Horario.Equals($"{i}{horario.Periodo()}")));
+                                var turma = Model.FirstOrDefault(mt => mt.Turma.Horarios.Any(hg => hg.Horario.Equals($"{i}{horario.Periodo}")));
                                 <td style="width: 18%">
                                     <div class="@discColorMap.Where(dcm => dcm.Key.Equals(@turma.Turma.Disciplina)).First().Value padding-5px-tb padding-15px-lr border-radius-5 margin-10px-bottom text-white font-size16 xs-font-size13">
                                         <span>@turma.Turma.Disciplina.Nome</span>

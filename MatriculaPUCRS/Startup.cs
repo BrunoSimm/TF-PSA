@@ -59,6 +59,7 @@ namespace MatriculaPUCRS
             services.AddScoped<IEstudanteRepositorio, EstudanteRepositorio>();
             services.AddScoped<IMatriculaTurmaRepositorio, MatriculaTurmaRepositorio>();
             services.AddScoped<ISemestreRepositorio, SemestreRepositorio>();
+            services.AddScoped<ICurriculoRepositorio, CurriculoRepositorio>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
