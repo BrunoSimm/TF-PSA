@@ -7,7 +7,7 @@
 <h2>@Model.First().Disciplina.Codigo - @Model.First().Disciplina.Nome</h2>
 <h5 class="text-muted">Turmas Disponíveis - Semestre @Model.First().Semestre.Titulo</h5>
 
-<h5 class="alert-danger">@(ViewBag.ErrorMessage == null ? "" : "ERRO: " + @ViewBag.ErrorMessage + "")</h5>
+<span class="alert-danger">@(ViewBag.ErrorMessage == null ? "" : "ERRO: " + @ViewBag.ErrorMessage + "")</span>
 <table class="table">
     <thead>
         <tr>

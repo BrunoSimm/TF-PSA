@@ -122,7 +122,7 @@ namespace MatriculaPUCRS.Controllers
             if(matriculasTurmas.Any(mt => mt.TurmaId == turma.Id))
             {
                 ViewBag.IsMatriculated = true;
-                ViewBag.Matricula = matriculasTurmas.Where(mt => mt.TurmaId == turma.Id);
+                ViewBag.Matricula = matriculasTurmas.Where(mt => mt.TurmaId == turma.Id).FirstOrDefault();
             } else
             {
                 ViewBag.IsMatriculated = false;

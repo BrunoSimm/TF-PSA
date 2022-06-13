@@ -23,7 +23,7 @@
             </span>
         }
     </h5>
-    <h5 class="alert-success">@(ViewBag.CancelarMatriculaStatus == null ? "" : @ViewBag.CancelarMatriculaStatus)</h5>
+    <span class="alert-success">@(ViewBag.CancelarMatriculaStatus == null ? "" : @ViewBag.CancelarMatriculaStatus)</span>
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
@@ -44,6 +44,22 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Semestre.Titulo)
         </dd>
+        @if (@ViewBag.IsMatriculated)
+        {
+            <dt class="col-sm-2">
+                Status
+            </dt>
+            <dd class="col-sm-10">
+                @ViewBag.Matricula.Estado
+            </dd>
+
+            <dt class="col-sm-2">
+                Nota
+            </dt>
+            <dd class="col-sm-10">
+                @ViewBag.Matricula.Nota
+            </dd>
+        }
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Horarios)
         </dt>

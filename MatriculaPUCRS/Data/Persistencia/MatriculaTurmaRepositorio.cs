@@ -38,7 +38,8 @@ namespace MatriculaPUCRS.Data.Persistencia
                 Estudante = estudante, EstudanteId = estudante.Id, 
                 Turma = turma, TurmaId = turma.Id,
                 Aprovado = false,
-                Nota = 0
+                Nota = 0,
+                Estado = EstadoMatriculaTurmaEnum.MATRICULADO
             });
             await _matriculaContext.SaveChangesAsync();
         }
