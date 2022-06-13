@@ -1,5 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Identity;
 @inject SignInManager<ApplicationUser> SignInManager;
+@inject UserManager<ApplicationUser> UserManager;
 
 <!DOCTYPE html>
 <html lang="en">
@@ -16,18 +17,32 @@
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-light-gray border-bottom box-shadow mb-3">
             <div class="container">
 
-                <a class="navbar-brand" asp-area="" asp-controller="Turmas" asp-action="Index">
-                    <img src="~/images/pucrsicon.png" width="50" height="50" alt="PUCRS" />
-                </a>
+                @{
+                    bool isSignIn = SignInManager.IsSignedIn(User);
+                    bool isStudent = User.IsInRole("Estudante");
+                    if (!isSignIn)
+                    {
+                        <a class="navbar-brand" href="/Identity/Account/Register">
+                            <img src="~/images/pucrsicon.png" width="40" height="50" alt="PUCRS" />
+                        </a>
+                    }
+                    else
+                    {
+                        <a class="navbar-brand" asp-area="" asp-controller="@(isStudent ? "Turmas" : "Disciplinas")" asp-action="Index">
+                            <img src="~/images/pucrsicon.png" width="40" height="50" alt="PUCRS" />
+                        </a>
+                    }
+                }
+
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    @if (SignInManager.IsSignedIn(User))
+                    @if (isSignIn)
                     {
                         <ul class="navbar-nav flex-grow-1">
-                            @if (User.IsInRole("Estudante"))
+                            @if (isStudent)
                             {
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Matriculas" asp-action="Index">Matrícula</a>

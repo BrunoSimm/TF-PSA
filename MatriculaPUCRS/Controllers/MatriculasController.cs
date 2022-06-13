@@ -111,6 +111,24 @@ namespace MatriculaPUCRS.Controllers
 
             if (estudante is not null)
             {
+
+                //verificar se o estudante possui os pre requisitos
+                if (turma.Disciplina.Requisitos.Count() > 0)
+                {
+                    foreach (var preRequisito in turma.Disciplina.Requisitos)
+                    {
+                        if (estudante.Matriculas.Any(mt => mt.Turma.DisciplinaId == preRequisito.DisciplinaId && mt.Aprovado == true))
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            TempData["ErrorMessageTemp"] = $"Você não possui o pre requisito '{preRequisito.Disciplina.Nome}' para esta disciplina.";
+                            return RedirectToAction("Details", new { id = disciplinaId });
+                        }
+                    }
+                }
+
                 //verificar se existem vagas disponíveis na turma
                 if (turma.VagasRemanescentes == 0)
                 {
@@ -123,13 +141,6 @@ namespace MatriculaPUCRS.Controllers
                 {
                     TempData["ErrorMessageTemp"] = "Você já cursou e foi aprivado nesta disciplina.";
                     return RedirectToAction("Details", new { id = disciplinaId });
-                }
-
-                //verificar se o estudante já está matriculado na turma
-                MatriculaTurma matriculaTurma = await _matriculaTurmaRepositorio.GetByEstudanteAndTurma(estudante, turma);
-                if (matriculaTurma is not null)
-                {
-                    
                 }
 
                 //verificar se o estudante já está matriculado nesta disciplina no semestre atual.
@@ -172,23 +183,6 @@ namespace MatriculaPUCRS.Controllers
                 {
                     TempData["ErrorMessageTemp"] = "Você já está matriculado em outra turma nos mesmos horários.";
                     return RedirectToAction("Details", new { id = disciplinaId });
-                }
-
-                //verificar se o estudante possui os pre requisitos
-                if (turma.Disciplina.Requisitos.Count() > 0)
-                {
-                    foreach (var preRequisito in turma.Disciplina.Requisitos)
-                    {
-                        if (estudante.Matriculas.Any(mt => mt.Turma.DisciplinaId == preRequisito.DisciplinaId && mt.Aprovado == true))
-                        {
-                            continue;
-                        }
-                        else
-                        {
-                            TempData["ErrorMessageTemp"] = $"Você não possui o pre requisito '{preRequisito.Disciplina.Nome}' para esta disciplina.";
-                            return RedirectToAction("Details", new { id = disciplinaId });
-                        }
-                    }
                 }
 
                 //Realiza a Matricula.
