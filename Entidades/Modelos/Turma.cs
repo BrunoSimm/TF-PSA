@@ -18,6 +18,7 @@ namespace Entidades.Modelos
         public Disciplina Disciplina { get; set; }
         public long SemestreId { get; set; }
         public Semestre Semestre { get; set; }
+        [Display(Name ="Horários")]
         public IEnumerable<HorarioGrade> Horarios { get; set; }
         public IEnumerable<MatriculaTurma> Matriculas { get; set; }
 

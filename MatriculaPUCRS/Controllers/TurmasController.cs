@@ -51,6 +51,8 @@ namespace MatriculaPUCRS.Controllers
                 return NotFound();
             }
 
+            ViewBag.MatriculaSuccessMessage = TempData["SuccessMessageTemp"];
+
             List<MatriculaTurma> matriculasTurmas = await _matriculaTurmaRepositorio.GetByEstudanteAndSemestre(estudante, semestre);
             
             return View(matriculasTurmas);
@@ -96,12 +98,66 @@ namespace MatriculaPUCRS.Controllers
                 .Include(t => t.Semestre)
                 .Include(t => t.Horarios)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (turma == null)
             {
                 return NotFound();
             }
 
+            //Verifica se o usuário logado está matriculado nesta turma.
+            ApplicationUser loggedUser = await _userManager.GetUserAsync(User);
+            Estudante estudante = await _estudanteRepositorio.GetByIdAsync(loggedUser.EstudanteId);
+
+            var semestre = await _semestreRepositorio.GetSemestreAtualAsync();
+
+            if (semestre is null || estudante is null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.CancelarMatriculaStatus = TempData["CancelarMatriculaStatus"];
+
+            List<MatriculaTurma> matriculasTurmas = await _matriculaTurmaRepositorio.GetByEstudanteAndSemestre(estudante, semestre);
+
+            if(matriculasTurmas.Any(mt => mt.TurmaId == turma.Id))
+            {
+                ViewBag.IsMatriculated = true;
+                ViewBag.Matricula = matriculasTurmas.Where(mt => mt.TurmaId == turma.Id);
+            } else
+            {
+                ViewBag.IsMatriculated = false;
+            }
+
             return View(turma);
+        }
+
+        // POST: Turmas/CancelarMatricula/5
+        [HttpPost, ActionName("CancelarMatricula")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CancelarMatricula(long id)
+        {
+            //Verifica se o usuário logado está matriculado nesta turma.
+            ApplicationUser loggedUser = await _userManager.GetUserAsync(User);
+            Estudante estudante = await _estudanteRepositorio.GetByIdAsync(loggedUser.EstudanteId);
+
+            Semestre semestre = await _semestreRepositorio.GetSemestreAtualAsync();
+
+            Turma turma = await _turmaRepositorio.GetTurmaByIdAsync(id);
+
+            if (semestre is null || estudante is null || turma is null)
+            {
+                return NotFound();
+            }
+
+            MatriculaTurma matriculaTurma = await _matriculaTurmaRepositorio.GetByEstudanteAndTurma(estudante, turma);
+            if(matriculaTurma is null)
+            {
+                return NotFound();
+            }
+
+            await _matriculaTurmaRepositorio.Delete(matriculaTurma);
+            TempData["CancelarMatriculaStatus"] = "Matrícula cancelada com sucesso.";
+            return RedirectToAction(nameof(Details), new { id = turma.Id});
         }
 
         // GET: Turmas/Create

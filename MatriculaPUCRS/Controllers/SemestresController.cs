@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace MatriculaPUCRS.Controllers
 {
-    //[Authorize(Roles ="Coordenador")]
+    [Authorize(Roles ="Coordenador")]
     public class SemestresController : Controller
     {
         private readonly MatriculaContext _context;

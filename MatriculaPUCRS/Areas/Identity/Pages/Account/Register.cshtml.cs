@@ -114,7 +114,7 @@ namespace MatriculaPUCRS.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
-            returnUrl ??= Url.Content("~/");
+            returnUrl ??= Url.Content("/Turmas");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
@@ -128,13 +128,22 @@ namespace MatriculaPUCRS.Areas.Identity.Pages.Account
                     return Page();
                 }
 
+                Input.CPF = Convert.ToUInt64(Input.CPF).ToString(@"000\.000\.000\-00");
+                estud = await _estudanteRepositorio.GetByCPF(Input.CPF);
+
+                if(estud is not null)
+                {
+                    ModelState.AddModelError(string.Empty, "ERRO: CPF já cadastrado no sistema.");
+                    return Page();
+                }
+
                 ApplicationUser user = new ApplicationUser { UserName = Input.Email, Email = Input.Email };
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
                     Estudante estudante = new Estudante() { 
                         Id = matriculaId,
-                        CPF = Convert.ToUInt64(Input.CPF).ToString(@"000\.000\.000\-00"),
+                        CPF = Input.CPF,
                         Nome = Input.Nome, 
                         Estado = EstadoEstudanteEnum.ATIVO, 
                         CurriculoId = Input.CurriculoID,
