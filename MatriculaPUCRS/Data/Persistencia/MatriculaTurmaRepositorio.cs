@@ -20,6 +20,8 @@ namespace MatriculaPUCRS.Data.Persistencia
         {
             return _matriculaContext.MatriculaTurmas
                 .Include(mt => mt.Turma).ThenInclude(t => t.Horarios)
+                .Include(mt => mt.Turma).ThenInclude(t => t.Disciplina).ThenInclude(d => d.Curriculos)
+                .Include(mt => mt.Estudante).ThenInclude(estudante => estudante.Curriculo)
                 .Where(
                     mt => mt.EstudanteId == estudante.Id &&
                     mt.Turma.SemestreId == semestre.Id

@@ -17,7 +17,9 @@ namespace MatriculaPUCRS.Data.Persistencia
 
         public Task<Turma> GetTurmaByIdAsync(long id)
         {
-            return _matriculaContext.Turmas.Include(t => t.Horarios).Include(t => t.Disciplina).ThenInclude(d => d.Requisitos).ThenInclude(r => r.Disciplina).Where(x => x.Id == id).FirstOrDefaultAsync();
+            return _matriculaContext.Turmas.Include(t => t.Horarios)
+                .Include(t => t.Disciplina).ThenInclude(d => d.Requisitos).ThenInclude(r => r.Disciplina).Where(x => x.Id == id)
+                .FirstOrDefaultAsync();
         }
 
         public IQueryable<Turma> ListTurmasWithDisciplinaAndSemestreAndHorariosAsQueryable()
