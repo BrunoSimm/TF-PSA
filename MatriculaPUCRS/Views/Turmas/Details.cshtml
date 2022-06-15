@@ -74,9 +74,15 @@
         <dd class="col-sm-10">
             <table class="table">
                 <tr>
-                    <th></th>
-                    <th>Horário Inicial</th>
-                    <th>Horário Final</th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Horarios.First().Horario)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Horarios.First().HorarioInicial)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Horarios.First().HorarioFinal)
+                    </th>
                 </tr>
                 @foreach (var item in Model.Horarios)
                 {

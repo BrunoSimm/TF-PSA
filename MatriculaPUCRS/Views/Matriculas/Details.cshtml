@@ -34,7 +34,7 @@
             <th>
                 <a asp-action="Details" asp-route-sortOrder="@ViewData["HorarioSortParm"]">@Html.DisplayNameFor(model => model.Horarios)</a>
             </th>
-            <th></th>
+            <th  align="right"></th>
         </tr>
     </thead>
     <tbody>
@@ -64,7 +64,7 @@
                     }
                     </p>
                 </td>
-                <td>
+                <td  align="right">
                     <div>
                         <button type="submit" class="btn btn-primary">Matricular</button>
                         <!-- <a class="btn btn-primary" type="submit" asp-action="Matricular" asp- asp-route-turmaId="@item.Id" asp-route-disciplinaId="@item.DisciplinaId" asp-route-semestreId="@item.SemestreId">Matricular</a>  -->

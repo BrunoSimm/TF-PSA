@@ -24,7 +24,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.Nome)
             </th>
-            <th></th>
+            <th  align="right"></th>
         </tr>
     </thead>
     <tbody>
@@ -36,7 +36,7 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Nome)
             </td>
-            <td>
+            <td  align="right">
                 <a asp-action="Details" asp-route-id="@item.Id"><button type="button" class="btn btn-primary">Matricular</button></a>
             </td>
         </tr>
