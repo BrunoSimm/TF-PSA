@@ -4,7 +4,7 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
+<h1>@ViewData["Title"]</h1>
 
 <h4>Semestre</h4>
 <hr />
@@ -14,17 +14,17 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Titulo" class="control-label"></label>
-                <input asp-for="Titulo" class="form-control" />
+                <input asp-for="Titulo" class="form-control" id="Titulo" readonly />
                 <span asp-validation-for="Titulo" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="DataInicial" class="control-label"></label>
-                <input asp-for="DataInicial" class="form-control" />
+                <input asp-for="DataInicial" class="form-control" id="DataInicial" />
                 <span asp-validation-for="DataInicial" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="DataFinal" class="control-label"></label>
-                <input asp-for="DataFinal" class="form-control" />
+                <input asp-for="DataFinal" class="form-control" id="DataFinal" onchange="TituloSemestre( this.value );" />
                 <span asp-validation-for="DataFinal" class="text-danger"></span>
             </div>
             <div class="form-group">

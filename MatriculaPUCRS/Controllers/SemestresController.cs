@@ -35,8 +35,8 @@ namespace MatriculaPUCRS.Controllers
                 return NotFound();
             }
 
-            var semestre = await _context.Semestres
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var semestre = await _context.Semestres.FirstOrDefaultAsync(m => m.Id == id);
+
             if (semestre == null)
             {
                 return NotFound();
@@ -48,7 +48,7 @@ namespace MatriculaPUCRS.Controllers
         // GET: Semestres/Create
         public IActionResult Create()
         {
-            return View();
+            return View(new Semestre());
         }
 
         // POST: Semestres/Create

@@ -17,10 +17,10 @@ namespace MatriculaPUCRS.Data.Persistencia
 
         public Task<Estudante> GetByCPF(string cpf)
         {
-            return _matriculaContext.Estudantes.FirstOrDefaultAsync(e => e.CPF.Equals(cpf));
+            return _matriculaContext.Estudantes.SingleOrDefaultAsync(e => e.CPF.Equals(cpf));
         }
 
-        public Task<Estudante> GetByIdAsync(long id)
+        public Task<Estudante> GetByIdAsync(long? id)
         {
             return _matriculaContext.Estudantes
                 .Include(e => e.Matriculas)

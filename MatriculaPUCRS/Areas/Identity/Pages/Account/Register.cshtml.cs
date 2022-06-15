@@ -144,8 +144,7 @@ namespace MatriculaPUCRS.Areas.Identity.Pages.Account
                     Estudante estudante = new Estudante() { 
                         Id = matriculaId,
                         CPF = Input.CPF,
-                        Nome = Input.Nome, 
-                        Estado = EstadoEstudanteEnum.ATIVO, 
+                        Nome = Input.Nome,
                         CurriculoId = Input.CurriculoID,
                     };
 

@@ -12,7 +12,7 @@ namespace Entidades.Modelos
         [Display(Name = "Código")]
         public long Id { get; set; }
         
-        [Display(Name ="Vagas Ofertadas")]
+        [Display(Name ="Vagas Ofertadas")] // Total de Vagas?
         public int NumeroDeVagas { get; set; }
         public long DisciplinaId { get; set; }
         public Disciplina Disciplina { get; set; }

@@ -5,6 +5,7 @@ namespace MatriculaPUCRS.Models
 {
     public class ApplicationUser : IdentityUser
     {
-        public long EstudanteId { get; set; }
+        public long? EstudanteId { get; set; }
+        //public Estudante Estudante { get; set; }
     }
 }

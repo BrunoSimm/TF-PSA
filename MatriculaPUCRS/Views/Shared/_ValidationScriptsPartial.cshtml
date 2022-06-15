@@ -1,2 +1,13 @@
 ﻿<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
 <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+<script type="text/javascript">
+	function TituloSemestre( value )
+	{
+        var ano = value.substring(0,4);
+        var mes = value.substring(5,7);
+        var semestre = (mes <= 6) ? "1" : "2";
+        var titulo = ano + '/' + semestre;
+        document.getElementById( "Titulo" ).value = titulo;
+	}
+</script>

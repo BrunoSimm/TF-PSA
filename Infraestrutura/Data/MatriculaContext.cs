@@ -21,13 +21,18 @@ namespace Infraestrutura.Data
         {
             modelBuilder.Entity<Curriculo>().HasAlternateKey(c => c.Codigo);
             modelBuilder.Entity<Curriculo>().Property(c => c.NomeDoCurso).IsRequired();
+
             modelBuilder.Entity<Disciplina>().HasAlternateKey(d => d.Codigo);
+
             modelBuilder.Entity<HorarioGrade>().HasAlternateKey(hg => hg.Horario);
-            modelBuilder.Entity<Semestre>().HasAlternateKey(s => s.Titulo);
+
+            modelBuilder.Entity<Semestre>().HasIndex(s => s.Titulo).IsUnique();
+            modelBuilder.Entity<Semestre>().Property(s => s.Titulo).IsRequired();
             modelBuilder.Entity<Semestre>().Property(s => s.DataInicial).IsRequired();
             modelBuilder.Entity<Semestre>().Property(s => s.DataFinal).IsRequired();
             
             modelBuilder.Entity<Turma>().Ignore(t => t.VagasRemanescentes);
+
             modelBuilder.Entity<Estudante>().Property(e => e.Id).ValueGeneratedNever();
             modelBuilder.Entity<Estudante>().Property(e => e.Nome).IsRequired();
             modelBuilder.Entity<Estudante>().Property(e => e.CPF).IsRequired();
@@ -45,6 +50,7 @@ namespace Infraestrutura.Data
                 .HasMany<Requisito>()
                 .WithOne(r => r.Disciplina)
                 .OnDelete(DeleteBehavior.NoAction);
+
             modelBuilder.Entity<Requisito>().HasAlternateKey(r => new { r.DisciplinaId, r.DisciplinaOrigemId });
             modelBuilder.Entity<Requisito>().HasOne(r => r.Disciplina);
             modelBuilder.Entity<Requisito>().HasOne(r => r.DisciplinaOrigem);
