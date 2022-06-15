@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Entidades.Modelos;
 using Infraestrutura.Data;
 using Microsoft.AspNetCore.Authorization;
+using Persistencia.Interfaces.Repositorios;
 
 namespace MatriculaPUCRS.Controllers
 {
@@ -15,16 +13,23 @@ namespace MatriculaPUCRS.Controllers
     public class SemestresController : Controller
     {
         private readonly MatriculaContext _context;
+        private readonly ISemestreRepositorio _semestreRepositorio;
 
-        public SemestresController(MatriculaContext context)
+        public SemestresController(
+            MatriculaContext context, 
+            ISemestreRepositorio semestreRepositorio)
         {
             _context = context;
+            _semestreRepositorio = semestreRepositorio;
         }
 
         // GET: Semestres
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Semestres.ToListAsync());
+            var semestres = await _semestreRepositorio.List()
+                .ContinueWith(list => list.Result.OrderBy(s => s.Titulo));
+
+            return View(semestres);
         }
 
         // GET: Semestres/Details/5
@@ -35,7 +40,7 @@ namespace MatriculaPUCRS.Controllers
                 return NotFound();
             }
 
-            var semestre = await _context.Semestres.FirstOrDefaultAsync(m => m.Id == id);
+            var semestre = await _semestreRepositorio.GetEntityById((long) id);
 
             if (semestre == null)
             {
@@ -60,8 +65,7 @@ namespace MatriculaPUCRS.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(semestre);
-                await _context.SaveChangesAsync();
+                await _semestreRepositorio.Add(semestre);
                 return RedirectToAction(nameof(Index));
             }
             return View(semestre);
@@ -75,7 +79,7 @@ namespace MatriculaPUCRS.Controllers
                 return NotFound();
             }
 
-            var semestre = await _context.Semestres.FindAsync(id);
+            var semestre = await _semestreRepositorio.GetEntityById((long) id);
             if (semestre == null)
             {
                 return NotFound();
@@ -99,8 +103,7 @@ namespace MatriculaPUCRS.Controllers
             {
                 try
                 {
-                    _context.Update(semestre);
-                    await _context.SaveChangesAsync();
+                    await _semestreRepositorio.Update(semestre);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -126,8 +129,7 @@ namespace MatriculaPUCRS.Controllers
                 return NotFound();
             }
 
-            var semestre = await _context.Semestres
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var semestre = await _semestreRepositorio.GetEntityById((long) id);
             if (semestre == null)
             {
                 return NotFound();
@@ -141,9 +143,8 @@ namespace MatriculaPUCRS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(long id)
         {
-            var semestre = await _context.Semestres.FindAsync(id);
-            _context.Semestres.Remove(semestre);
-            await _context.SaveChangesAsync();
+            var semestre = await _semestreRepositorio.GetEntityById(id);
+            await _semestreRepositorio.Delete(semestre);
             return RedirectToAction(nameof(Index));
         }
 

@@ -7,7 +7,7 @@ namespace Entidades.Modelos
         // PK EstudanteId&TurmaId
         [Range(0, 10, ErrorMessage = "A Nota deve estar entre 0 e 10.")]
         [RegularExpression(@"^\d+(\.\d)?$", ErrorMessage = "Nota deve ter até uma casa decimal.")]
-        public float Nota { get; set; } // float?
+        public float Nota { get; set; } // trocar para nullable?
         public bool Aprovado { get; set; }
         public long TurmaId { get; set; }
         public Turma Turma { get; set; }

@@ -16,19 +16,22 @@ namespace MatriculaPUCRS.Controllers
     [Authorize(Roles = "Coordenador")]
     public class DisciplinasController : Controller
     {
+        private readonly MatriculaContext _context;
         private readonly IDisciplinaRepositorio _disciplinaRepositorio;
-       private readonly MatriculaContext _context;
 
         public DisciplinasController(IDisciplinaRepositorio disciplinaRepositorio, MatriculaContext matriculaContext)
         {
-            _disciplinaRepositorio = disciplinaRepositorio;
             _context = matriculaContext;
+            _disciplinaRepositorio = disciplinaRepositorio;
         }
 
         // GET: Disciplinas
         public async Task<IActionResult> Index()
         {
-            return View(await _disciplinaRepositorio.List());
+            var disciplinas = await _disciplinaRepositorio.List()
+                .ContinueWith(list => list.Result.OrderBy(d => d.Nivel).ThenBy(d => d.Codigo));
+
+            return View(disciplinas);
             //return View(await _context.Disciplinas.ToListAsync());
         }
 

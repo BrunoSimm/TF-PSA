@@ -34,13 +34,13 @@ namespace MatriculaPUCRS.Controllers
             IEstudanteRepositorio estudanteRepositorio,
             ISemestreRepositorio semestreRepositorio)
         {
-            _semestreRepositorio = semestreRepositorio;
             _userManager = userManager;
             _context = context;
             _disciplinaRepositorio = disciplinaRepositorio;
             _turmaRepositorio = turmaRepositorio;
             _matriculaTurmaRepositorio = matriculaTurmaRepositorio;
             _estudanteRepositorio = estudanteRepositorio;
+            _semestreRepositorio = semestreRepositorio;
         }
 
         // GET: Matriculas
