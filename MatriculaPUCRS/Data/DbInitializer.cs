@@ -15,16 +15,45 @@ namespace MatriculaPUCRS.Data
         {
             contextIdentity.Database.EnsureCreated();
             context.Database.EnsureCreated();
-            // Look for any students.
-            if (context.Curriculos.Any())
+
+            // Verifica se exitem as roles e adiciona no DB
+            foreach (Roles role in Enum.GetValues(typeof(Roles)))
             {
-                return;   // DB has been seeded
+                if (!await roleManager.RoleExistsAsync(role.ToString()))
+                    await roleManager.CreateAsync(new IdentityRole(role.ToString()));
             }
 
-            if (!contextIdentity.Roles.Any())
+            // Verifica se existem coordenadores
+            if (!await userManager.GetUsersInRoleAsync(Roles.Coordenador.ToString()).ContinueWith(users => users.Result.Any()))
             {
-                await roleManager.CreateAsync(new IdentityRole(Roles.Coordenador.ToString()));
-                await roleManager.CreateAsync(new IdentityRole(Roles.Estudante.ToString()));
+                var coordenador = new ApplicationUser
+                {
+                    Id = "9b24d507-384c-462f-9616-e2d8e7576548",
+                    // EstudanteId = null,
+                    UserName = "coordenador@contoso.com",
+                    NormalizedUserName = "COORDENADOR@CONTOSO.COM",
+                    Email = "coordenador@contoso.com",
+                    NormalizedEmail = "COORDENADOR@CONTOSO.COM",
+                    EmailConfirmed = false,
+                    PasswordHash = "AQAAAAEAACcQAAAAEBR+cMG2CKDLvTiOL1HA7dqwtZFhqg2ck5de/ItQhnIGzOUnHJ9/7+9zJdg3B12eAg==", // 123456
+                    SecurityStamp = "MHVNU5SGQJ6WRQHAT5OBFNGYY4I6OKRS",
+                    ConcurrencyStamp = "6b4ef5b5-6e57-4f8f-956b-2198ffc576c6",
+                    //PhoneNumber = null,
+                    PhoneNumberConfirmed = false,
+                    TwoFactorEnabled = false,
+                    //LockoutEnd = null,
+                    LockoutEnabled = true,
+                    AccessFailedCount = 0
+                };
+
+                await userManager.CreateAsync(coordenador);
+                await userManager.AddToRoleAsync(coordenador, Roles.Coordenador.ToString());
+            }
+
+            // Verifica se existem curriculos
+            if (context.Curriculos.Any())
+            {
+                return;   // DB existe
             }
 
             var curriculos = new Curriculo[]
