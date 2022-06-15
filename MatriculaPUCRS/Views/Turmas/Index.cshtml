@@ -41,30 +41,26 @@
         </ol>
     </nav>
 
-    <div class="d-none d-print-block"> <!-- PRINT ONLY -->
-       <div>
-           <img class="float-right" src="~/images/pucrsicon.png" width="60" height="70" alt="PUCRS" />
-            <h1 class="mb-5 d-flex justify-content-center">Comprovante de Matrícula</h1>
-       </div>
-
-        <p><b>Aluno:</b> @Model.First().Estudante.Nome</p>
-        <p><b>Matrícula: </b>@Model.First().Estudante.NumeroMatricula</p>
-        <p><b>Curso:</b> @Model.First().Turma.Disciplina.Curriculos.First().NomeDoCurso </p>
-        <p><b>Currículo:</b> @Model.First().Estudante.Curriculo.Codigo</p>
-        <p><b>Semestre:</b> @Model.First().Turma.Semestre.Titulo</p>
-        <p><b>Data do Comprovante: </b>@DateTime.Now</p>
-
-        <h2 class="mt-3 mb-3 d-flex justify-content-center">Grade de Horários</h2>
-    </div>
-
-    @if (Model.Count() == 0)
+    @if (Model.Any())
     {
-        <h4 class="text-light-gray text-center">
-            Nenhuma matrícula realizada até o momento!
-        </h4>
-    }
-    else
-    {
+        <div class="d-none d-print-block">
+            <!-- PRINT ONLY -->
+            <div>
+                <img class="float-right" src="~/images/pucrsicon.png" width="60" height="70" alt="PUCRS" />
+                <h1 class="mb-5 d-flex justify-content-center">Comprovante de Matrícula</h1>
+            </div>
+
+            <p><b>Aluno:</b> @Model.First().Estudante.Nome</p>
+            <p><b>Matrícula: </b>@Model.First().Estudante.NumeroMatricula</p>
+            <p><b>Curso:</b> @Model.First().Turma.Disciplina.Curriculos.First().NomeDoCurso </p>
+            <p><b>Currículo:</b> @Model.First().Estudante.Curriculo.Codigo</p>
+            <p><b>Semestre:</b> @Model.First().Turma.Semestre.Titulo</p>
+            <p><b>Data do Comprovante: </b>@DateTime.Now</p>
+
+            <h2 class="mt-3 mb-3 d-flex justify-content-center">Grade de Horários</h2>
+        </div>
+
+
         <h5>
             <span class="alert-success">@(ViewBag.MatriculaSuccessMessage == null ? "" : @ViewBag.MatriculaSuccessMessage)</span>
         </h5>
@@ -129,31 +125,39 @@
                 <button class="btn btn-primary" onclick="window.print();">Comprovante de Matrícula</button>
             </div>
         </div>
+
+        <div class="d-none d-print-block">
+            <!-- PRINT ONLY -->
+            <h2 class="mt-3 mb-3 align-self-center d-flex justify-content-center">Disciplinas</h2>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th scope="col">Disciplina</th>
+                        <th scope="col">Código Disciplina</th>
+                        <th scope="col">Turma</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var matricula in Model)
+                    {
+                        <tr>
+                            <th scope="row">@matricula.Turma.Disciplina.Nome</th>
+                            <th scope="row">@matricula.Turma.Disciplina.Codigo</th>
+                            <th scope="row">@matricula.Turma.Id</th>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    }
+    else
+    {
+        <h4 class="text-light-gray text-center">
+            Nenhuma matrícula realizada até o momento!
+        </h4>
     }
 
-    <div class="d-none d-print-block"> <!-- PRINT ONLY -->
-        <h2 class="mt-3 mb-3 align-self-center d-flex justify-content-center">Disciplinas</h2>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th scope="col">Disciplina</th>
-                    <th scope="col">Código Disciplina</th>
-                    <th scope="col">Turma</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var matricula in Model)
-                {
-                    <tr>
-                        <th scope="row">@matricula.Turma.Disciplina.Nome</th>
-                        <th scope="row">@matricula.Turma.Disciplina.Codigo</th>
-                        <th scope="row">@matricula.Turma.Id</th>
-                    </tr>
-                }
-            </tbody>
-        </table>
-
-    </div>
 </div>
 
 
