@@ -43,8 +43,6 @@ namespace Infraestrutura.Data
 
             modelBuilder.Entity<MatriculaTurma>().HasKey(mt => new { mt.TurmaId, mt.EstudanteId });
             modelBuilder.Entity<MatriculaTurma>().Property(mt => mt.Estado).HasConversion<string>();
-            modelBuilder.Entity<MatriculaTurma>().Property(mt => mt.Aprovado)
-                .HasComputedColumnSql("CASE WHEN MatriculaTurmas.Nota >= 5 THEN CAST(1 as BIT) ELSE CAST(0 as BIT) END");
 
             modelBuilder.Entity<Disciplina>()
                 .HasMany<Requisito>()

@@ -7,7 +7,7 @@
     string name = string.Empty;
     if (SignInManager.IsSignedIn(User))
     {
-        long? userId = await UserManager.FindByEmailAsync(User.Identity.Name).ContinueWith(au => au.Result.EstudanteId);
+        long? userId = await UserManager.FindByEmailAsync(User.Identity.Name).ContinueWith(au => au is not null ? au.Result.EstudanteId : null);
         name = userId is null ? User.Identity.Name : await EstudanteRepositorio.GetEntityById((long) userId).ContinueWith(e => e.Result.Nome);
     }
 }

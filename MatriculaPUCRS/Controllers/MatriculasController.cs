@@ -117,11 +117,7 @@ namespace MatriculaPUCRS.Controllers
                 {
                     foreach (var preRequisito in turma.Disciplina.Requisitos)
                     {
-                        if (estudante.Matriculas.Any(mt => mt.Turma.DisciplinaId == preRequisito.DisciplinaId && mt.Aprovado == true))
-                        {
-                            continue;
-                        }
-                        else
+                        if (!estudante.Matriculas.Any(mt => mt.Turma.DisciplinaId == preRequisito.DisciplinaId && mt.Aprovado == true))
                         {
                             TempData["ErrorMessageTemp"] = $"Você não possui o pre requisito '{preRequisito.Disciplina.Nome}' para esta disciplina.";
                             return RedirectToAction("Details", new { id = disciplinaId });
@@ -137,9 +133,9 @@ namespace MatriculaPUCRS.Controllers
                 }
 
                 //verificar se o estudante já cursou esta disciplina
-                if (estudante.Matriculas.Where(m => m.Turma.DisciplinaId == disciplinaId && m.Aprovado == true).Count() > 0)
+                if (estudante.Matriculas.Any(m => m.Turma.DisciplinaId == disciplinaId && m.Aprovado == true))
                 {
-                    TempData["ErrorMessageTemp"] = "Você já cursou e foi aprivado nesta disciplina.";
+                    TempData["ErrorMessageTemp"] = "Você já cursou e foi aprovado nesta disciplina.";
                     return RedirectToAction("Details", new { id = disciplinaId });
                 }
 

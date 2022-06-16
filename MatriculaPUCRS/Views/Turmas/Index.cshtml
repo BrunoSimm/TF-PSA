@@ -22,12 +22,12 @@
 
     IDictionary<Disciplina, string> discColorMap = new Dictionary<Disciplina, string>();
     Model.ToList().ForEach(mt =>
-    {
-        if (!discColorMap.ContainsKey(mt.Turma.Disciplina))
         {
-            discColorMap.Add(mt.Turma.Disciplina, bootStrapColors[discColorMap.Count % bootStrapColors.Count]);
-        }
-    });
+            if (!discColorMap.ContainsKey(mt.Turma.Disciplina))
+            {
+                discColorMap.Add(mt.Turma.Disciplina, bootStrapColors[discColorMap.Count % bootStrapColors.Count]);
+            }
+        });
 
     List<HorarioGrade> horarios = Model.SelectMany(mt => mt.Turma.Horarios).Distinct().ToList();
     List<string> periodos = horarios.Select(h => h.Periodo).Distinct().OrderBy(s => s).ToList();
@@ -60,8 +60,7 @@
             <h2 class="mt-3 mb-3 d-flex justify-content-center">Grade de Horários</h2>
         </div>
 
-
-        <h5>
+        <h5 class="d-print-none">
             <span class="alert-success">@(ViewBag.MatriculaSuccessMessage == null ? "" : @ViewBag.MatriculaSuccessMessage)</span>
         </h5>
 

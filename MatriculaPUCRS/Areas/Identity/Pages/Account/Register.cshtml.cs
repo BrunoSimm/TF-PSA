@@ -75,7 +75,7 @@ namespace MatriculaPUCRS.Areas.Identity.Pages.Account
 
             [Required]
             [StringLength(8, ErrorMessage = "A matrícula deve conter 8 dígitos.")]
-            [RegularExpression(@"^[1-2][0-9][1-2]\d{5}$", ErrorMessage = "Código de matrícula inválido.")]
+            [RegularExpression(@"^[1-2][0-9][124]\d{5}$", ErrorMessage = "Código de matrícula inválido.")]
             [Display(Name = "Matricula (sem dígito verificador)")]
             public string Matricula { get; set; }
 

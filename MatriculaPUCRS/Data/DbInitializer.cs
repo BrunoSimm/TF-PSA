@@ -26,14 +26,14 @@ namespace MatriculaPUCRS.Data
             // Verifica se existem coordenadores
             if (!await userManager.GetUsersInRoleAsync(Roles.Coordenador.ToString()).ContinueWith(users => users.Result.Any()))
             {
-                var coordenador = new ApplicationUser
+                var userCoordenador = new ApplicationUser
                 {
                     Id = "9b24d507-384c-462f-9616-e2d8e7576548",
                     // EstudanteId = null,
-                    UserName = "coordenador@contoso.com",
-                    NormalizedUserName = "COORDENADOR@CONTOSO.COM",
-                    Email = "coordenador@contoso.com",
-                    NormalizedEmail = "COORDENADOR@CONTOSO.COM",
+                    UserName = "coordenador@pucrs.com",
+                    NormalizedUserName = "COORDENADOR@PUCRS.COM",
+                    Email = "coordenador@pucrs.com",
+                    NormalizedEmail = "COORDENADOR@PUCRS.COM",
                     EmailConfirmed = false,
                     PasswordHash = "AQAAAAEAACcQAAAAEBR+cMG2CKDLvTiOL1HA7dqwtZFhqg2ck5de/ItQhnIGzOUnHJ9/7+9zJdg3B12eAg==", // 123456
                     SecurityStamp = "MHVNU5SGQJ6WRQHAT5OBFNGYY4I6OKRS",
@@ -46,8 +46,56 @@ namespace MatriculaPUCRS.Data
                     AccessFailedCount = 0
                 };
 
-                await userManager.CreateAsync(coordenador);
-                await userManager.AddToRoleAsync(coordenador, Roles.Coordenador.ToString());
+                await userManager.CreateAsync(userCoordenador);
+                await userManager.AddToRoleAsync(userCoordenador, Roles.Coordenador.ToString());
+            }
+
+            // Verifica se existem os estudantes
+            if (!await userManager.GetUsersInRoleAsync(Roles.Estudante.ToString()).ContinueWith(users => users.Result.Any()))
+            {
+                var userEstudante1 = new ApplicationUser
+                {
+                    Id = "3af176d5-b6e8-42ab-b12e-2400216a4dca",
+                    EstudanteId = 11111111,
+                    UserName = "aluno1@pucrs.com",
+                    NormalizedUserName = "ALUNO1@PUCRS.COM",
+                    Email = "aluno1@pucrs.com",
+                    NormalizedEmail = "ALUNO1@PUCRS.COM",
+                    EmailConfirmed = false,
+                    PasswordHash = "AQAAAAEAACcQAAAAEFt8qzjaNj2UDIwFhhEtUT+Yb1R6Lg35ZwmgpplFkSSVhLapQv3ZiMrhAp+J3SPLOQ==", // 123456
+                    SecurityStamp = "SEZVKDWT7GO6JGEOKDEHLGYVEBMP4AZD",
+                    ConcurrencyStamp = "173e1d9b-91d4-4b52-833c-32ab893e627d",
+                    //PhoneNumber = null,
+                    PhoneNumberConfirmed = false,
+                    TwoFactorEnabled = false,
+                    //LockoutEnd = null,
+                    LockoutEnabled = true,
+                    AccessFailedCount = 0
+                };
+                await userManager.CreateAsync(userEstudante1);
+                await userManager.AddToRoleAsync(userEstudante1, Roles.Estudante.ToString());
+
+                var userEstudante2 = new ApplicationUser
+                {
+                    Id = "f0151dae-5ef7-45fe-b578-f0c31a7f8382",
+                    EstudanteId = 22222222,
+                    UserName = "aluno2@pucrs.com",
+                    NormalizedUserName = "ALUNO2@PUCRS.COM",
+                    Email = "aluno2@pucrs.com",
+                    NormalizedEmail = "ALUNO2@PUCRS.COM",
+                    EmailConfirmed = false,
+                    PasswordHash = "AQAAAAEAACcQAAAAELqvVQPH5euT6EuO1tf9Iy+GUR/wKrvm0oQKBaY28s92iiEFTdTcdhVb+0FlRgpdrQ==", // 123456
+                    SecurityStamp = "NUFHQ3N3MTOIP6V3ZTQAPL2ZGVMAFAA3",
+                    ConcurrencyStamp = "0c20be27-cc97-4f48-850f-2843d1194777",
+                    //PhoneNumber = null,
+                    PhoneNumberConfirmed = false,
+                    TwoFactorEnabled = false,
+                    //LockoutEnd = null,
+                    LockoutEnabled = true,
+                    AccessFailedCount = 0
+                };
+                await userManager.CreateAsync(userEstudante2);
+                await userManager.AddToRoleAsync(userEstudante2, Roles.Estudante.ToString());
             }
 
             // Verifica se existem curriculos
@@ -86,7 +134,7 @@ namespace MatriculaPUCRS.Data
                 new Disciplina { Nivel = 4, Codigo = "4636P-04", Nome = "Disicplina Integradora", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
                 new Disciplina { Nivel = 4, Codigo = "4637C-04", Nome = "Projeto e Desenvolvimento de Software", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
                 new Disciplina { Nivel = 5, Codigo = "4611H-02", Nome = "Sistema de Gerenciamento de Banco de Dados", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 30 },
-                new Disciplina { Nivel = 5, Codigo = "4636L-04", Nome = "Gerência de Projeos de TI", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
+                new Disciplina { Nivel = 5, Codigo = "4636L-04", Nome = "Gerência de Projetos de TI", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
                 new Disciplina { Nivel = 5, Codigo = "4636M-02", Nome = "Gerência de Redes de Computadores", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 30 },
                 new Disciplina { Nivel = 5, Codigo = "4636R-04", Nome = "Inteligência de Negócio", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
                 new Disciplina { Nivel = 5, Codigo = "4637B-04", Nome = "Programação de Software Aplicado", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
@@ -199,6 +247,10 @@ namespace MatriculaPUCRS.Data
 
             var estudantes = new Estudante[]
             {
+                // Estudantes com login                
+                new Estudante { Id = 11111111, Nome = "Aluno1", CPF = "111.111.111-11", Estado = EstadoEstudanteEnum.ATIVO, Curriculo = curriculos[0] },
+                new Estudante { Id = 22222222, Nome = "Aluno2", CPF = "222.222.222-22", Estado = EstadoEstudanteEnum.ATIVO, Curriculo = curriculos[0] },
+                // Estudantes sem login
                 new Estudante { Id = 20103549, Nome = "Cleber", CPF = "000.000.000-01", Estado = EstadoEstudanteEnum.SUSPENSO, Curriculo = curriculos[0] },
                 new Estudante { Id = 20160982, Nome = "Wesley", CPF = "000.000.000-02", Estado = EstadoEstudanteEnum.GRADUADO },
                 new Estudante { Id = 20104575, Nome = "Valdomir", CPF = "000.000.000-03", Estado = EstadoEstudanteEnum.ATIVO, Curriculo = curriculos[0] },
