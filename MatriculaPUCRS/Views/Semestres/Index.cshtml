@@ -22,6 +22,9 @@
                 @Html.DisplayNameFor(model => model.DataFinal)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.Turmas)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.TotalDeAlunos)
             </th>
             <th  align="right"></th>
@@ -40,13 +43,25 @@
                 @Html.DisplayFor(modelItem => item.DataFinal)
             </td>
             <td>
+                @item.Turmas.Count()
+            </td>
+            <td>
                 @Html.DisplayFor(modelItem => item.TotalDeAlunos)
             </td>
-            <td  align="right">
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
+            @if (item.Turmas.Any())
+            {
+                <td  align="right">
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                </td>
+            }
+            else
+            {
+                <td  align="right">
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            }
         </tr>
 }
     </tbody>

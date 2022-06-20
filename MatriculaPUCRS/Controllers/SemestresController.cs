@@ -26,28 +26,10 @@ namespace MatriculaPUCRS.Controllers
         // GET: Semestres
         public async Task<IActionResult> Index()
         {
-            var semestres = await _semestreRepositorio.List()
+            IOrderedEnumerable<Semestre> semestres = await _semestreRepositorio.ListSemestresWithTurmas()
                 .ContinueWith(list => list.Result.OrderBy(s => s.Titulo));
 
             return View(semestres);
-        }
-
-        // GET: Semestres/Details/5
-        public async Task<IActionResult> Details(long? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var semestre = await _semestreRepositorio.GetEntityById((long) id);
-
-            if (semestre == null)
-            {
-                return NotFound();
-            }
-
-            return View(semestre);
         }
 
         // GET: Semestres/Create
@@ -71,6 +53,23 @@ namespace MatriculaPUCRS.Controllers
             return View(semestre);
         }
 
+        // GET: Semestres/Details/5
+        public async Task<IActionResult> Details(long? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            Semestre semestre = await _semestreRepositorio.GetSemestreWithTurmasById((long) id);
+            if (semestre == null)
+            {
+                return NotFound();
+            }
+
+            return View(semestre);
+        }
+
         // GET: Semestres/Edit/5
         public async Task<IActionResult> Edit(long? id)
         {
@@ -79,7 +78,7 @@ namespace MatriculaPUCRS.Controllers
                 return NotFound();
             }
 
-            var semestre = await _semestreRepositorio.GetEntityById((long) id);
+            Semestre semestre = await _semestreRepositorio.GetEntityById((long) id);
             if (semestre == null)
             {
                 return NotFound();
@@ -129,7 +128,7 @@ namespace MatriculaPUCRS.Controllers
                 return NotFound();
             }
 
-            var semestre = await _semestreRepositorio.GetEntityById((long) id);
+            Semestre semestre = await _semestreRepositorio.GetEntityById((long) id);
             if (semestre == null)
             {
                 return NotFound();
@@ -143,7 +142,7 @@ namespace MatriculaPUCRS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(long id)
         {
-            var semestre = await _semestreRepositorio.GetEntityById(id);
+            Semestre semestre = await _semestreRepositorio.GetEntityById(id);
             await _semestreRepositorio.Delete(semestre);
             return RedirectToAction(nameof(Index));
         }

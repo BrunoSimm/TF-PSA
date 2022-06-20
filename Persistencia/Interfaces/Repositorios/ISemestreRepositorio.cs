@@ -10,6 +10,8 @@ namespace Persistencia.Interfaces.Repositorios
     public interface ISemestreRepositorio : ICrud<Semestre>
     {
         public Task<Semestre> GetSemestreAtualAsync();
+        public Task<IEnumerable<Semestre>> ListSemestresWithTurmas();
+        public Task<Semestre> GetSemestreWithTurmasById(long Id);
     }
 
 

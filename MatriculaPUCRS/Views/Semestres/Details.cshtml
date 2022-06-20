@@ -1,4 +1,5 @@
-﻿@model Entidades.Modelos.Semestre
+﻿@using Entidades.Modelos
+@model Entidades.Modelos.Semestre
 
 @{
     ViewData["Title"] = "Details";
@@ -27,6 +28,45 @@
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.DataFinal)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Turmas)
+        </dt>
+        <dd class="col-sm-10">
+            <table class="table">
+                <tr>
+                    <th>@Html.DisplayNameForInnerType((Turma t) => t.Id)</th>
+                    <th>@Html.DisplayNameForInnerType((Turma t) => t.Disciplina)</th>
+                    <th>@Html.DisplayNameForInnerType((Turma t) => t.Horarios)</th>
+                    <th>@Html.DisplayNameForInnerType((Turma t) => t.NumeroDeVagas)</th>
+                    <th>@Html.DisplayNameForInnerType((Turma t) => t.NumeroDeMatriculas)</th>
+                </tr>
+                @foreach (var item in Model.Turmas)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Id)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Disciplina.NomeParaLista)
+                        </td>
+                        <td>
+                            <p>
+                                @foreach (var horario in item.Horarios.OrderBy(h => h.Horario))
+                               {
+                                    @Html.DisplayFor(modelItem => horario.Horario) 
+                               }
+                            </p>
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.NumeroDeVagas)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.NumeroDeMatriculas)
+                        </td>
+                    </tr>
+                }
+            </table>
         </dd>
     </dl>
 </div>
