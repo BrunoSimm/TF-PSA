@@ -10,6 +10,6 @@ namespace Entidades.Modelos
         public bool Ativo { get; set; }
         public IEnumerable<Estudante> Estudantes { get; set; }
         public IEnumerable<Disciplina> Disciplinas { get; set; }
-        public string NomeParaListaDropdown => string.Concat(Codigo, " - ", NomeDoCurso);
+        public string NomeParaLista => string.Concat(Codigo, " - ", NomeDoCurso);
     }
 }

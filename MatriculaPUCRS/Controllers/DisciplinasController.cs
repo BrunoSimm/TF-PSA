@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace MatriculaPUCRS.Controllers
 {
-    [Authorize(Roles = "Coordenador")]
     public class DisciplinasController : Controller
     {
         private readonly MatriculaContext _context;
@@ -26,16 +25,14 @@ namespace MatriculaPUCRS.Controllers
         }
 
         // GET: Disciplinas
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            var disciplinas = await _disciplinaRepositorio.List()
-                .ContinueWith(list => list.Result.OrderBy(d => d.Nivel).ThenBy(d => d.Codigo));
-
-            return View(disciplinas);
-            //return View(await _context.Disciplinas.ToListAsync());
+            Curriculo curso = _context.Curriculos.Include(c => c.Disciplinas).FirstOrDefault();
+            return View(curso);
         }
 
         // GET: Disciplinas/Details/5
+        [Authorize(Roles = "Coordenador")]
         public async Task<IActionResult> Details(long? id)
         {
             if (id == null)
@@ -53,6 +50,7 @@ namespace MatriculaPUCRS.Controllers
         }
 
         // GET: Disciplinas/Create
+        [Authorize(Roles = "Coordenador")]
         public IActionResult Create()
         {
             return View();
@@ -63,6 +61,7 @@ namespace MatriculaPUCRS.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Coordenador")]
         public async Task<IActionResult> Create([Bind("Id,Titulo,Descricao")] Disciplina disciplina)
         {
             if (ModelState.IsValid)
@@ -75,6 +74,7 @@ namespace MatriculaPUCRS.Controllers
         }
 
         // GET: Disciplinas/Edit/5
+        [Authorize(Roles = "Coordenador")]
         public async Task<IActionResult> Edit(long? id)
         {
             if (id == null)
@@ -95,7 +95,8 @@ namespace MatriculaPUCRS.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id, [Bind("Id,Titulo,Descricao")] Disciplina disciplina)
+        [Authorize(Roles = "Coordenador")]
+        public async Task<IActionResult> Edit(long id, [Bind("Id,Codigo,Nome,Nivel,CargaHoraria")] Disciplina disciplina)
         {
             if (id != disciplina.Id)
             {
@@ -126,6 +127,7 @@ namespace MatriculaPUCRS.Controllers
         }
 
         // GET: Disciplinas/Delete/5
+        [Authorize(Roles = "Coordenador")]
         public async Task<IActionResult> Delete(long? id)
         {
             if (id == null)
@@ -146,6 +148,7 @@ namespace MatriculaPUCRS.Controllers
         // POST: Disciplinas/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Coordenador")]
         public async Task<IActionResult> DeleteConfirmed(long id)
         {
             var disciplina = await _context.Disciplinas.FindAsync(id);

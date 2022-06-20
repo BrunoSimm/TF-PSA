@@ -26,6 +26,9 @@ namespace MatriculaPUCRS.Data.Persistencia
                 .Include(e => e.Matriculas)
                     .ThenInclude(m => m.Turma)
                     .ThenInclude(t => t.Disciplina)
+                .Include(e => e.Matriculas)
+                    .ThenInclude(m => m.Turma)
+                    .ThenInclude(t => t.Horarios)
                 .SingleOrDefaultAsync(e => e.Id == id);
         }
     }

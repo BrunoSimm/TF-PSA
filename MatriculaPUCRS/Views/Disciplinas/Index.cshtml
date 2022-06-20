@@ -1,34 +1,47 @@
-﻿@model IEnumerable<Entidades.Modelos.Disciplina>
+﻿@using Microsoft.AspNetCore.Identity
+@using Entidades.Modelos
+@inject SignInManager<ApplicationUser> SignInManager;
+@model Entidades.Modelos.Curriculo
 
 @{
-    ViewData["Title"] = "Disciplinas";
+    ViewData["Title"] = $"Curso - { Model.NomeParaLista }";
+    var disciplinas = Model.Disciplinas.OrderBy(d => d.Nivel).ThenBy(d => d.Codigo);
+    bool isCoordenador = SignInManager.IsSignedIn(User) && User.IsInRole("Coordenador");
 }
 
 <h1>@ViewData["Title"]</h1>
 
-<p>
-    <a asp-action="Create">Adicionar</a>
-</p>
+<h2>Disciplinas</h2>
+
+@if (isCoordenador)
+{
+    <p>
+        <a asp-action="Create">Adicionar</a>
+    </p>
+}
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Codigo)
+                @Html.DisplayNameForInnerType((Disciplina d) => d.Codigo)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Nome)
+                @Html.DisplayNameForInnerType((Disciplina d) => d.Nome)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Nivel)
+                @Html.DisplayNameForInnerType((Disciplina d) => d.Nivel)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.CargaHoraria)
+                @Html.DisplayNameForInnerType((Disciplina d) => d.CargaHoraria)
             </th>
-            <th  align="right"></th>
+            @if (isCoordenador)
+            {
+                <th  align="right"></th>
+            }
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+@foreach (var item in disciplinas) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Codigo)
@@ -42,11 +55,14 @@
             <td>
                 @Html.DisplayFor(modelItem => item.CargaHoraria)
             </td>
-            <td  align="right">
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
+            @if (isCoordenador)
+            {
+                <td  align="right">
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            }
         </tr>
 }
     </tbody>

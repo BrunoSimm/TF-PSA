@@ -55,7 +55,7 @@ namespace MatriculaPUCRS.Areas.Identity.Pages.Account
             [Display(Name = "Senha")]
             public string Password { get; set; }
 
-            [Display(Name = "Lembrar-me?")]
+            [Display(Name = "Lembrar de mim")]
             public bool RememberMe { get; set; }
         }
 
@@ -91,15 +91,15 @@ namespace MatriculaPUCRS.Areas.Identity.Pages.Account
 
                     var userLogged = await _userManager.Users.Where(user => user.Email.Equals(Input.Email)).FirstOrDefaultAsync();
                     var userRoles = await _userManager.GetRolesAsync(userLogged);
+                    returnUrl = Url.Content("~/Disciplinas");
                     if (userRoles.Any(ur => ur.Equals(Roles.Roles.Estudante.ToString())))
                     {
-                        returnUrl = Url.Content("~/Turmas");
+                        returnUrl = Url.Content("~/Matriculas");
                     }
                     if (userRoles.Any(ur => ur.Equals(Roles.Roles.Coordenador.ToString())))
                     {
-                        returnUrl = Url.Content("~/Disciplinas");
+                        returnUrl = Url.Content("~/Turmas");
                     }
-                    returnUrl = Url.Content("~/Turmas");
                     return LocalRedirect(returnUrl);
                 }
                 if (result.RequiresTwoFactor)

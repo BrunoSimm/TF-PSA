@@ -17,7 +17,7 @@ namespace Entidades.Modelos
         
         [Display(Name = "Horário Final")] 
         public string HorarioFinal { get; set; }
-        public int DiaDaSemana => Convert.ToInt32(Horario[0]);
+        public int DiaDaSemana => int.Parse(Horario[0].ToString());
         public string Periodo => Horario.Substring(Horario.Length - 2);
     }
 }

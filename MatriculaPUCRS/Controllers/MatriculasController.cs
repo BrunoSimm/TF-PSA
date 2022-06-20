@@ -17,7 +17,6 @@ namespace MatriculaPUCRS.Controllers
     [Authorize(Roles = "Estudante")]
     public class MatriculasController : Controller
     {
-        private readonly MatriculaContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IDisciplinaRepositorio _disciplinaRepositorio;
         private readonly ITurmaRepositorio _turmaRepositorio;
@@ -27,7 +26,6 @@ namespace MatriculaPUCRS.Controllers
 
         public MatriculasController(
             UserManager<ApplicationUser> userManager,
-            MatriculaContext context,
             IDisciplinaRepositorio disciplinaRepositorio,
             ITurmaRepositorio turmaRepositorio,
             IMatriculaTurmaRepositorio matriculaTurmaRepositorio,
@@ -35,7 +33,6 @@ namespace MatriculaPUCRS.Controllers
             ISemestreRepositorio semestreRepositorio)
         {
             _userManager = userManager;
-            _context = context;
             _disciplinaRepositorio = disciplinaRepositorio;
             _turmaRepositorio = turmaRepositorio;
             _matriculaTurmaRepositorio = matriculaTurmaRepositorio;
@@ -44,30 +41,103 @@ namespace MatriculaPUCRS.Controllers
         }
 
         // GET: Matriculas
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder)
+        {
+            ApplicationUser loggedUser = await _userManager.GetUserAsync(User);
+            if (loggedUser.EstudanteId is null)
+            {
+                return NotFound();
+            }
+
+            Estudante estudante = await _estudanteRepositorio.GetByIdAsync(loggedUser.EstudanteId);
+
+            Semestre semestre = await _semestreRepositorio.GetSemestreAtualAsync();
+
+            if (semestre is null || estudante is null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.MatriculaSuccessMessage = TempData["SuccessMessageTemp"];
+
+            var matriculasTurmas = estudante.Matriculas.Where(mt => mt.Turma.Semestre.Equals(semestre));
+
+            return View(matriculasTurmas);
+        }
+
+
+        // GET: Matriculas/Disciplinas
+        public async Task<IActionResult> Disciplinas()
         {
             ViewBag.MatriculaSuccessMessage = TempData["ErrorMessageTemp"];
+            ViewBag.Semestre = await _semestreRepositorio.GetSemestreAtualAsync();
             List<Disciplina> disciplinas = await _disciplinaRepositorio.GetDisciplinasFromCurrentSemester();
             disciplinas = disciplinas.Distinct().ToList();
             return View(disciplinas);
         }
 
+        // GET: Matriculas/GradeDeHorario
+        public async Task<IActionResult> GradeDeHorario()
+        {
+            ApplicationUser loggedUser = await _userManager.GetUserAsync(User);
+            Estudante estudante = await _estudanteRepositorio.GetByIdAsync(loggedUser.EstudanteId);
+
+            Semestre semestre = await _semestreRepositorio.GetSemestreAtualAsync();
+
+            if (semestre is null || estudante is null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.MatriculaSuccessMessage = TempData["SuccessMessageTemp"];
+
+            var matriculasTurmas = estudante.Matriculas.Where(mt => mt.Turma.Semestre.Equals(semestre));
+
+            return View(matriculasTurmas);
+        }
+
+        // GET: Matriculas/Comprovante
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Comprovante()
+        {
+            ApplicationUser loggedUser = await _userManager.GetUserAsync(User);
+            Estudante estudante = await _estudanteRepositorio.GetByIdAsync(loggedUser.EstudanteId);
+
+            var semestre = await _semestreRepositorio.GetSemestreAtualAsync();
+
+            if (semestre is null || estudante is null)
+            {
+                return NotFound();
+            }
+
+            List<MatriculaTurma> matriculasTurmas = await _matriculaTurmaRepositorio.GetByEstudanteAndSemestre(estudante, semestre);
+
+            return View(matriculasTurmas);
+        }
+
         // GET: Matriculas/Details/5
+        // Lista Turmas da Disciplina id
         public async Task<IActionResult> Details(long? id, string sortOrder)
         {
             if (id == null)
             {
                 return NotFound();
             }
+
             ViewBag.ErrorMessage = TempData["ErrorMessageTemp"];
+            ViewData["CurrentSort"] = sortOrder;
             ViewData["TituloSortParm"] = String.IsNullOrEmpty(sortOrder) ? "titulo_asc" : "";
             ViewData["IdSortParm"] = sortOrder == "Id" ? "id_desc" : "Id";
             ViewData["HorarioSortParm"] = sortOrder == "Horario" ? "horario_desc" : "Horario";
-            var turmas = _turmaRepositorio
-                .ListTurmasWithDisciplinaAndSemestreAndHorariosAsQueryable()
-                .Include(t => t.Matriculas)
+            IQueryable<Turma> turmas = _turmaRepositorio
+                .ListTurmasWithDisciplinaAndSemestreAndHorariosAndMatriculasAsQueryable()
                 .Where(t => t.DisciplinaId == id)
                 .Where(t => DateTime.Now >= t.Semestre.DataInicial && DateTime.Now <= t.Semestre.DataFinal);
+
+            if (!turmas.Any())
+            {
+                return NotFound();
+            }
 
             switch (sortOrder)
             {
@@ -85,10 +155,6 @@ namespace MatriculaPUCRS.Controllers
                     break;
             }
 
-            if (turmas.Count() == 0)
-            {
-                return NotFound();
-            }
             return View(await turmas.ToListAsync());
         }
 
@@ -113,7 +179,7 @@ namespace MatriculaPUCRS.Controllers
             {
 
                 //verificar se o estudante possui os pre requisitos
-                if (turma.Disciplina.Requisitos.Count() > 0)
+                if (turma.Disciplina.Requisitos.Any())
                 {
                     foreach (var preRequisito in turma.Disciplina.Requisitos)
                     {
@@ -184,100 +250,157 @@ namespace MatriculaPUCRS.Controllers
                 //Realiza a Matricula.
                 await _matriculaTurmaRepositorio.MatricularEstudanteAsync(turma, estudante);
                 TempData["SuccessMessageTemp"] = $"Matrícula na turma {turma.Id} realizada com sucesso!";
-                return Redirect("/Turmas");
+                return RedirectToAction("Index");
             }
             return NotFound();
         }
 
-        // GET: MatriculaTurmas/Edit/5
-        public async Task<IActionResult> Edit(long? id)
+        // GET: Matricula/Turma/5
+        public async Task<IActionResult> Turma(long? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var matriculaTurma = await _context.MatriculaTurmas.FindAsync(id);
-            if (matriculaTurma == null)
+            ApplicationUser loggedUser = await _userManager.GetUserAsync(User);
+            Estudante estudante = await _estudanteRepositorio.GetByIdAsync(loggedUser.EstudanteId);
+
+            var semestre = await _semestreRepositorio.GetSemestreAtualAsync();
+
+            if (semestre is null || estudante is null)
             {
                 return NotFound();
             }
-            ViewData["EstudanteId"] = new SelectList(_context.Estudantes, "Id", "Id", matriculaTurma.EstudanteId);
-            ViewData["TurmaId"] = new SelectList(_context.Turmas, "Id", "Id", matriculaTurma.TurmaId);
-            return View(matriculaTurma);
+
+            var turma = await _turmaRepositorio.GetTurmaByIdAsync((long) id);
+
+            if (turma == null)
+            {
+                return NotFound();
+            }
+
+            //ViewBag.CancelarMatriculaStatus = TempData["CancelarMatriculaStatus"];
+
+            //Verifica se o usuário logado está matriculado nesta turma.
+            IEnumerable<MatriculaTurma> matriculasTurmas = estudante.Matriculas.Where(mt => mt.Turma.Semestre.Equals(semestre));
+
+            MatriculaTurma matriculaTurma = matriculasTurmas.FirstOrDefault(mt => mt.TurmaId == turma.Id);
+            ViewBag.Matricula = matriculaTurma;
+            ViewBag.IsMatriculated = matriculaTurma is not null && matriculaTurma.Estado.Equals(EstadoMatriculaTurmaEnum.MATRICULADO);
+
+            return View(turma);
         }
 
-        // POST: MatriculaTurmas/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+        // POST: Turmas/CancelarMatricula/5
+        [HttpPost, ActionName("CancelarMatricula")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id, [Bind("Nota,Aprovado,TurmaId,EstudanteId")] MatriculaTurma matriculaTurma)
+        public async Task<IActionResult> CancelarMatricula(long id)
         {
-            if (id != matriculaTurma.TurmaId)
+            //Verifica se o usuário logado está matriculado nesta turma.
+            ApplicationUser loggedUser = await _userManager.GetUserAsync(User);
+            Estudante estudante = await _estudanteRepositorio.GetByIdAsync(loggedUser.EstudanteId);
+
+            Semestre semestre = await _semestreRepositorio.GetSemestreAtualAsync();
+
+            Turma turma = await _turmaRepositorio.GetTurmaByIdAsync(id);
+
+            if (semestre is null || estudante is null || turma is null)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(matriculaTurma);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!MatriculaTurmaExists(matriculaTurma.TurmaId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["EstudanteId"] = new SelectList(_context.Estudantes, "Id", "Id", matriculaTurma.EstudanteId);
-            ViewData["TurmaId"] = new SelectList(_context.Turmas, "Id", "Id", matriculaTurma.TurmaId);
-            return View(matriculaTurma);
-        }
-
-        // GET: MatriculaTurmas/Delete/5
-        public async Task<IActionResult> Delete(long? id)
-        {
-            if (id == null)
+            MatriculaTurma matriculaTurma = await _matriculaTurmaRepositorio.GetEntityById(turma.Id, estudante.Id);
+            if (matriculaTurma is null)
             {
                 return NotFound();
             }
 
-            var matriculaTurma = await _context.MatriculaTurmas
-                .Include(m => m.Estudante)
-                .Include(m => m.Turma)
-                .FirstOrDefaultAsync(m => m.TurmaId == id);
-            if (matriculaTurma == null)
-            {
-                return NotFound();
-            }
-
-            return View(matriculaTurma);
+            await _matriculaTurmaRepositorio.Delete(matriculaTurma);
+            TempData["CancelarMatriculaStatus"] = "Matrícula cancelada com sucesso.";
+            return RedirectToAction(nameof(Turma), new { id = turma.Id });
         }
 
-        // POST: MatriculaTurmas/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(long id)
-        {
-            var matriculaTurma = await _context.MatriculaTurmas.FindAsync(id);
-            _context.MatriculaTurmas.Remove(matriculaTurma);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+        // COORDENADOR PODE EDITAR E EXCLUIR MATRICULAS?
+        //// GET: Matricula/Edit/5
+        //public async Task<IActionResult> Edit(long? turmaId, long estudanteId)
+        //{
+        //    if (turmaId == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-        private bool MatriculaTurmaExists(long id)
-        {
-            return _context.MatriculaTurmas.Any(e => e.TurmaId == id);
-        }
+        //    var matriculaTurma = await _matriculaTurmaRepositorio.GetEntityById((long) turmaId, estudanteId);
+        //    if (matriculaTurma == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    ViewData["Estudantes"] = new SelectList(await _estudanteRepositorio.List(), nameof(Estudante.Id), nameof(Estudante.NumeroMatricula), matriculaTurma.EstudanteId);
+        //    ViewData["Turmas"] = new SelectList(await _turmaRepositorio.List(), nameof(Entidades.Modelos.Turma.Id), nameof(Entidades.Modelos.Turma.Id), matriculaTurma.TurmaId);
+        //    return View(matriculaTurma);
+        //}
+
+        //// POST: Matricula/Edit/5
+        //// To protect from overposting attacks, enable the specific properties you want to bind to.
+        //// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Edit(long id, [Bind("Nota,Aprovado,TurmaId,EstudanteId")] MatriculaTurma matriculaTurma)
+        //{
+        //    if (id != matriculaTurma.TurmaId)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    if (ModelState.IsValid)
+        //    {
+        //        try
+        //        {
+        //            await _matriculaTurmaRepositorio.Update(matriculaTurma);
+        //        }
+        //        catch (DbUpdateConcurrencyException)
+        //        {
+        //            if (!await _matriculaTurmaRepositorio.MatriculaTurmaExists(matriculaTurma.TurmaId, matriculaTurma.EstudanteId))
+        //            {
+        //                return NotFound();
+        //            }
+        //            else
+        //            {
+        //                throw;
+        //            }
+        //        }
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //    ViewData["Estudantes"] = new SelectList(await _estudanteRepositorio.List(), nameof(Estudante.Id), nameof(Estudante.NumeroMatricula), matriculaTurma.EstudanteId);
+        //    ViewData["Turmas"] = new SelectList(await _turmaRepositorio.List(), nameof(Entidades.Modelos.Turma.Id), nameof(Entidades.Modelos.Turma.Id), matriculaTurma.TurmaId);
+        //    return View(matriculaTurma);
+        //}
+
+        //// GET: Matricula/Delete/5
+        //public async Task<IActionResult> Delete(long? turmaId, long estudanteId)
+        //{
+        //    if (turmaId == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    var matriculaTurma = await _matriculaTurmaRepositorio.GetByEstudanteAndTurma((long) turmaId, estudanteId);
+        //    if (matriculaTurma == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    return View(matriculaTurma);
+        //}
+
+        //// POST: Matricula/Delete/5
+        //[HttpPost, ActionName("Delete")]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> DeleteConfirmed(long turmaId, long estudanteId)
+        //{
+        //    var matriculaTurma = await _matriculaTurmaRepositorio.GetEntityById(turmaId, estudanteId);
+        //    await _matriculaTurmaRepositorio.Delete(matriculaTurma);
+        //    return RedirectToAction(nameof(Index));
+        //}
     }
 }

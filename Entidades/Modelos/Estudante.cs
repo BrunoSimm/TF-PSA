@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Entidades.Modelos
 {
     public class Estudante
     {
+        [Display(Name = "Matrícula")]
         public long Id { get; set; } // Id Matricula
         public int DigitoVerificador { get; }
         public string NumeroMatricula => Id + "-" + DigitoVerificador; // Matricula = "Id-DV"

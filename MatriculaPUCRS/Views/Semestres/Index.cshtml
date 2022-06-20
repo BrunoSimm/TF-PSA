@@ -21,6 +21,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.DataFinal)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TotalDeAlunos)
+            </th>
             <th  align="right"></th>
         </tr>
     </thead>
@@ -35,6 +38,9 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.DataFinal)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TotalDeAlunos)
             </td>
             <td  align="right">
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

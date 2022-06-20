@@ -5,85 +5,102 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Entidades.Modelos;
-using Infraestrutura.Data;
 using Persistencia.Interfaces.Repositorios;
 using Microsoft.AspNetCore.Authorization;
 using MatriculaPUCRS.Models;
 using Microsoft.AspNetCore.Identity;
+using MatriculaPUCRS.Areas.Roles;
+using System;
+using System.Diagnostics;
 
 namespace MatriculaPUCRS.Controllers
 {
-    [Authorize(Roles = "Estudante")]
+    [Authorize(Roles = "Coordenador")]
     public class TurmasController : Controller
     {
-        private readonly MatriculaContext _context;
-        private readonly ITurmaRepositorio _turmaRepositorio;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ITurmaRepositorio _turmaRepositorio;
         private readonly IMatriculaTurmaRepositorio _matriculaTurmaRepositorio;
         private readonly IEstudanteRepositorio _estudanteRepositorio;
         private readonly ISemestreRepositorio _semestreRepositorio;
+        private readonly IDisciplinaRepositorio _disciplinaRepositorio;
         public TurmasController(
-            MatriculaContext matriculaContext,
             UserManager<ApplicationUser> userManager, 
             ITurmaRepositorio turmaRepositorio, 
             IMatriculaTurmaRepositorio matriculaTurmaRepositorio, 
             IEstudanteRepositorio estudanteRepositorio,
-            ISemestreRepositorio semestreRepositorio)
+            ISemestreRepositorio semestreRepositorio,
+            IDisciplinaRepositorio disciplinaRepositorio)
         {
-            _context = matriculaContext;
-            _semestreRepositorio = semestreRepositorio;
-            _estudanteRepositorio = estudanteRepositorio;
-            _matriculaTurmaRepositorio = matriculaTurmaRepositorio;
-            _turmaRepositorio = turmaRepositorio;
             _userManager = userManager;
+            _turmaRepositorio = turmaRepositorio;
+            _matriculaTurmaRepositorio = matriculaTurmaRepositorio;
+            _estudanteRepositorio = estudanteRepositorio;
+            _semestreRepositorio = semestreRepositorio;
+            _disciplinaRepositorio = disciplinaRepositorio;
         }
 
         // GET: Turmas
         public async Task<IActionResult> Index(string sortOrder)
         {
-            ApplicationUser loggedUser = await _userManager.GetUserAsync(User);
-            Estudante estudante = await _estudanteRepositorio.GetByIdAsync(loggedUser.EstudanteId);
-
-            var semestre = await _semestreRepositorio.GetSemestreAtualAsync();
-
-            if(semestre is null || estudante is null)
-            {
-                return NotFound();
-            }
-
-            ViewBag.MatriculaSuccessMessage = TempData["SuccessMessageTemp"];
-
-            List<MatriculaTurma> matriculasTurmas = await _matriculaTurmaRepositorio.GetByEstudanteAndSemestre(estudante, semestre);
-            
-            return View(matriculasTurmas);
-        }        
-
-        /*
-        // GET: Turmas
-        public async Task<IActionResult> Index(string sortOrder)
-        {
-            ViewData["TituloSortParm"] = String.IsNullOrEmpty(sortOrder) ? "titulo_asc" : "";
-            ViewData["IdSortParm"] = sortOrder == "Id" ? "id_desc" : "Id";
-            ViewData["HorarioSortParm"] = sortOrder == "Horario" ? "horario_desc" : "Horario";
-            var turmas = _turmaRepositorio.ListTurmasWithDisciplinaAndSemestreAndHorariosAsQueryable();
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["TurmaSortParm"] = "Turma";
+            ViewData["TituloSortParm"] = "Titulo";
+            ViewData["HorarioSortParm"] = "Horario";
+            ViewData["SemestreSortParm"] = "Semestre";
+            var turmas = _turmaRepositorio.ListTurmasWithDisciplinaAndSemestreAndHorariosAndMatriculasAsQueryable();
             switch (sortOrder)
             {
-                case "titulo_asc":
+                case "Turma":
+                    turmas = turmas.OrderBy(t => t.Id);
+                    break;
+                case "Titulo":
                     turmas = turmas.OrderBy(t => t.Disciplina.Nome);
                     break;
-                case "horario_desc":
-                    turmas = turmas.OrderByDescending(t => t.Horarios.OrderBy(h => h.Horario).First().Horario);
+                case "Horario":
+                    turmas = turmas.OrderBy(t => t.Horarios.OrderBy(h => h.Horario).First().Horario);
                     break;
-                case "id_desc":
-                    turmas = turmas.OrderByDescending(t => t.Id);
+                case "Semestre":
+                    turmas = turmas.OrderBy(t => t.Semestre.Titulo).ThenBy(t => t.Id);
                     break;
                 default:
                     turmas = turmas.OrderBy(t => t.Id);
                     break;
-            } 
+            }
             return View(await turmas.AsNoTracking().ToListAsync());
         }
-        */
+
+        // GET: Turmas/Create
+        public IActionResult Create()
+        {
+            var turma = new Turma();
+            PopularHorariosTurma(turma);
+            ViewData["Disciplinas"] = new SelectList(_disciplinaRepositorio.List().Result, nameof(Disciplina.Id), nameof(Disciplina.NomeParaLista));
+            ViewData["Semestres"] = new SelectList(_semestreRepositorio.List().Result, nameof(Semestre.Id), nameof(Semestre.Titulo));
+            return View();
+        }
+
+        // POST: Turmas/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([Bind("Id,NumeroDeVagas,DisciplinaId,SemestreId")] Turma turma, string[] horariosSelecionados)
+        {
+            if (horariosSelecionados is not null)
+            {
+                turma.Horarios = await _turmaRepositorio.GetHorarios().Where(hg => horariosSelecionados.Contains(hg.Horario)).ToListAsync();
+            }
+
+            if (ModelState.IsValid)
+            {
+                await _turmaRepositorio.Add(turma);
+                return RedirectToAction(nameof(Index));
+            }
+            ViewData["Disciplinas"] = new SelectList(await _disciplinaRepositorio.List(), nameof(Disciplina.Id), nameof(Disciplina.NomeParaLista), turma.DisciplinaId);
+            ViewData["Semestres"] = new SelectList(await _semestreRepositorio.List(), nameof(Semestre.Id), nameof(Semestre.Titulo), turma.SemestreId);
+            return View(turma);
+        }
 
         // GET: Turmas/Details/5
         public async Task<IActionResult> Details(long? id)
@@ -93,96 +110,13 @@ namespace MatriculaPUCRS.Controllers
                 return NotFound();
             }
 
-            var turma = await _context.Turmas
-                .Include(t => t.Disciplina)
-                .Include(t => t.Semestre)
-                .Include(t => t.Horarios)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            Turma turma = await _turmaRepositorio.GetTurmaByIdWithEstudantesAsync((long) id);
 
             if (turma == null)
             {
                 return NotFound();
             }
 
-            //Verifica se o usuário logado está matriculado nesta turma.
-            ApplicationUser loggedUser = await _userManager.GetUserAsync(User);
-            Estudante estudante = await _estudanteRepositorio.GetByIdAsync(loggedUser.EstudanteId);
-
-            var semestre = await _semestreRepositorio.GetSemestreAtualAsync();
-
-            if (semestre is null || estudante is null)
-            {
-                return NotFound();
-            }
-
-            ViewBag.CancelarMatriculaStatus = TempData["CancelarMatriculaStatus"];
-
-            List<MatriculaTurma> matriculasTurmas = await _matriculaTurmaRepositorio.GetByEstudanteAndSemestre(estudante, semestre);
-
-            if(matriculasTurmas.Any(mt => mt.TurmaId == turma.Id))
-            {
-                ViewBag.IsMatriculated = true;
-                ViewBag.Matricula = matriculasTurmas.Where(mt => mt.TurmaId == turma.Id).FirstOrDefault();
-            } else
-            {
-                ViewBag.IsMatriculated = false;
-            }
-
-            return View(turma);
-        }
-
-        // POST: Turmas/CancelarMatricula/5
-        [HttpPost, ActionName("CancelarMatricula")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CancelarMatricula(long id)
-        {
-            //Verifica se o usuário logado está matriculado nesta turma.
-            ApplicationUser loggedUser = await _userManager.GetUserAsync(User);
-            Estudante estudante = await _estudanteRepositorio.GetByIdAsync(loggedUser.EstudanteId);
-
-            Semestre semestre = await _semestreRepositorio.GetSemestreAtualAsync();
-
-            Turma turma = await _turmaRepositorio.GetTurmaByIdAsync(id);
-
-            if (semestre is null || estudante is null || turma is null)
-            {
-                return NotFound();
-            }
-
-            MatriculaTurma matriculaTurma = await _matriculaTurmaRepositorio.GetByEstudanteAndTurma(estudante, turma);
-            if(matriculaTurma is null)
-            {
-                return NotFound();
-            }
-
-            await _matriculaTurmaRepositorio.Delete(matriculaTurma);
-            TempData["CancelarMatriculaStatus"] = "Matrícula cancelada com sucesso.";
-            return RedirectToAction(nameof(Details), new { id = turma.Id});
-        }
-
-        // GET: Turmas/Create
-        public IActionResult Create()
-        {
-            ViewData["DisciplinaId"] = new SelectList(_context.Disciplinas, "Id", "Id");
-            ViewData["SemestreId"] = new SelectList(_context.Semestres, "Id", "Id");
-            return View();
-        }
-
-        // POST: Turmas/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,NumeroDeVagas,DisciplinaId,SemestreId")] Turma turma)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(turma);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["DisciplinaId"] = new SelectList(_context.Disciplinas, "Id", "Id", turma.DisciplinaId);
-            ViewData["SemestreId"] = new SelectList(_context.Semestres, "Id", "Id", turma.SemestreId);
             return View(turma);
         }
 
@@ -194,13 +128,24 @@ namespace MatriculaPUCRS.Controllers
                 return NotFound();
             }
 
-            var turma = await _context.Turmas.FindAsync(id);
+            var turma = await _turmaRepositorio.GetTurmaByIdAsync((long) id);
             if (turma == null)
             {
                 return NotFound();
             }
-            ViewData["DisciplinaId"] = new SelectList(_context.Disciplinas, "Id", "Id", turma.DisciplinaId);
-            ViewData["SemestreId"] = new SelectList(_context.Semestres, "Id", "Id", turma.SemestreId);
+
+            // Verifica se a turma possui alunos matriculados
+            if (turma.Matriculas.Any())
+            {
+                return BadRequest("Não é possível editar uma turma com estudantes matriculados.");
+                //ModelState.AddModelError("", "Não é possível editar uma turma com estudantes matriculados.");
+                //return RedirectToAction(nameof(Index));
+                //return NotFound();
+            }
+
+            ViewData["Disciplinas"] = new SelectList(_disciplinaRepositorio.List().Result, nameof(Disciplina.Id), nameof(Disciplina.NomeParaLista), turma.DisciplinaId);
+            ViewData["Semestres"] = new SelectList(_semestreRepositorio.List().Result, nameof(Semestre.Id), nameof(Semestre.Titulo), turma.SemestreId);
+            PopularHorariosTurma(turma);
             return View(turma);
         }
 
@@ -209,23 +154,40 @@ namespace MatriculaPUCRS.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id, [Bind("Id,NumeroDeVagas,DisciplinaId,SemestreId")] Turma turma)
+        public async Task<IActionResult> Edit(long id, [Bind("Id,NumeroDeVagas,DisciplinaId,SemestreId")] Turma turma, string[] horariosSelecionados)
         {
             if (id != turma.Id)
             {
                 return NotFound();
             }
 
+            // Verifica se foi removida
+            var turmaContext = await _turmaRepositorio.GetTurmaByIdAsync((long)id);
+            if (turmaContext == null)
+            {
+                return NotFound();
+            }
+
+            // Verifica se a turma possui alunos matriculados
+            if (turmaContext.Matriculas.Any())
+            {
+                return NotFound();
+            }
+
+            if (horariosSelecionados is not null)
+            {
+                turma.Horarios = await _turmaRepositorio.GetHorarios().Where(hg => horariosSelecionados.Contains(hg.Horario)).ToListAsync();
+            }
+
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(turma);
-                    await _context.SaveChangesAsync();
+                    await _turmaRepositorio.Update(turma);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!TurmaExists(turma.Id))
+                    if (!await _turmaRepositorio.EntityExistsById(turma.Id))
                     {
                         return NotFound();
                     }
@@ -234,10 +196,13 @@ namespace MatriculaPUCRS.Controllers
                         throw;
                     }
                 }
+
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["DisciplinaId"] = new SelectList(_context.Disciplinas, "Id", "Id", turma.DisciplinaId);
-            ViewData["SemestreId"] = new SelectList(_context.Semestres, "Id", "Id", turma.SemestreId);
+
+
+            ViewData["Disciplinas"] = new SelectList(await _disciplinaRepositorio.List(), nameof(Disciplina.Id), nameof(Disciplina.NomeParaLista), turma.DisciplinaId);
+            ViewData["Semestres"] = new SelectList(await _semestreRepositorio.List(), nameof(Semestre.Id), nameof(Semestre.Titulo), turma.SemestreId);
             return View(turma);
         }
 
@@ -249,10 +214,7 @@ namespace MatriculaPUCRS.Controllers
                 return NotFound();
             }
 
-            var turma = await _context.Turmas
-                .Include(t => t.Disciplina)
-                .Include(t => t.Semestre)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var turma = await _turmaRepositorio.GetTurmaByIdAsync((long) id);
             if (turma == null)
             {
                 return NotFound();
@@ -266,15 +228,33 @@ namespace MatriculaPUCRS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(long id)
         {
-            var turma = await _context.Turmas.FindAsync(id);
-            _context.Turmas.Remove(turma);
-            await _context.SaveChangesAsync();
+            var turma = await _turmaRepositorio.GetEntityById(id);
+            await _turmaRepositorio.Delete(turma);
             return RedirectToAction(nameof(Index));
         }
 
-        private bool TurmaExists(long id)
+        private void PopularHorariosTurma(Turma turma)
         {
-            return _context.Turmas.Any(e => e.Id == id);
+            //var horarios = _turmaRepositorio.GetHorarios();
+            //var horariosTurma = new HashSet<long>(turma.Horarios.Select(h => h.Id));
+            //var viewModel = new List<HorariosSelecionado>();
+            //foreach (var horario in horarios)
+            //{
+            //    viewModel.Add(new HorariosSelecionado
+            //    {
+            //        Id = horario.Id,
+            //        Horario = horario.Horario,
+            //        Selecionado = horariosTurma.Contains(horario.Id)
+            //    });
+            //}
+            var horarios = _turmaRepositorio.GetHorarios().Select(hg => 
+                new HorariosSelecionado
+                {
+                    Id = hg.Id,
+                    Horario = hg.Horario,
+                    Selecionado = turma.Horarios.Contains(hg),
+                }).ToList();
+            ViewData["Horarios"] = horarios;
         }
     }
 }

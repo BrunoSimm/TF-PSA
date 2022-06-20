@@ -6,8 +6,8 @@
 
 <nav aria-label="breadcrumb">
   <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="/Turmas">Home</a></li>
-    <li class="breadcrumb-item"><a href="/Matriculas">Matrículas</a></li>
+    <li class="breadcrumb-item"><a href="/Matriculas">Matrícula</a></li>
+    <li class="breadcrumb-item"><a href="/Matriculas">Disciplinas</a></li>
     <li class="breadcrumb-item active" aria-current="page">@Model.First().Disciplina.Nome</li>
   </ol>
 </nav>
@@ -41,39 +41,37 @@
         @foreach (var item in Model)
         {
             <form asp-controller="Matriculas" asp-action="Matricular" method="post" role="form">
-            <tr>
-                <td>
-                    <input type="hidden" name="turmaId" value="@item.Id" />
-                    @Html.DisplayFor(modelItem => item.Id)
-                </td>
-                <td>
-                    <input type="hidden" name="semestreId" value="@item.SemestreId" />
-                    @Html.DisplayFor(modelItem => item.Semestre.Titulo)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.NumeroDeVagas)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.VagasRemanescentes)
-                </td>
-                <td>
-                    <p>
-                    @foreach (var horario in item.Horarios.OrderBy(h => h.Horario))
-                    {
-                        @Html.DisplayFor(modelItem => horario.Horario)
-                    }
-                    </p>
-                </td>
-                <td  align="right">
-                    <div>
-                        <button type="submit" class="btn btn-primary">Matricular</button>
-                        <!-- <a class="btn btn-primary" type="submit" asp-action="Matricular" asp- asp-route-turmaId="@item.Id" asp-route-disciplinaId="@item.DisciplinaId" asp-route-semestreId="@item.SemestreId">Matricular</a>  -->
-                    </div>
-                </td>
-            </tr>
-            <input type="hidden" name="disciplinaId" value="@item.DisciplinaId" />
+                <tr>
+                    <td>
+                        <input type="hidden" name="turmaId" value="@item.Id" />
+                        @Html.DisplayFor(modelItem => item.Id)
+                    </td>
+                    <td>
+                        <input type="hidden" name="semestreId" value="@item.SemestreId" />
+                        @Html.DisplayFor(modelItem => item.Semestre.Titulo)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.NumeroDeVagas)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.VagasRemanescentes)
+                    </td>
+                    <td>
+                        <p>
+                        @foreach (var horario in item.Horarios.OrderBy(h => h.Horario))
+                        {
+                            @Html.DisplayFor(modelItem => horario.Horario)
+                        }
+                        </p>
+                    </td>
+                    <td  align="right">
+                        <div>
+                            <button type="submit" class="btn btn-primary">Matricular</button>
+                        </div>
+                    </td>
+                </tr>
+                <input type="hidden" name="disciplinaId" value="@item.DisciplinaId" />
             </form>
-
         }
     </tbody>
 </table>

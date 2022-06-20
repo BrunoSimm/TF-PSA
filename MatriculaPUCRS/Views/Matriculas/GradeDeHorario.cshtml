@@ -1,0 +1,119 @@
+﻿@using Entidades.Modelos
+@model IEnumerable<Entidades.Modelos.MatriculaTurma>
+
+@section Stylesheets {
+    <link rel="stylesheet" href="/css/grade_de_horarios.css" type="text/css" />
+}
+
+@{
+    ViewData["Title"] = "Grade de Horários";
+
+    List<string> bootStrapColors = new List<string>();
+    bootStrapColors.Add("bg-sky");
+    bootStrapColors.Add("bg-green");
+    bootStrapColors.Add("bg-pink");
+    bootStrapColors.Add("bg-yellow");
+    bootStrapColors.Add("bg-orange");
+    bootStrapColors.Add("bg-purple");
+    bootStrapColors.Add("bg-lightred");
+    bootStrapColors.Add("bg-warning");
+    bootStrapColors.Add("bg-dark");
+    bootStrapColors.Add("bg-info");
+    bootStrapColors.Add("bg-primary");
+
+    IDictionary<Disciplina, string> discColorMap = new Dictionary<Disciplina, string>();
+    Model.ToList().ForEach(mt =>
+        {
+            if (!discColorMap.ContainsKey(mt.Turma.Disciplina))
+            {
+                discColorMap.Add(mt.Turma.Disciplina, bootStrapColors[discColorMap.Count % bootStrapColors.Count]);
+            }
+        });
+
+    List<HorarioGrade> horarios = Model.SelectMany(mt => mt.Turma.Horarios).Distinct().ToList();
+    List<string> periodos = horarios.Select(h => h.Periodo).Distinct().OrderBy(s => s).ToList();
+}
+
+<div class="container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/Matriculas">Matrícula</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Grade de Horários</li>
+        </ol>
+    </nav>
+
+@if (Model.Any())
+{
+    <h5 class="d-print-none">
+        <span class="alert-success">@(ViewBag.MatriculaSuccessMessage == null ? "" : @ViewBag.MatriculaSuccessMessage)</span>
+    </h5>
+    <div class="table-responsive">
+        <table class="table table-bordered text-center table-hover">
+            <thead>
+                <tr class="bg-light-gray">
+                    <th class="text-uppercase">
+                        Horário
+                    </th>
+                    <th class="text-uppercase">SEG</th>
+                    <th class="text-uppercase">TER</th>
+                    <th class="text-uppercase">QUA</th>
+                    <th class="text-uppercase">QUI</th>
+                    <th class="text-uppercase">SEX</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (string periodo in periodos)
+                {
+                    var horario = horarios.Find(h => h.Periodo.Equals(periodo));
+                    <tr>
+                        <td class="align-middle">
+                            <p class="bg-light-gray rounded">@horario.Periodo</p>
+                            <span>@horario.HorarioInicial</span><br />
+                            <span>@horario.HorarioFinal</span>
+                        </td>
+                        @for (int i = 2; i <= 6; i++)
+                        {
+                            @if (Model.Any(mt => mt.Turma.Horarios.Any(hg => hg.Horario.Equals($"{i}{horario.Periodo}"))))
+                            {
+                                var turma = Model.FirstOrDefault(mt => mt.Turma.Horarios.Any(hg => hg.Horario.Equals($"{i}{horario.Periodo}")));
+                                <td style="width: 18%">
+                                    <div class="@discColorMap.Where(dcm => dcm.Key.Equals(@turma.Turma.Disciplina)).First().Value padding-5px-tb padding-15px-lr border-radius-5 margin-10px-bottom text-white font-size16 xs-font-size13">
+                                        <span>@turma.Turma.Disciplina.Nome</span>
+                                    </div>
+                                    <div class="font-size13 margin-10px-top">@turma.Turma.Disciplina.Codigo</div>
+                                    <div class="font-size13 ">T.@turma.Turma.Id</div>
+                                    <div class="float-right">
+                                        <div class="d-print-none">
+                                            <a asp-action="Turma" asp-route-id="@turma.TurmaId">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-trash" viewBox="0 0 16 16">
+                                                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+                                                    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
+                                                </svg>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </td>
+                            }
+                            else
+                            {
+                                <td class="bg-light-gray" style="width: 18%"></td>
+                            }
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <div align="right" class="d-print-none">
+            <form asp-action="Comprovante">
+                <input type="submit" value="Comprovante de Matrícula" class="btn btn-outline-info" />
+            </form>
+        </div>
+    </div>
+}
+else
+{
+    <h4 class="text-light-gray text-center">
+        Nenhuma matrícula realizada até o momento!
+    </h4>
+}
+</div>

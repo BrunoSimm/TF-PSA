@@ -102,7 +102,7 @@ namespace MatriculaPUCRS.Areas.Identity.Pages.Account
             var curriculos = await _curriculoRepositorio.GetActiveCurriculosAsync();
             curriculos.OrderBy(c => c.NomeDoCurso).ThenBy(c => c.Codigo);
 
-            Curriculos = new SelectList(curriculos, nameof(Curriculo.Id), nameof(Curriculo.NomeParaListaDropdown), selectedCurriculo);
+            Curriculos = new SelectList(curriculos, nameof(Curriculo.Id), nameof(Curriculo.NomeParaLista), selectedCurriculo);
         }
 
         public async Task OnGetAsync(string returnUrl = null)

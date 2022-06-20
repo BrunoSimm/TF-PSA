@@ -10,4 +10,14 @@
         var titulo = ano + '/' + semestre;
         document.getElementById( "Titulo" ).value = titulo;
 	}
+
+    function CargaHorariaPadrao( value )
+	{
+        if ( document.getElementById( "CargaHoraria" ).value == "" )
+        {
+            var creditos = value.slice(-2);
+            var cargaHorariaPadrao = creditos * 30;
+            document.getElementById( "CargaHoraria" ).value = cargaHorariaPadrao;
+        }
+	}
 </script>

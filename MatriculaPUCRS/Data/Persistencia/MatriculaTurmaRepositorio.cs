@@ -21,17 +21,20 @@ namespace MatriculaPUCRS.Data.Persistencia
             return _matriculaContext.MatriculaTurmas
                 .Include(mt => mt.Turma).ThenInclude(t => t.Horarios)
                 .Include(mt => mt.Turma).ThenInclude(t => t.Disciplina).ThenInclude(d => d.Curriculos)
-                .Include(mt => mt.Estudante).ThenInclude(estudante => estudante.Curriculo)
-                .Where(
-                    mt => mt.EstudanteId == estudante.Id &&
+                .Include(mt => mt.Estudante).ThenInclude(e => e.Curriculo)
+                .Where(mt =>
+                    mt.EstudanteId == estudante.Id &&
                     mt.Turma.SemestreId == semestre.Id
                 )
-                .ToListAsync();    
+                .ToListAsync();
         }
 
-        public async Task<MatriculaTurma> GetByEstudanteAndTurma(Estudante estudante, Turma turma)
+        public async Task<MatriculaTurma> GetByEstudanteAndTurma(long turmaId, long estudanteId)
         {
-            return await _matriculaContext.MatriculaTurmas.Where(mt => mt.EstudanteId == estudante.Id && mt.Turma.Id == turma.Id).FirstOrDefaultAsync();
+            return await _matriculaContext.MatriculaTurmas
+                .Include(mt => mt.Turma)
+                .Include(mt => mt.Estudante)
+                .FirstOrDefaultAsync(mt => mt.TurmaId == turmaId && mt.EstudanteId == estudanteId);
         }
 
         public async Task MatricularEstudanteAsync(Turma turma, Estudante estudante)
@@ -44,6 +47,12 @@ namespace MatriculaPUCRS.Data.Persistencia
                 //Estado = EstadoMatriculaTurmaEnum.MATRICULADO
             });
             await _matriculaContext.SaveChangesAsync();
+        }
+
+        public async Task<bool> MatriculaTurmaExists(long turmaId, long estudanteId)
+        {
+            return await _context.MatriculaTurmas
+                .AnyAsync(e => e.TurmaId == turmaId && e.EstudanteId == estudanteId);
         }
     }
 }

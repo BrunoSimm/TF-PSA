@@ -33,10 +33,16 @@ namespace MatriculaPUCRS.Data.Persistencia
             await _context.SaveChangesAsync();
         }
 
-        public async Task<T> GetEntityById(long Id)
+        public virtual async Task<T> GetEntityById(params object[] Id)
         {
             //using var data = new ApplicationDbContext(_OptionsBuilder);
             return await _context.Set<T>().FindAsync(Id);
+        }
+
+        public virtual async Task<bool> EntityExistsById(params object[] Id)
+        {
+            var entity = await _context.Set<T>().FindAsync(Id);
+            return entity is not null;
         }
 
         public async Task<IEnumerable<T>> List()

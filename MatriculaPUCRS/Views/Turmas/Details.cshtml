@@ -1,142 +1,89 @@
-﻿@model Entidades.Modelos.Turma
+﻿@using Entidades.Modelos
+@model Entidades.Modelos.Turma
 
 @{
-    ViewData["Title"] = $"Turma {Model.Id}";
+    ViewData["Title"] = "Details";
 }
 
-<nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/Turmas">Home</a></li>
-        <li class="breadcrumb-item"><a href="/Turmas">Grade de Horários</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Turma @Model.Id</li>
-    </ol>
-</nav>
-
-<h1>@Model.Disciplina.Nome - @Model.Disciplina.Codigo</h1>
+<h1>@ViewData["Title"]</h1>
 
 <div>
-    <h5>
-        Turma @Model.Id -
-        @if (@ViewBag.IsMatriculated)
-        {
-            <span class=text-success small font-weight-bold">
-                Você está matriculado(a) nesta turma!
-            </span>
-
-        }
-        else
-        {
-            <span class="text-info small font-weight-bold">
-                Você não está matriculado(a) nesta turma!
-            </span>
-        }
-    </h5>
-    <span class="alert-success">@(ViewBag.CancelarMatriculaStatus == null ? "" : @ViewBag.CancelarMatriculaStatus)</span>
+    <h4>Turma</h4>
     <hr />
     <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.NumeroDeVagas)
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Id)
         </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.NumeroDeVagas)
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Id)
         </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.VagasRemanescentes)
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Disciplina)
         </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.VagasRemanescentes)
-        </dd>
-        <dt class="col-sm-2">
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Disciplina.NomeParaLista)
+        </dd class>
+        <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Semestre)
         </dt>
-        <dd class="col-sm-10">
+        <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Semestre.Titulo)
+        </dd class>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.NumeroDeVagas)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.NumeroDeVagas)
         </dd>
-        @if (@ViewBag.IsMatriculated)
-        {
-            <dt class="col-sm-2">
-                Status
-            </dt>
-            <dd class="col-sm-10">
-                @ViewBag.Matricula.Estado
-            </dd>
-
-            <dt class="col-sm-2">
-                Nota
-            </dt>
-            <dd class="col-sm-10">
-                @ViewBag.Matricula.Nota
-            </dd>
-        }
-        <dt class="col-sm-2">
+        <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Horarios)
+        </dt>
+        <dd class="col-sm-10">
+            <p>
+                @foreach (var horario in Model.Horarios.OrderBy(h => h.Horario))
+                {
+                    @Html.DisplayFor(modelItem => horario.Horario)
+                }
+            </p>
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Matriculas)
         </dt>
         <dd class="col-sm-10">
             <table class="table">
                 <tr>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Horarios.First().Horario)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Horarios.First().HorarioInicial)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Horarios.First().HorarioFinal)
-                    </th>
+                    <th>@Html.DisplayNameForInnerType((MatriculaTurma mt) => mt.Estudante.Id)</th>
+                    <th>@Html.DisplayNameForInnerType((MatriculaTurma mt) => mt.Estudante.Nome)</th>
+                    <th>@Html.DisplayNameForInnerType((MatriculaTurma mt) => mt.Nota)</th>
+                    <th>@Html.DisplayNameForInnerType((MatriculaTurma mt) => mt.Aprovado)</th>
+                    <th>@Html.DisplayNameForInnerType((MatriculaTurma mt) => mt.Estado)</th>
                 </tr>
-                @foreach (var item in Model.Horarios)
+                @foreach (var item in Model.Matriculas)
                 {
                     <tr>
                         <td>
-                            @Html.DisplayFor(modelItem => item.Horario)
+                            @Html.DisplayFor(modelItem => item.Estudante.Id)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.HorarioInicial)
+                            @Html.DisplayFor(modelItem => item.Estudante.Nome)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.HorarioFinal)
+                            @Html.DisplayFor(modelItem => item.Nota)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Aprovado)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Estado)
                         </td>
                     </tr>
                 }
             </table>
         </dd>
     </dl>
-</div>
-<div class="float-right">
-    @if (@ViewBag.IsMatriculated)
+    @if (!Model.Matriculas.Any())
     {
-        <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#cancelarMatriculaModal">
-            Cancelar Matrícula
-        </button>
-
-
-        <!-- Modal -->
-        <div class="modal fade" id="cancelarMatriculaModal" tabindex="-1" role="dialog" aria-labelledby="cancelarMatriculaModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="cancelarMatriculaModalLabel">Cancelar Matrícula</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        Você deseja mesmo CANCELAR seu pedido de matrícula nesta turma?
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Voltar</button>
-                        <form asp-action="CancelarMatricula">
-                            <input type="hidden" asp-for="Id" />
-                            <input type="submit" value="Cancelar Matrícula" class="btn btn-danger" />
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a><span> | </span>
     }
-    else
-    {
-        <a class="btn btn-outline-info" asp-action="Index">Grade de Horários</a>
-        <a class="btn btn-outline-success" asp-controller="Matriculas" asp-action="Details" asp-route-id="@Model.DisciplinaId">Matricular</a>
-    }
+        <a asp-action="Index">Back to List</a>
 </div>

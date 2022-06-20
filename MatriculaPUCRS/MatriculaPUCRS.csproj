@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="wwwroot\css\index_turmas.css" />
+    <None Include="wwwroot\css\grade_de_horarios.css" />
   </ItemGroup>
 
   <ItemGroup>

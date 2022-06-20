@@ -8,7 +8,8 @@ namespace Persistencia.Interfaces
         Task Add(T Objeto);
         Task Update(T Objeto);
         Task Delete(T Objeto);
-        Task<T> GetEntityById(long Id);
+        Task<T> GetEntityById(params object[] Id);
+        Task<bool> EntityExistsById(params object[] Id);
         Task<IEnumerable<T>> List();
     }
 }

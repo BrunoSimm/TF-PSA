@@ -113,9 +113,9 @@ namespace MatriculaPUCRS.Data
 
             var disciplinas = new Disciplina[]
             {
-                new Disciplina { Nivel = 1, Codigo = "254PF-04", Nome = "Fundamentos Aplicados à Administração", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
+                new Disciplina { Nivel = 1, Codigo = "254PF-04", Nome = "Fundamentos Aplicados a Administração", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
                 new Disciplina { Nivel = 1, Codigo = "4611C-06", Nome = "Fundamentos de Programação", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 90 },
-                new Disciplina { Nivel = 1, Codigo = "4636U-04", Nome = "Introdução à Sistemas de Informação", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
+                new Disciplina { Nivel = 1, Codigo = "4636U-04", Nome = "Introdução a Sistemas de Informação", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
                 new Disciplina { Nivel = 1, Codigo = "4637P-02", Nome = "Fundamentos da Computação", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 30 },
                 new Disciplina { Nivel = 1, Codigo = "95300-04", Nome = "Cálculo I", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
                 new Disciplina { Nivel = 2, Codigo = "4115L-02", Nome = "Matemática Discreta (SI)", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },

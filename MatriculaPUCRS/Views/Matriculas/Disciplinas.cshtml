@@ -1,0 +1,45 @@
+﻿@model IEnumerable<Entidades.Modelos.Disciplina>
+
+@{
+    ViewData["Title"] = "Matrículas";
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/Matriculas">Matrícula</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Disciplinas</li>
+    </ol>
+</nav>
+
+<h2>Disciplinas Disponíveis - @ViewBag.Semestre.Titulo</h2>
+
+<span class="alert-success">@(ViewBag.MatriculaSuccessMessage == null ? "" : @ViewBag.MatriculaSuccessMessage)</span>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Codigo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Nome)
+            </th>
+            <th  align="right"></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Codigo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Nome)
+            </td>
+            <td  align="right">
+                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary">Matricular</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
