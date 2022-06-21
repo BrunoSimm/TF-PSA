@@ -2,10 +2,17 @@
 
 @{
     string complemento = Model.Any() ? $" - { Model.First().Turma.Semestre.Titulo }" : "";
-    ViewData["Title"] = "Turmas Matriculadas" + complemento;
+    ViewData["Title"] = "Turmas Matriculadas";
 }
 
-<h1>@ViewData["Title"]</h1>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/Matriculas">Matrículas</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Minhas turmas</li>
+    </ol>
+</nav>
+
+<h2>@ViewData["Title"] @complemento</h2>
 
 <div >
 @if (Model.Any())
