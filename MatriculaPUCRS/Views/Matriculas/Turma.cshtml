@@ -5,136 +5,138 @@
     ViewData["Title"] = $"Turma { Model.Id }";
 }
 
-<nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/Turmas">Home</a></li>
-        <li class="breadcrumb-item"><a href="/Turmas">Grade de Horários</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Turma @Model.Id</li>
-    </ol>
-</nav>
+<div class="container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/Matriculas">Matrículas</a></li>
+            <li class="breadcrumb-item"><a href="/Matriculas">Minhas turmas</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Turma @Model.Id</li>
+        </ol>
+    </nav>
 
-<h1>@Model.Disciplina.Nome - @Model.Disciplina.Codigo</h1>
+    <h2>@Model.Disciplina.NomeParaLista</h2>
 
-<div>
-    <h5>
-        Turma @Model.Id -
-        @if (@ViewBag.IsMatriculated)
-        {
-            <span class=text-success small font-weight-bold">
-                Você está matriculado(a) nesta turma!
-            </span>
+    <div>
+        <h5>
+            Turma @Model.Id -
+            @if (@ViewBag.IsMatriculated)
+            {
+                <span class="text-success">
+                    Você está matriculado(a) nesta turma
+                </span>
 
-        }
-        else
-        {
-            <span class="text-info small font-weight-bold">
-                Você não está matriculado(a) nesta turma!
-            </span>
-        }
-    </h5>
-    <span class="alert-success">@(ViewBag.CancelarMatriculaStatus == null ? "" : @ViewBag.CancelarMatriculaStatus)</span>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.NumeroDeVagas)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.NumeroDeVagas)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.VagasRemanescentes)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.VagasRemanescentes)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Semestre)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Semestre.Titulo)
-        </dd>
-        @if (@ViewBag.Matricula is not null)
-        {
+            }
+            else
+            {
+                <span class="text-info">
+                    Você não está matriculado(a) nesta turma
+                </span>
+            }
+        </h5>
+        <span class="alert-success">@(ViewBag.CancelarMatriculaStatus == null ? "" : @ViewBag.CancelarMatriculaStatus)</span>
+        <hr />
+        <dl class="row">
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.NumeroDeVagas)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.NumeroDeVagas)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.VagasRemanescentes)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.VagasRemanescentes)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Semestre)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Semestre.Titulo)
+            </dd>
+            @if (@ViewBag.Estado is not null)
+            {
             <dt class="col-sm-2">
                 Status
             </dt>
+                <dd class="col-sm-10">
+                    @ViewBag.Estado
+                </dd>
+            }
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Horarios)
+            </dt>
             <dd class="col-sm-10">
-                @ViewBag.Matricula.Estado
-            </dd>
-        }
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Horarios)
-        </dt>
-        <dd class="col-sm-10">
-            <table class="table">
-                <tr>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Horarios.First().Horario)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Horarios.First().HorarioInicial)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Horarios.First().HorarioFinal)
-                    </th>
-                </tr>
-                @foreach (var item in Model.Horarios)
-                {
+                <table class="table">
                     <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Horario)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.HorarioInicial)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.HorarioFinal)
-                        </td>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Horarios.First().Horario)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Horarios.First().HorarioInicial)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Horarios.First().HorarioFinal)
+                        </th>
                     </tr>
-                }
-            </table>
-        </dd>
-    </dl>
-</div>
-<div class="float-right">
-    @if (@ViewBag.IsMatriculated)
-    {
-        <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#cancelarMatriculaModal">
-            Cancelar Matrícula
-        </button>
+                    @foreach (var item in Model.Horarios)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Horario)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.HorarioInicial)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.HorarioFinal)
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </dd>
+        </dl>
+    </div>
+    <div align="right">
+        @if (@ViewBag.IsMatriculated)
+        {
+            <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#cancelarMatriculaModal">
+                Cancelar Matrícula
+            </button>
 
-        <!-- Modal -->
-        <div class="modal fade" id="cancelarMatriculaModal" tabindex="-1" role="dialog" aria-labelledby="cancelarMatriculaModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="cancelarMatriculaModalLabel">Cancelar Matrícula</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        Você deseja mesmo CANCELAR sua matrícula nesta turma?
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Voltar</button>
-                        <form asp-action="CancelarMatricula">
-                            <input type="hidden" asp-for="Id" />
-                            <input type="submit" value="Cancelar Matrícula" class="btn btn-danger" />
-                        </form>
+            <!-- Modal -->
+            <div class="modal fade" style="text-align: initial" id="cancelarMatriculaModal" tabindex="-1" role="dialog" aria-labelledby="cancelarMatriculaModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="cancelarMatriculaModalLabel">Cancelar Matrícula</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            Você deseja mesmo CANCELAR sua matrícula nesta turma?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Voltar</button>
+                            <form asp-action="CancelarMatricula">
+                                <input type="hidden" asp-for="Id" />
+                                <button type="submit" class="btn btn-danger">Cancelar Matrícula</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    }
-    else if (@ViewBag.Matricula is null)
-    {
-        <form asp-controller="Matriculas" asp-action="Matricular" method="post" role="form">
-            <a class="btn btn-outline-info" asp-action="GradeDeHorario">Grade de Horários</a>
-            <input type="hidden" name="turmaId" value="@Model.Id" />
-            <input type="hidden" name="disciplinaId" value="@Model.DisciplinaId" />
-            <input type="hidden" name="semestreId" value="@Model.SemestreId" />
-            <button type="submit" class="btn btn-outline-success" >Matricular</button>
-        </form>
-    }
+        }
+        else if (ViewBag.Matricula is null && ViewBag.Estado is not null)
+        {
+            <form asp-controller="Matriculas" asp-action="Matricular" method="post" role="form">
+                <a class="btn btn-outline-info" asp-action="GradeDeHorario">Grade de Horários</a>
+                <input type="hidden" name="turmaId" value="@Model.Id" />
+                <input type="hidden" name="disciplinaId" value="@Model.DisciplinaId" />
+                <input type="hidden" name="semestreId" value="@Model.SemestreId" />
+                <button type="submit" class="btn btn-outline-success" >Matricular</button>
+            </form>
+        }
+    </div>
 </div>

@@ -4,74 +4,76 @@
     ViewData["Title"] = "Matrícula";
 }
 
-<nav aria-label="breadcrumb">
-  <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="/Matriculas">Matrículas</a></li>
-    <li class="breadcrumb-item"><a href="/Matriculas/Disciplinas">Disciplinas</a></li>
-    <li class="breadcrumb-item active" aria-current="page">@Model.First().Disciplina.Nome</li>
-  </ol>
-</nav>
+<div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/Matriculas">Matrículas</a></li>
+        <li class="breadcrumb-item"><a href="/Matriculas/Disciplinas">Disciplinas</a></li>
+        <li class="breadcrumb-item active" aria-current="page">@ViewBag.Disciplina.Nome</li>
+      </ol>
+    </nav>
 
-<h2>@Model.First().Disciplina.Codigo - @Model.First().Disciplina.Nome</h2>
-<h5 class="text-muted">Turmas Disponíveis - Semestre @Model.First().Semestre.Titulo</h5>
+    <h2>@ViewBag.Disciplina.NomeParaLista</h2>
+    <h5 class="text-muted">Turmas Disponíveis - @ViewBag.Semestre.Titulo</h5>
 
-<span class="alert-danger">@(ViewBag.ErrorMessage == null ? "" : "ERRO: " + @ViewBag.ErrorMessage + "")</span>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                <a asp-action="Details" asp-route-sortOrder="@ViewData["IdSortParm"]">@Html.DisplayNameFor(model => model.Id)</a>
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Semestre)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NumeroDeVagas)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.VagasRemanescentes)
-            </th>
-            <th>
-                <a asp-action="Details" asp-route-sortOrder="@ViewData["HorarioSortParm"]">@Html.DisplayNameFor(model => model.Horarios)</a>
-            </th>
-            <th  align="right"></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <form asp-controller="Matriculas" asp-action="Matricular" method="post" role="form">
-                <tr>
-                    <td>
-                        <input type="hidden" name="turmaId" value="@item.Id" />
-                        @Html.DisplayFor(modelItem => item.Id)
-                    </td>
-                    <td>
-                        <input type="hidden" name="semestreId" value="@item.SemestreId" />
-                        @Html.DisplayFor(modelItem => item.Semestre.Titulo)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.NumeroDeVagas)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.VagasRemanescentes)
-                    </td>
-                    <td>
-                        <p>
-                        @foreach (var horario in item.Horarios.OrderBy(h => h.Horario))
-                        {
-                            @Html.DisplayFor(modelItem => horario.Horario)
-                        }
-                        </p>
-                    </td>
-                    <td  align="right">
-                        <div>
-                            <button type="submit" class="btn btn-primary">Matricular</button>
-                        </div>
-                    </td>
-                </tr>
-                <input type="hidden" name="disciplinaId" value="@item.DisciplinaId" />
-            </form>
-        }
-    </tbody>
-</table>
+    <span class="alert-danger">@(ViewBag.ErrorMessage == null ? "" : "ERRO: " + @ViewBag.ErrorMessage + "")</span>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    <a asp-action="Details" asp-route-sortOrder="@ViewData["IdSortParm"]">@Html.DisplayNameFor(model => model.Id)</a>
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Semestre)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.NumeroDeVagas)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.VagasRemanescentes)
+                </th>
+                <th>
+                    <a asp-action="Details" asp-route-sortOrder="@ViewData["HorarioSortParm"]">@Html.DisplayNameFor(model => model.Horarios)</a>
+                </th>
+                <th  align="right"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <form asp-controller="Matriculas" asp-action="Matricular" method="post" role="form">
+                    <tr>
+                        <td>
+                            <input type="hidden" name="turmaId" value="@item.Id" />
+                            @Html.DisplayFor(modelItem => item.Id)
+                        </td>
+                        <td>
+                            <input type="hidden" name="semestreId" value="@item.SemestreId" />
+                            @Html.DisplayFor(modelItem => item.Semestre.Titulo)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.NumeroDeVagas)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.VagasRemanescentes)
+                        </td>
+                        <td>
+                            <p>
+                            @foreach (var horario in item.Horarios.OrderBy(h => h.Horario))
+                            {
+                                @Html.DisplayFor(modelItem => horario.Horario)
+                            }
+                            </p>
+                        </td>
+                        <td  align="right">
+                            <div>
+                                <button type="submit" class="btn btn-outline-success">Matricular</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <input type="hidden" name="disciplinaId" value="@item.DisciplinaId" />
+                </form>
+            }
+        </tbody>
+    </table>
+</div>

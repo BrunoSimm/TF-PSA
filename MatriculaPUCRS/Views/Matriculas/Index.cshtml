@@ -1,82 +1,85 @@
 ﻿@model IEnumerable<Entidades.Modelos.MatriculaTurma>
 
 @{
-    string complemento = Model.Any() ? $" - { Model.First().Turma.Semestre.Titulo }" : "";
+    string complemento = $" - { ViewBag.Semestre.Titulo }";
     ViewData["Title"] = "Turmas Matriculadas";
 }
+<div class="container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/Matriculas">Matrículas</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Minhas turmas</li>
+        </ol>
+    </nav>
 
-<nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/Matriculas">Matrículas</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Minhas turmas</li>
-    </ol>
-</nav>
+    <h2>@ViewData["Title"] @complemento</h2>
 
-<h2>@ViewData["Title"] @complemento</h2>
-
-<div >
 @if (Model.Any())
 {
-    <h5>
-        <span class="alert-success">@(ViewBag.MatriculaSuccessMessage == null ? "" : @ViewBag.MatriculaSuccessMessage)</span>
-    </h5>
+    if (ViewBag.MatriculaSuccessMessage is not null)
+    {
+        <h5 class="alert-success">
+            @ViewBag.MatriculaSuccessMessage
+        </h5>
+    }
 
-<div asp-validation-summary="All" class="text-danger"></div>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["TurmaSortParm"]">@Html.DisplayNameFor(model => model.Turma.Id)</a>
-            </th>
-            <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["TituloSortParm"]">@Html.DisplayNameFor(model => model.Turma.Disciplina)</a>
-            </th>
-            <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["HorarioSortParm"]">@Html.DisplayNameFor(model => model.Turma.Horarios)</a>
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Turma.NumeroDeVagas)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Turma.VagasRemanescentes)
-            </th>
-            <th  align="right"></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Turma.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Turma.Disciplina.NomeParaLista)
-            </td>
-            <td>
-                <p>
-                    @foreach (var horario in item.Turma.Horarios.OrderBy(h => h.Horario))
-                   {
-                        @Html.DisplayFor(modelItem => horario.Horario) 
-                   }
-                </p>
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Turma.NumeroDeVagas)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Turma.VagasRemanescentes)
-            </td>
-            <td  align="right">
-                <a asp-action="Turma" asp-route-id="@item.Turma.Id">Detalhes</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
-<hr >
-<div align="right" class="d-print-none">
-    <a asp-action="GradeDeHorario" asp-controller="Matriculas" class="btn btn-outline-info">Grade de Horários</a>
-</div>
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    <a asp-action="Index" asp-route-sortOrder="@ViewData["TurmaSortParm"]">@Html.DisplayNameFor(model => model.Turma.Id)</a>
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-sortOrder="@ViewData["TituloSortParm"]">@Html.DisplayNameFor(model => model.Turma.Disciplina)</a>
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-sortOrder="@ViewData["HorarioSortParm"]">@Html.DisplayNameFor(model => model.Turma.Horarios)</a>
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Turma.NumeroDeVagas)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Turma.VagasRemanescentes)
+                </th>
+                <th  align="right"></th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Turma.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Turma.Disciplina.NomeParaLista)
+                </td>
+                <td>
+                    <p>
+                        @foreach (var horario in item.Turma.Horarios.OrderBy(h => h.Horario))
+                       {
+                            @Html.DisplayFor(modelItem => horario.Horario) 
+                       }
+                    </p>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Turma.NumeroDeVagas)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Turma.VagasRemanescentes)
+                </td>
+                <td  align="right">
+                    <a asp-action="Turma" asp-route-id="@item.Turma.Id">Detalhes</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    <hr >
+    <div align="right" class="d-print-none">
+        <a asp-action="GradeDeHorario" asp-controller="Matriculas" class="btn btn-outline-info">Grade de Horários</a>
+    </div>
 }
 else
 {

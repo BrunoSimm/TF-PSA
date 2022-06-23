@@ -40,13 +40,13 @@ namespace MatriculaPUCRS.Controllers
                 return NotFound();
             }
 
-            var disciplinas = await _disciplinaRepositorio.GetDisciplinaByIdWithMatriculasAndSemestre(id);
-            if (disciplinas == null)
+            Disciplina disciplina = await _disciplinaRepositorio.GetDisciplinaByIdWithMatriculasAndSemestre((long) id);
+            if (disciplina == null)
             {
                 return NotFound();
             }
 
-            return View(disciplinas);
+            return View(disciplina);
         }
 
         // GET: Disciplinas/Create

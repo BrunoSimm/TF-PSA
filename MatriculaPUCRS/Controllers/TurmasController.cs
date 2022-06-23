@@ -48,7 +48,7 @@ namespace MatriculaPUCRS.Controllers
             ViewData["TituloSortParm"] = "Titulo";
             ViewData["HorarioSortParm"] = "Horario";
             ViewData["SemestreSortParm"] = "Semestre";
-            var turmas = _turmaRepositorio.ListTurmasWithDisciplinaAndSemestreAndHorariosAndMatriculasAsQueryable();
+            IEnumerable<Turma> turmas = _turmaRepositorio.ListTurmasWithDisciplinaAndSemestreAndHorariosAndMatriculas();
             switch (sortOrder)
             {
                 case "Turma":
@@ -67,7 +67,7 @@ namespace MatriculaPUCRS.Controllers
                     turmas = turmas.OrderBy(t => t.Id);
                     break;
             }
-            return View(await turmas.AsNoTracking().ToListAsync());
+            return View(turmas);
         }
 
         // GET: Turmas/Create

@@ -5,7 +5,8 @@ namespace Persistencia.Interfaces.Repositorios
 {
     public interface IEstudanteRepositorio : ICrud<Estudante>
     {
-        Task<Estudante> GetByIdAsync(long? id);
-        Task<Estudante> GetByCPF(string cpf);
+        public Task<Estudante> GetByIdAsync(long? id);
+        public Task<Estudante> GetByCPF(string cpf);
+        public Task<EstadoMatriculaTurmaEnum?> GetStatusDisciplina(long estudanteId, long disciplinaId);
     }
 }

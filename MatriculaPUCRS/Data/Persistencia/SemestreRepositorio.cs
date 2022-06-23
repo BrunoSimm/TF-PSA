@@ -19,7 +19,10 @@ namespace MatriculaPUCRS.Data.Persistencia
 
         public async Task<Semestre> GetSemestreAtualAsync()
         {
-            return await _matriculaContext.Semestres.Where(s => DateTime.Now >= s.DataInicial && DateTime.Now <= s.DataFinal).FirstOrDefaultAsync();
+            return await _matriculaContext.Semestres
+                .Where(s => DateTime.Now >= s.DataInicial && DateTime.Now <= s.DataFinal)
+                .OrderBy(s => s.DataFinal)
+                .FirstOrDefaultAsync();
         }
         
         public async Task<IEnumerable<Semestre>> ListSemestresWithTurmas()

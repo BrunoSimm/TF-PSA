@@ -59,8 +59,9 @@ namespace MatriculaPUCRS.Controllers
             }
 
             ViewBag.MatriculaSuccessMessage = TempData["SuccessMessageTemp"];
+            ViewBag.Semestre = semestre;
 
-            var matriculasTurmas = estudante.Matriculas.Where(mt => mt.Turma.Semestre.Equals(semestre));
+            IEnumerable<MatriculaTurma> matriculasTurmas = estudante.Matriculas.Where(mt => mt.Turma.SemestreId.Equals(semestre.Id));
 
             return View(matriculasTurmas);
         }
@@ -70,9 +71,33 @@ namespace MatriculaPUCRS.Controllers
         public async Task<IActionResult> Disciplinas()
         {
             ViewBag.MatriculaSuccessMessage = TempData["ErrorMessageTemp"];
-            ViewBag.Semestre = await _semestreRepositorio.GetSemestreAtualAsync();
-            List<Disciplina> disciplinas = await _disciplinaRepositorio.GetDisciplinasFromCurrentSemester();
-            disciplinas = disciplinas.Distinct().ToList();
+
+            Semestre semestre = await _semestreRepositorio.GetSemestreAtualAsync();
+
+            IEnumerable<Disciplina> disciplinas = await _disciplinaRepositorio.GetDisciplinasFromCurrentSemester();
+            disciplinas = disciplinas.Distinct();
+
+            ApplicationUser loggedUser = await _userManager.GetUserAsync(User);
+            Estudante estudante = await _estudanteRepositorio.GetByIdAsync(loggedUser.EstudanteId);
+
+            IEnumerable<Disciplina> disciplinasCursadas = estudante.Matriculas
+                .Where(mt => mt.Estado == (EstadoMatriculaTurmaEnum.APROVADO ^ EstadoMatriculaTurmaEnum.CURSANDO))
+                .Select(mt => mt.Turma.Disciplina).Distinct();
+
+            disciplinas = disciplinas.Where(d => !disciplinasCursadas.Contains(d));
+
+            //IEnumerable<MatriculaTurma> turmasMatriculado = estudante.Matriculas.Where(mt => mt.Turma.SemestreId.Equals(semestre.Id));
+
+            //List<Disciplina> disciplinas2 = await _disciplinaRepositorio.GetDisciplinasFromSemester(estudante.Id, semestre.Id);
+
+            //IQueryable<Turma> turmas = _turmaRepositorio
+            //    .ListTurmasWithDisciplinaAndSemestreAndHorariosAndMatriculasAsQueryable()
+            //    .Where(t => t.DisciplinaId == id)
+            //    .Where(t => DateTime.Now >= t.Semestre.DataInicial && DateTime.Now <= t.Semestre.DataFinal);
+
+            ViewBag.TurmasMatriculado = estudante.Matriculas.Where(mt => mt.Turma.SemestreId.Equals(semestre.Id)).Select(mt => mt.Turma);
+            ViewBag.DisciplinasMatriculado = estudante.Matriculas.Where(mt => mt.Turma.SemestreId.Equals(semestre.Id)).Select(mt => mt.Turma.Disciplina).Distinct();
+            ViewBag.Semestre = semestre;
             return View(disciplinas);
         }
 
@@ -90,8 +115,9 @@ namespace MatriculaPUCRS.Controllers
             }
 
             ViewBag.MatriculaSuccessMessage = TempData["SuccessMessageTemp"];
+            ViewBag.Semestre = semestre;
 
-            var matriculasTurmas = estudante.Matriculas.Where(mt => mt.Turma.Semestre.Equals(semestre));
+            IEnumerable<MatriculaTurma> matriculasTurmas = estudante.Matriculas.Where(mt => mt.Turma.SemestreId.Equals(semestre.Id));
 
             return View(matriculasTurmas);
         }
@@ -124,38 +150,44 @@ namespace MatriculaPUCRS.Controllers
                 return NotFound();
             }
 
+            Semestre semestre = await _semestreRepositorio.GetSemestreAtualAsync();
+            
+            if (semestre is null)
+            {
+                return NotFound();
+            }
+
             ViewBag.ErrorMessage = TempData["ErrorMessageTemp"];
             ViewData["CurrentSort"] = sortOrder;
-            ViewData["TituloSortParm"] = String.IsNullOrEmpty(sortOrder) ? "titulo_asc" : "";
-            ViewData["IdSortParm"] = sortOrder == "Id" ? "id_desc" : "Id";
-            ViewData["HorarioSortParm"] = sortOrder == "Horario" ? "horario_desc" : "Horario";
-            IQueryable<Turma> turmas = _turmaRepositorio
-                .ListTurmasWithDisciplinaAndSemestreAndHorariosAndMatriculasAsQueryable()
-                .Where(t => t.DisciplinaId == id)
-                .Where(t => DateTime.Now >= t.Semestre.DataInicial && DateTime.Now <= t.Semestre.DataFinal);
+            ViewData["IdSortParm"] = "Id";
+            ViewData["HorarioSortParm"] = "Horario";
+
+            Disciplina disciplina = await _disciplinaRepositorio.GetDisciplinaByIdWithMatriculasAndSemestre((long) id);
+
+            IEnumerable<Turma> turmas = disciplina.Turmas.Where(t => t.SemestreId == semestre.Id);
 
             if (!turmas.Any())
             {
                 return NotFound();
             }
 
+            ViewBag.Semestre = semestre;
+            ViewBag.Disciplina = disciplina;
+
             switch (sortOrder)
             {
-                case "titulo_asc":
-                    turmas = turmas.OrderBy(t => t.Disciplina.Nome);
+                case "Id":
+                    turmas = turmas.OrderBy(t => t.Id);
                     break;
-                case "horario_desc":
-                    turmas = turmas.OrderByDescending(t => t.Horarios.OrderBy(h => h.Horario).First().Horario);
-                    break;
-                case "id_desc":
-                    turmas = turmas.OrderByDescending(t => t.Id);
+                case "Horario":
+                    turmas = turmas.OrderBy(t => t.Horarios.OrderBy(h => h.Horario).First().Horario);
                     break;
                 default:
                     turmas = turmas.OrderBy(t => t.Id);
                     break;
             }
 
-            return View(await turmas.ToListAsync());
+            return View(turmas);
         }
 
         [HttpPost]
@@ -175,84 +207,84 @@ namespace MatriculaPUCRS.Controllers
             ApplicationUser loggedUser = await _userManager.GetUserAsync(User);
             Estudante estudante = await _estudanteRepositorio.GetByIdAsync(loggedUser.EstudanteId);
 
-            if (estudante is not null)
+            if (estudante is null)
             {
-
-                //verificar se o estudante possui os pre requisitos
-                if (turma.Disciplina.Requisitos.Any())
-                {
-                    foreach (var preRequisito in turma.Disciplina.Requisitos)
-                    {
-                        if (!estudante.Matriculas.Any(mt => mt.Turma.DisciplinaId == preRequisito.DisciplinaId && mt.Aprovado == true))
-                        {
-                            TempData["ErrorMessageTemp"] = $"Você não possui o pre requisito '{preRequisito.Disciplina.Nome}' para esta disciplina.";
-                            return RedirectToAction("Details", new { id = disciplinaId });
-                        }
-                    }
-                }
-
-                //verificar se existem vagas disponíveis na turma
-                if (turma.VagasRemanescentes == 0)
-                {
-                    TempData["ErrorMessageTemp"] = "Não há vagas disponíveis para esta turma.";
-                    return RedirectToAction("Details", new { id = disciplinaId });
-                }
-
-                //verificar se o estudante já cursou esta disciplina
-                if (estudante.Matriculas.Any(m => m.Turma.DisciplinaId == disciplinaId && m.Aprovado == true))
-                {
-                    TempData["ErrorMessageTemp"] = "Você já cursou e foi aprovado nesta disciplina.";
-                    return RedirectToAction("Details", new { id = disciplinaId });
-                }
-
-                //verificar se o estudante já está matriculado nesta disciplina no semestre atual.
-                List<MatriculaTurma> matriculaDisciplina = await _matriculaTurmaRepositorio.GetByEstudanteAndSemestre(estudante, semestre);
-                if(matriculaDisciplina.Count > 0)
-                {
-                    if(matriculaDisciplina.Any(md => md.Turma.Id == turma.Id))
-                    {
-                        TempData["ErrorMessageTemp"] = "Você já está matriculado nessa turma.";
-                        return RedirectToAction("Details", new { id = disciplinaId });
-                    }
-
-                    if(matriculaDisciplina.Any(md => md.Turma.DisciplinaId == disciplina.Id))
-                    {
-                        TempData["ErrorMessageTemp"] = "Você já está matriculado nesta disciplina neste semestre.";
-                        return RedirectToAction("Details", new { id = disciplinaId });
-                    }
-                }
-
-                //verificar se o estudante não possui outra turma nos horarios desta Turma
-                List<MatriculaTurma> matriculasSemestreAtual = await _matriculaTurmaRepositorio.GetByEstudanteAndSemestre(estudante, semestre);
-                bool hasConflict = false;
-                if (matriculasSemestreAtual.Count > 0)
-                {
-                    foreach (var matricula in matriculasSemestreAtual)
-                    {
-                        if (hasConflict == true) break;
-                        foreach (var turmaHorario in turma.Horarios)
-                        {
-                            if (matricula.Turma.Horarios.Any(h => h.Horario.Equals(turmaHorario.Horario)))
-                            {
-                                hasConflict = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                if (hasConflict)
-                {
-                    TempData["ErrorMessageTemp"] = "Você já está matriculado em outra turma nos mesmos horários.";
-                    return RedirectToAction("Details", new { id = disciplinaId });
-                }
-
-                //Realiza a Matricula.
-                await _matriculaTurmaRepositorio.MatricularEstudanteAsync(turma, estudante);
-                TempData["SuccessMessageTemp"] = $"Matrícula na turma {turma.Id} realizada com sucesso!";
-                return RedirectToAction("Index");
+                return NotFound();
             }
-            return NotFound();
+
+            //verificar se o estudante possui os pre requisitos
+            if (turma.Disciplina.Requisitos.Any())
+            {
+                foreach (var preRequisito in turma.Disciplina.Requisitos)
+                {
+                    if (!estudante.Matriculas.Any(mt => mt.Turma.DisciplinaId == preRequisito.DisciplinaId && mt.Aprovado == true))
+                    {
+                        TempData["ErrorMessageTemp"] = $"Você não possui o pre requisito '{preRequisito.Disciplina.Nome}' para esta disciplina.";
+                        return RedirectToAction("Details", new { id = disciplinaId });
+                    }
+                }
+            }
+
+            //verificar se existem vagas disponíveis na turma
+            if (turma.VagasRemanescentes == 0)
+            {
+                TempData["ErrorMessageTemp"] = "Não há vagas disponíveis para esta turma.";
+                return RedirectToAction("Details", new { id = disciplinaId });
+            }
+
+            //verificar se o estudante já cursou esta disciplina
+            if (estudante.Matriculas.Any(m => m.Turma.DisciplinaId == disciplinaId && m.Aprovado == true))
+            {
+                TempData["ErrorMessageTemp"] = "Você já cursou e foi aprovado nesta disciplina.";
+                return RedirectToAction("Details", new { id = disciplinaId });
+            }
+
+            //verificar se o estudante já está matriculado nesta disciplina no semestre atual.
+            List<MatriculaTurma> matriculaDisciplina = await _matriculaTurmaRepositorio.GetByEstudanteAndSemestre(estudante, semestre);
+            if (matriculaDisciplina.Count > 0)
+            {
+                if (matriculaDisciplina.Any(md => md.Turma.Id == turma.Id))
+                {
+                    TempData["ErrorMessageTemp"] = "Você já está matriculado nessa turma.";
+                    return RedirectToAction("Details", new { id = disciplinaId });
+                }
+
+                if (matriculaDisciplina.Any(md => md.Turma.DisciplinaId == disciplina.Id))
+                {
+                    TempData["ErrorMessageTemp"] = "Você já está matriculado nesta disciplina neste semestre.";
+                    return RedirectToAction("Details", new { id = disciplinaId });
+                }
+            }
+
+            //verificar se o estudante não possui outra turma nos horarios desta Turma
+            List<MatriculaTurma> matriculasSemestreAtual = await _matriculaTurmaRepositorio.GetByEstudanteAndSemestre(estudante, semestre);
+            bool hasConflict = false;
+            if (matriculasSemestreAtual.Count > 0)
+            {
+                foreach (var matricula in matriculasSemestreAtual)
+                {
+                    if (hasConflict == true) break;
+                    foreach (var turmaHorario in turma.Horarios)
+                    {
+                        if (matricula.Turma.Horarios.Any(h => h.Horario.Equals(turmaHorario.Horario)))
+                        {
+                            hasConflict = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (hasConflict)
+            {
+                TempData["ErrorMessageTemp"] = "Você já está matriculado em outra turma nos mesmos horários.";
+                return RedirectToAction("Details", new { id = disciplinaId });
+            }
+
+            //Realiza a Matricula.
+            await _matriculaTurmaRepositorio.MatricularEstudanteAsync(turma, estudante);
+            TempData["SuccessMessageTemp"] = $"Matrícula na turma {turma.Id} realizada com sucesso!";
+            return RedirectToAction("Index");
         }
 
         // GET: Matricula/Turma/5
@@ -266,14 +298,14 @@ namespace MatriculaPUCRS.Controllers
             ApplicationUser loggedUser = await _userManager.GetUserAsync(User);
             Estudante estudante = await _estudanteRepositorio.GetByIdAsync(loggedUser.EstudanteId);
 
-            var semestre = await _semestreRepositorio.GetSemestreAtualAsync();
+            Semestre semestre = await _semestreRepositorio.GetSemestreAtualAsync();
 
             if (semestre is null || estudante is null)
             {
                 return NotFound();
             }
 
-            var turma = await _turmaRepositorio.GetTurmaByIdAsync((long) id);
+            Turma turma = await _turmaRepositorio.GetTurmaByIdAsync((long) id);
 
             if (turma == null)
             {
@@ -283,17 +315,19 @@ namespace MatriculaPUCRS.Controllers
             //ViewBag.CancelarMatriculaStatus = TempData["CancelarMatriculaStatus"];
 
             //Verifica se o usuário logado está matriculado nesta turma.
-            IEnumerable<MatriculaTurma> matriculasTurmas = estudante.Matriculas.Where(mt => mt.Turma.Semestre.Equals(semestre));
-
+            IEnumerable<MatriculaTurma> matriculasTurmas = estudante.Matriculas.Where(mt => mt.Turma.SemestreId.Equals(semestre.Id));
             MatriculaTurma matriculaTurma = matriculasTurmas.FirstOrDefault(mt => mt.TurmaId == turma.Id);
+
             ViewBag.Matricula = matriculaTurma;
             ViewBag.IsMatriculated = matriculaTurma is not null && matriculaTurma.Estado.Equals(EstadoMatriculaTurmaEnum.MATRICULADO);
+            ViewBag.Estado = await _estudanteRepositorio.GetStatusDisciplina(estudante.Id, turma.DisciplinaId);
 
             return View(turma);
         }
 
         // POST: Turmas/CancelarMatricula/5
-        [HttpPost, ActionName("CancelarMatricula")]
+        [HttpPost]
+        [ActionName("CancelarMatricula")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CancelarMatricula(long id)
         {
@@ -303,7 +337,7 @@ namespace MatriculaPUCRS.Controllers
 
             Semestre semestre = await _semestreRepositorio.GetSemestreAtualAsync();
 
-            Turma turma = await _turmaRepositorio.GetTurmaByIdAsync(id);
+            Turma turma = await _turmaRepositorio.GetEntityById(id);
 
             if (semestre is null || estudante is null || turma is null)
             {

@@ -46,7 +46,7 @@ namespace MatriculaPUCRS.Data.Persistencia
                 .FirstOrDefaultAsync(t => t.Id == id);
         }
 
-        public IQueryable<Turma> ListTurmasWithDisciplinaAndSemestreAndHorariosAndMatriculasAsQueryable()
+        public IEnumerable<Turma> ListTurmasWithDisciplinaAndSemestreAndHorariosAndMatriculas()
         {
             return _matriculaContext.Turmas
                 .Include(t => t.Disciplina)
@@ -54,7 +54,7 @@ namespace MatriculaPUCRS.Data.Persistencia
                 .Include(t => t.Semestre)
                 .Include(t => t.Horarios)
                 .Include(t => t.Matriculas)
-                .AsQueryable();
+                .AsEnumerable();
         }
 
         public override async Task Update(Turma turma)

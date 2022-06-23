@@ -4,14 +4,14 @@
 @model Entidades.Modelos.Curriculo
 
 @{
-    ViewData["Title"] = $"Curso - { Model.NomeParaLista }";
+    ViewData["Title"] = "Cursos";
     var disciplinas = Model.Disciplinas.OrderBy(d => d.Nivel).ThenBy(d => d.Codigo);
     bool isCoordenador = SignInManager.IsSignedIn(User) && User.IsInRole("Coordenador");
 }
 
-<h1>@ViewData["Title"]</h1>
+<h1>Curso - @Model.NomeDoCurso</h1>
 
-<h2>Disciplinas</h2>
+<h2>Currículo - @Model.Codigo</h2>
 
 @if (isCoordenador)
 {

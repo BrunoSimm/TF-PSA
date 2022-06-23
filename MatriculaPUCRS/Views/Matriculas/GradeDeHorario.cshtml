@@ -6,6 +6,7 @@
 }
 
 @{
+    string complemento = $" - { ViewBag.Semestre.Titulo }";
     ViewData["Title"] = "Grade de Horários";
 
     List<string> bootStrapColors = new List<string>();
@@ -42,11 +43,17 @@
         </ol>
     </nav>
 
+    <h2>@ViewData["Title"] @complemento</h2>
+
 @if (Model.Any())
 {
-    <h5 class="d-print-none">
-        <span class="alert-success">@(ViewBag.MatriculaSuccessMessage == null ? "" : @ViewBag.MatriculaSuccessMessage)</span>
-    </h5>
+    if (ViewBag.MatriculaSuccessMessage is not null)
+    {
+        <h5 class="d-print-none alert-success">
+            @ViewBag.MatriculaSuccessMessage
+        </h5>
+    }
+
     <div class="table-responsive">
         <table class="table table-bordered text-center table-hover">
             <thead>

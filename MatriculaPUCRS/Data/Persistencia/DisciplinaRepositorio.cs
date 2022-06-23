@@ -33,13 +33,42 @@ namespace MatriculaPUCRS.Data.Persistencia
                 .Where(result => DateTime.Now >= result.semestre.DataInicial && DateTime.Now <= result.semestre.DataFinal)
                 .Select(result => result.turmaDisc.disc)
                 .Include(d => d.Turmas).ThenInclude(t => t.Semestre)
+                .Include(d => d.Turmas).ThenInclude(t => t.Horarios)
+                .Include(d => d.Turmas).ThenInclude(t => t.Matriculas)
                 .ToListAsync();
         }
 
-        public Task<Disciplina> GetDisciplinaByIdWithMatriculasAndSemestre(long? id)
+        public Task<List<Disciplina>> GetDisciplinasFromSemestre(long estudanteId, long semestreId)
+        {
+            var disciplinasComTurmas = _matriculaContext.Disciplinas
+                .Include(d => d.Turmas).ThenInclude(t => t.Semestre)
+                .Include(d => d.Turmas).ThenInclude(t => t.Horarios)
+                .Include(d => d.Turmas).ThenInclude(t => t.Matriculas)
+                .Where(d => d.Turmas.Any(t => t.SemestreId == semestreId));
+
+            var tumasNoSemestre = _matriculaContext.Turmas
+                .Include(t => t.Semestre)
+                .Include(t => t.Horarios)
+                .Include(t => t.Matriculas)
+                .Include(t => t.Disciplina)
+                .Where(t => t.SemestreId == semestreId);
+
+            var disciplinasCursadasEstudante = _matriculaContext.MatriculaTurmas
+                .Where(mt =>
+                    mt.EstudanteId == estudanteId &&
+                    mt.Estado == (EstadoMatriculaTurmaEnum.APROVADO ^ EstadoMatriculaTurmaEnum.CURSANDO)
+                    )
+                .Select(mt => mt.Turma.Disciplina).Distinct();
+
+            return disciplinasComTurmas.Where(d => !disciplinasCursadasEstudante.Contains(d)).ToListAsync();
+        }
+
+
+        public Task<Disciplina> GetDisciplinaByIdWithMatriculasAndSemestre(long id)
         {
             return _matriculaContext.Disciplinas
                 .Include(d => d.Turmas).ThenInclude(t => t.Semestre)
+                .Include(d => d.Turmas).ThenInclude(t => t.Horarios)
                 .Include(d => d.Turmas).ThenInclude(t => t.Matriculas)
                 .FirstOrDefaultAsync(m => m.Id == id);
         }
