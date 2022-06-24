@@ -21,7 +21,9 @@ namespace Entidades.Modelos
         [Range(0, 3000, ErrorMessage = "O valor deve ser positivo.")]
         public int CargaHoraria { get; set; }
         public IEnumerable<Curriculo> Curriculos { get; set; }
-        public IEnumerable<Requisito> Requisitos { get; set; }
+
+        public virtual IEnumerable<Disciplina> DisciplinaOrigem { get; set; }
+        public virtual IEnumerable<Disciplina> Requisitos { get; set; }
         public IEnumerable<Turma> Turmas { get; set; }
         public string NomeParaLista => string.Concat(Codigo, " - ", Nome);
 

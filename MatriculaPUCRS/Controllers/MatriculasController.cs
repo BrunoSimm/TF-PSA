@@ -217,9 +217,9 @@ namespace MatriculaPUCRS.Controllers
             {
                 foreach (var preRequisito in turma.Disciplina.Requisitos)
                 {
-                    if (!estudante.Matriculas.Any(mt => mt.Turma.DisciplinaId == preRequisito.DisciplinaId && mt.Aprovado == true))
+                    if (!estudante.Matriculas.Any(mt => mt.Turma.DisciplinaId == preRequisito.Id && mt.Estado == EstadoMatriculaTurmaEnum.APROVADO))
                     {
-                        TempData["ErrorMessageTemp"] = $"Você não possui o pre requisito '{preRequisito.Disciplina.Nome}' para esta disciplina.";
+                        TempData["ErrorMessageTemp"] = $"Você não cumpre o pré-requisito '{preRequisito.NomeParaLista}' para se matricular nesta disciplina.";
                         return RedirectToAction("Details", new { id = disciplinaId });
                     }
                 }

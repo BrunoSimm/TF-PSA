@@ -160,16 +160,41 @@ namespace MatriculaPUCRS.Data
                 new Disciplina { Nivel = 8, Codigo = "4636C-04", Nome = "Auditoria e Segurançaa de Sistemas de Informação", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
                 new Disciplina { Nivel = 8, Codigo = "4637D-04", Nome = "Qualidade de Processo", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
                 new Disciplina { Nivel = 8, Codigo = "4637M-04", Nome = "Trabalho de Conclusão II", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
+                new Disciplina { Nivel = 4, Codigo = "4647D-04", Nome = "Sistemas Operacionais", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
+                new Disciplina { Nivel = 4, Codigo = "46520-04", Nome = "Modelagem e Projeto de Banco de Dados", Curriculos = new Curriculo[] { curriculos[0] }, CargaHoraria = 60 },
             };
             context.Disciplinas.AddRange(disciplinas);
             await context.SaveChangesAsync();
 
-            var requisitos = new Requisito[]
-            {
-                new Requisito { Disciplina = disciplinas[0], DisciplinaId = disciplinas[0].Id, DisciplinaOrigem = disciplinas[9], DisciplinaOrigemId = disciplinas[9].Id, TipoRequisito = TipoRequisitoEnum.PRE_REQUISITO },
-                new Requisito { Disciplina = disciplinas[1], DisciplinaId = disciplinas[1].Id, DisciplinaOrigem = disciplinas[7], DisciplinaOrigemId = disciplinas[7].Id, TipoRequisito = TipoRequisitoEnum.PRE_REQUISITO }
-            };
-            context.Requisitos.AddRange(requisitos);
+            disciplinas[7].Requisitos = new Disciplina[] { disciplinas[1] };
+            disciplinas[8].Requisitos = new Disciplina[] { disciplinas[2] };
+            disciplinas[11].Requisitos = new Disciplina[] { disciplinas[5] };
+            disciplinas[12].Requisitos = new Disciplina[] { disciplinas[7] };
+            disciplinas[13].Requisitos = new Disciplina[] { disciplinas[8] };
+            disciplinas[15].Requisitos = new Disciplina[] { disciplinas[3] };
+            disciplinas[16].Requisitos = new Disciplina[] { disciplinas[8] };
+            disciplinas[17].Requisitos = new Disciplina[] { disciplinas[15] };
+            disciplinas[18].Requisitos = new Disciplina[] { disciplinas[7], disciplinas[9], disciplinas[13], disciplinas[16] };
+            disciplinas[19].Requisitos = new Disciplina[] { disciplinas[16] };
+            disciplinas[47].Requisitos = new Disciplina[] { disciplinas[15] };
+            disciplinas[48].Requisitos = new Disciplina[] { disciplinas[11] };
+            disciplinas[20].Requisitos = new Disciplina[] { disciplinas[48] };
+            disciplinas[22].Requisitos = new Disciplina[] { disciplinas[17] };
+            disciplinas[23].Requisitos = new Disciplina[] { disciplinas[48] };
+            disciplinas[24].Requisitos = new Disciplina[] { disciplinas[12] };
+            disciplinas[25].Requisitos = new Disciplina[] { disciplinas[47] };
+            disciplinas[26].Requisitos = new Disciplina[] { disciplinas[14] };
+            disciplinas[27].Requisitos = new Disciplina[] { disciplinas[14] };
+            disciplinas[28].Requisitos = new Disciplina[] { disciplinas[22] };
+            disciplinas[29].Requisitos = new Disciplina[] { disciplinas[14], disciplinas[18], disciplinas[19], disciplinas[21], disciplinas[23] };
+            disciplinas[30].Requisitos = new Disciplina[] { disciplinas[5], disciplinas[6] };
+            disciplinas[31].Requisitos = new Disciplina[] { disciplinas[23] };
+            disciplinas[33].Requisitos = new Disciplina[] { disciplinas[0] };
+            disciplinas[35].Requisitos = new Disciplina[] { disciplinas[10] };
+            disciplinas[37].Requisitos = new Disciplina[] { disciplinas[12] };
+            disciplinas[42].Requisitos = new Disciplina[] { disciplinas[33] };
+            disciplinas[45].Requisitos = new Disciplina[] { disciplinas[19] };
+            disciplinas[46].Requisitos = new Disciplina[] { disciplinas[37] };
             await context.SaveChangesAsync();
 
             var semestres = new Semestre[]

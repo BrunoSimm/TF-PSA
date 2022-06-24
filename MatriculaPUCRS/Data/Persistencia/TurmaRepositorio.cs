@@ -27,7 +27,6 @@ namespace MatriculaPUCRS.Data.Persistencia
                 .Include(t => t.Horarios)
                 .Include(t => t.Disciplina)
                     .ThenInclude(d => d.Requisitos)
-                        .ThenInclude(r => r.Disciplina)
                 .Include(t => t.Semestre)
                 .Include(t => t.Matriculas)
                 .FirstOrDefaultAsync(x => x.Id == id);
@@ -39,7 +38,6 @@ namespace MatriculaPUCRS.Data.Persistencia
                 .Include(t => t.Horarios)
                 .Include(t => t.Disciplina)
                     .ThenInclude(d => d.Requisitos)
-                        .ThenInclude(r => r.Disciplina)
                 .Include(t => t.Semestre)
                 .Include(t => t.Matriculas)
                     .ThenInclude(mt => mt.Estudante)

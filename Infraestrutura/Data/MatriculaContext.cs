@@ -15,7 +15,6 @@ namespace Infraestrutura.Data
         public DbSet<Semestre> Semestres { get; set; }
         public DbSet<Turma> Turmas { get; set; }
         public DbSet<HorarioGrade> HorariosGrade { get; set; }
-        public DbSet<Requisito> Requisitos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -23,6 +22,9 @@ namespace Infraestrutura.Data
             modelBuilder.Entity<Curriculo>().Property(c => c.NomeDoCurso).IsRequired();
 
             modelBuilder.Entity<Disciplina>().HasAlternateKey(d => d.Codigo);
+            modelBuilder.Entity<Disciplina>()
+                .HasMany(d => d.Requisitos)
+                .WithMany(r => r.DisciplinaOrigem);
 
             modelBuilder.Entity<HorarioGrade>().HasAlternateKey(hg => hg.Horario);
 
@@ -43,15 +45,6 @@ namespace Infraestrutura.Data
 
             modelBuilder.Entity<MatriculaTurma>().HasKey(mt => new { mt.TurmaId, mt.EstudanteId });
             modelBuilder.Entity<MatriculaTurma>().Property(mt => mt.Estado).HasConversion<string>();
-
-            modelBuilder.Entity<Disciplina>()
-                .HasMany<Requisito>()
-                .WithOne(r => r.Disciplina)
-                .OnDelete(DeleteBehavior.NoAction);
-
-            modelBuilder.Entity<Requisito>().HasAlternateKey(r => new { r.DisciplinaId, r.DisciplinaOrigemId });
-            modelBuilder.Entity<Requisito>().HasOne(r => r.Disciplina);
-            modelBuilder.Entity<Requisito>().HasOne(r => r.DisciplinaOrigem);
         }
     }
 }
