@@ -111,7 +111,6 @@ namespace MatriculaPUCRS.Controllers
                 }
             }
 
-
             //IEnumerable<MatriculaTurma> turmasMatriculado = estudante.Matriculas.Where(mt => mt.Turma.SemestreId.Equals(semestre.Id));
 
             //List<Disciplina> disciplinas2 = await _disciplinaRepositorio.GetDisciplinasFromSemester(estudante.Id, semestre.Id);

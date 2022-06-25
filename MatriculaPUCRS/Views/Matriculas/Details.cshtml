@@ -6,11 +6,11 @@
 
 <div class="container">
     <nav aria-label="breadcrumb">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/Matriculas">Matrículas</a></li>
-        <li class="breadcrumb-item"><a href="/Matriculas/Disciplinas">Disciplinas</a></li>
-        <li class="breadcrumb-item active" aria-current="page">@ViewBag.Disciplina.Nome</li>
-      </ol>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/Matriculas">Matrículas</a></li>
+            <li class="breadcrumb-item"><a href="/Matriculas/Disciplinas">Disciplinas</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@ViewBag.Disciplina.Nome</li>
+        </ol>
     </nav>
 
     <h2>@ViewBag.Disciplina.NomeParaLista</h2>
@@ -18,8 +18,21 @@
 
     @if (ViewBag.ErrorMessage is not null)
     {
-        <h6 class="alert-danger mb-1">@($"ERRO: { ViewBag.ErrorMessage }")</h6>
+        <div id="errorToast" class="toast ml-auto show" role="alert" aria-live="assertive" aria-atomic="true" data-delay="700" style="color:white;">
+            <div class="toast-header justify-content-between" style="background-color:#ff8080; color:white;">
+                <img src="~/images/pucrsicon.png" width="20px" height="20px" class="rounded me-2" alt="pucrs">
+                <strong class="me-auto ml-1">Falha ao realizar matrícula</strong>
+                <button type="button" class="close float-right justify-content-end" data-dismiss="toast" aria-label="Close" onclick="closeError()">
+                    ×
+                </button>
+            </div>
+            <div class="toast-body" style="color:black">
+                @ViewBag.ErrorMessage
+            </div>
+        </div>
+
     }
+
     <table class="table">
         <thead>
             <tr>
@@ -35,7 +48,7 @@
                 <th>
                     <a asp-action="Details" asp-route-sortOrder="@ViewData["HorarioSortParm"]">@Html.DisplayNameFor(model => model.Horarios)</a>
                 </th>
-                <th  align="right"></th>
+                <th align="right"></th>
             </tr>
         </thead>
         <tbody>
@@ -72,4 +85,32 @@
         }
         </tbody>
     </table>
+
+
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #errorToast {
+            position: absolute;
+            right: 0%;
+            bottom: 6.5%;
+        }
+
+        #btnCloseError {
+            padding: 0;
+            border: none;
+            background: none;
+        }
+    </style>
+
+    <script>
+        function closeError() {
+            document.getElementById('errorToast').style.display = "none";
+        }
+    </script>
 </div>
