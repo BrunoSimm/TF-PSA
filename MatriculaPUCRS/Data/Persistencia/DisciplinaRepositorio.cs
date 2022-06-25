@@ -35,6 +35,7 @@ namespace MatriculaPUCRS.Data.Persistencia
                 .Include(d => d.Turmas).ThenInclude(t => t.Semestre)
                 .Include(d => d.Turmas).ThenInclude(t => t.Horarios)
                 .Include(d => d.Turmas).ThenInclude(t => t.Matriculas)
+                .Include(d => d.Requisitos)
                 .ToListAsync();
         }
 
