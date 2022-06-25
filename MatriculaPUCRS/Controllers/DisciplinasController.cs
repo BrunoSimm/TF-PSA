@@ -10,25 +10,76 @@ using Infraestrutura.Data;
 using MatriculaPUCRS.Models;
 using Persistencia.Interfaces.Repositorios;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace MatriculaPUCRS.Controllers
 {
     public class DisciplinasController : Controller
     {
-        private readonly MatriculaContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly IDisciplinaRepositorio _disciplinaRepositorio;
+        private readonly IMatriculaTurmaRepositorio _matriculaTurmaRepositorio;
+        private readonly IEstudanteRepositorio _estudanteRepositorio;
 
-        public DisciplinasController(IDisciplinaRepositorio disciplinaRepositorio, MatriculaContext matriculaContext)
+        public DisciplinasController(
+            UserManager<ApplicationUser> userManager,
+            IDisciplinaRepositorio disciplinaRepositorio,
+            IMatriculaTurmaRepositorio matriculaTurmaRepositorio,
+            IEstudanteRepositorio estudanteRepositorio)
         {
-            _context = matriculaContext;
+            _userManager = userManager;
             _disciplinaRepositorio = disciplinaRepositorio;
+            _matriculaTurmaRepositorio = matriculaTurmaRepositorio;
+            _estudanteRepositorio = estudanteRepositorio;
         }
 
-        // GET: Disciplinas
-        public IActionResult Index()
+    // GET: Disciplinas
+    public async Task<IActionResult> Index()
         {
-            Curriculo curso = _context.Curriculos.Include(c => c.Disciplinas).FirstOrDefault();
+            Curriculo curso = await _disciplinaRepositorio.GetDisciplinasFromCurriculoId(1);
             return View(curso);
+        }
+
+        // GET: Disciplinas/HistoricoEscolar
+        [Authorize(Roles = "Estudante")]
+        public async Task<IActionResult> HistoricoEscolar()
+        {
+            // identificar estudante
+            // pegar curso e disciplinas
+            // atribuir status das disciplinas entre pendente e aprovado
+            // group by nivel (no front)
+            // calcular coef de rendimento
+            ApplicationUser loggedUser = await _userManager.GetUserAsync(User);
+            Estudante estudante = await _estudanteRepositorio.GetByIdAsync(loggedUser.EstudanteId);
+
+            if (estudante is null)
+            {
+                return NotFound();
+            }
+
+            IEnumerable<MatriculaTurma> matriculasTurmas = estudante.Matriculas;
+
+            return View(estudante);
+        }
+
+        // GET: Disciplinas/HistoricoMatriculas
+        [Authorize(Roles = "Estudante")]
+        public async Task<IActionResult> HistoricoMatriculas()
+        {
+            // identificar estudante
+            // pegar curso e disciplinas e todas matriculas e estado
+            // calcular coef de rendimento??
+            ApplicationUser loggedUser = await _userManager.GetUserAsync(User);
+            Estudante estudante = await _estudanteRepositorio.GetByIdAsync(loggedUser.EstudanteId);
+
+            if (estudante is null)
+            {
+                return NotFound();
+            }
+
+            IEnumerable<MatriculaTurma> matriculasTurmas = estudante.Matriculas;
+
+            return View(estudante);
         }
 
         // GET: Disciplinas/Details/5
@@ -66,8 +117,7 @@ namespace MatriculaPUCRS.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(disciplina);
-                await _context.SaveChangesAsync();
+                await _disciplinaRepositorio.Add(disciplina);
                 return RedirectToAction(nameof(Index));
             }
             return View(disciplina);
@@ -82,7 +132,7 @@ namespace MatriculaPUCRS.Controllers
                 return NotFound();
             }
 
-            var disciplina = await _context.Disciplinas.FindAsync(id);
+            var disciplina = await _disciplinaRepositorio.GetEntityById(id);
             if (disciplina == null)
             {
                 return NotFound();
@@ -107,12 +157,11 @@ namespace MatriculaPUCRS.Controllers
             {
                 try
                 {
-                    _context.Update(disciplina);
-                    await _context.SaveChangesAsync();
+                    await _disciplinaRepositorio.Update(disciplina);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!DisciplinaExists(disciplina.Id))
+                    if (!await _disciplinaRepositorio.EntityExistsById(disciplina.Id))
                     {
                         return NotFound();
                     }
@@ -135,8 +184,7 @@ namespace MatriculaPUCRS.Controllers
                 return NotFound();
             }
 
-            var disciplina = await _context.Disciplinas
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var disciplina = await _disciplinaRepositorio.GetEntityById(id);
             if (disciplina == null)
             {
                 return NotFound();
@@ -151,15 +199,9 @@ namespace MatriculaPUCRS.Controllers
         [Authorize(Roles = "Coordenador")]
         public async Task<IActionResult> DeleteConfirmed(long id)
         {
-            var disciplina = await _context.Disciplinas.FindAsync(id);
-            _context.Disciplinas.Remove(disciplina);
-            await _context.SaveChangesAsync();
+            var disciplina = await _disciplinaRepositorio.GetEntityById(id);
+            await _disciplinaRepositorio.Delete(disciplina);
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool DisciplinaExists(long id)
-        {
-            return _context.Disciplinas.Any(e => e.Id == id);
         }
     }
 }

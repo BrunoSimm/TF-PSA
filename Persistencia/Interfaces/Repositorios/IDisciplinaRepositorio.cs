@@ -12,5 +12,6 @@ namespace Persistencia.Interfaces.Repositorios
         public Task<Disciplina> GetDisciplinaByIdWithMatriculasAndSemestre(long id);
         public Task<List<Disciplina>> GetDisciplinasFromCurrentSemester();
         public Task<List<Disciplina>> GetDisciplinasFromSemestre(long estudanteId, long semestreId);
+        public Task<Curriculo> GetDisciplinasFromCurriculoId(long id);
     }
 }

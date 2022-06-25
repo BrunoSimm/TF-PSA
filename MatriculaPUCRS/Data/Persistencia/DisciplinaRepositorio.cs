@@ -35,6 +35,7 @@ namespace MatriculaPUCRS.Data.Persistencia
                 .Include(d => d.Turmas).ThenInclude(t => t.Semestre)
                 .Include(d => d.Turmas).ThenInclude(t => t.Horarios)
                 .Include(d => d.Turmas).ThenInclude(t => t.Matriculas)
+                .Include(d => d.Requisitos)
                 .ToListAsync();
         }
 
@@ -63,7 +64,6 @@ namespace MatriculaPUCRS.Data.Persistencia
             return disciplinasComTurmas.Where(d => !disciplinasCursadasEstudante.Contains(d)).ToListAsync();
         }
 
-
         public Task<Disciplina> GetDisciplinaByIdWithMatriculasAndSemestre(long id)
         {
             return _matriculaContext.Disciplinas
@@ -71,6 +71,11 @@ namespace MatriculaPUCRS.Data.Persistencia
                 .Include(d => d.Turmas).ThenInclude(t => t.Horarios)
                 .Include(d => d.Turmas).ThenInclude(t => t.Matriculas)
                 .FirstOrDefaultAsync(m => m.Id == id);
+        }
+
+        public Task<Curriculo> GetDisciplinasFromCurriculoId(long id)
+        {
+            return _matriculaContext.Curriculos.Include(c => c.Disciplinas).FirstOrDefaultAsync(c => c.Id == id);
         }
     }
 }

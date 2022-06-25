@@ -34,117 +34,119 @@
         </h6>
     }
 
-    <div class="accordion" id="accordion">
-        <div class="modal-header font-weight-bold border-top border-bottom">
-            @Html.DisplayNameFor(model => model.Codigo) - @Html.DisplayNameFor(model => model.Nome)
-        </div>
-    @foreach (var disciplina in Model)
-    {
-        matriculadoDisciplina = disciplinasMatriculado.Contains(disciplina);
-        <div class="card-header" id="heading_@disciplina.Id">
-            <span >
-                @Html.DisplayFor(modelItem => disciplina.NomeParaLista)
-                <a class="btn-link float-right" href="" type="button" data-toggle="collapse" data-target="#collapse_@disciplina.Id" aria-expanded="true" aria-controls="collapse_@disciplina.Id">
-                    @Html.DisplayNameFor(model => model.Turmas)
-                </a>
-            </span>
-        </div>
-        <div id="collapse_@disciplina.Id" class="collapse" aria-labelledby="heading_@disciplina.Id" data-parent="#accordion">
-            <div class="card-body">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>
-                                @Html.DisplayNameForInnerType((Turma t) => t.Id)
-                            </th>
-                            <th>
-                                @Html.DisplayNameForInnerType((Turma t) => t.Horarios)
-                            </th>
-                            <th>
-                                @Html.DisplayNameForInnerType((Turma t) => t.NumeroDeVagas)
-                            </th>
-                            <th>
-                                @Html.DisplayNameForInnerType((Turma t) => t.VagasRemanescentes)
-                            </th>
-                            <th align="right"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    @foreach (var turma in disciplina.Turmas)
-                    {
-                        matriculadoTurma = turmasMatriculado.Contains(turma);
-                        <tr>
-                            <td>
-                                @Html.DisplayFor(modelItem => turma.Id)
-                            </td>
-                            <td>
-                                <p>
-                                @foreach (var horario in turma.Horarios.OrderBy(h => h.Horario))
-                                {
-                                    @Html.DisplayFor(modelItem => horario.Horario)
-                                }
-                                </p>
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => turma.NumeroDeVagas)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => turma.VagasRemanescentes)
-                            </td>
-                            <td align="right">
-                            @if (matriculadoTurma)
-                            {
-                                <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#cancelarMatriculaModal_@turma.Id">
-                                    Cancelar Matrícula
-                                </button>
-
-                                <!-- Modal -->
-                                <div class="modal fade" style="text-align: initial" id="cancelarMatriculaModal_@turma.Id" tabindex="-1" role="dialog" aria-labelledby="cancelarMatriculaModalLabel_@turma.Id" aria-hidden="true">
-                                    <div class="modal-dialog" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="cancelarMatriculaModalLabel_@turma.Id">Cancelar Matrícula</h5>
-                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                            </div>
-                                            <div class="modal-body text-left">
-                                                Você deseja mesmo CANCELAR sua matrícula nesta turma?
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Voltar</button>
-                                                <form asp-action="CancelarMatricula" method="post" role="form" id="cancelarMatricula_@turma.Id">
-                                                    <input form="cancelarMatricula_@turma.Id" type="hidden" name="id" value="@turma.Id" />
-                                                    <input type="submit" class="btn btn-danger" value="Cancelar Matrícula" />
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            }
-                            else
-                            {
-                                <form asp-action="Matricular" method="post" role="form" id="matricular_@turma.Id">
-                                    <input form="matricular_@turma.Id" type="hidden" name="turmaId" value="@turma.Id" />
-                                    <input form="matricular_@turma.Id" type="hidden" name="semestreId" value="@turma.SemestreId" />
-                                    <input form="matricular_@turma.Id" type="hidden" name="disciplinaId" value="@turma.DisciplinaId" />
-                                    <button form="matricular_@turma.Id" type="submit" class="btn btn-outline-success" disabled="@matriculadoDisciplina">Matricular</button>
-                                </form>
-                            }
-                            </td>
-                        </tr>
-                    }
-                    </tbody>
-                </table>
+        <div class="accordion" id="accordion">
+            <div class="modal-header font-weight-bold border-top border-bottom">
+                @Html.DisplayNameFor(model => model.Codigo) - @Html.DisplayNameFor(model => model.Nome)
             </div>
+            @foreach (var disciplina in Model)
+            {
+                matriculadoDisciplina = disciplinasMatriculado.Contains(disciplina);
+                <div class="card-header" id="heading_@disciplina.Id">
+                    <a class="dropdown-toggle d-flex align-items-center" type="button" data-toggle="collapse" data-target="#collapse_@disciplina.Id" aria-expanded="true" aria-controls="collapse_@disciplina.Id">
+                        <span class="flex-grow-1">
+                            @Html.DisplayFor(modelItem => disciplina.NomeParaLista)
+                        </span>
+                        <span class="font-weight-bold">
+                            @Html.DisplayNameFor(model => model.Turmas)
+                        </span>
+                    </a>
+                </div>
+                <div id="collapse_@disciplina.Id" class="collapse" aria-labelledby="heading_@disciplina.Id" data-parent="#accordion">
+                    <div class="card-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        @Html.DisplayNameForInnerType((Turma t) => t.Id)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameForInnerType((Turma t) => t.Horarios)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameForInnerType((Turma t) => t.NumeroDeVagas)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameForInnerType((Turma t) => t.VagasRemanescentes)
+                                    </th>
+                                    <th align="right"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var turma in disciplina.Turmas)
+                                {
+                                    matriculadoTurma = turmasMatriculado.Contains(turma);
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => turma.Id)
+                                        </td>
+                                        <td>
+                                            <p>
+                                                @foreach (var horario in turma.Horarios.OrderBy(h => h.Horario))
+                                                {
+                                                    @Html.DisplayFor(modelItem => horario.Horario)
+                                                }
+                                            </p>
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => turma.NumeroDeVagas)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => turma.VagasRemanescentes)
+                                        </td>
+                                        <td align="right">
+                                            @if (matriculadoTurma)
+                                            {
+                                                <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#cancelarMatriculaModal_@turma.Id">
+                                                    Cancelar Matrícula
+                                                </button>
+
+                                                <!-- Modal -->
+                                                <div class="modal fade" style="text-align: initial" id="cancelarMatriculaModal_@turma.Id" tabindex="-1" role="dialog" aria-labelledby="cancelarMatriculaModalLabel_@turma.Id" aria-hidden="true">
+                                                    <div class="modal-dialog" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="cancelarMatriculaModalLabel_@turma.Id">Cancelar Matrícula</h5>
+                                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="modal-body text-left">
+                                                                Você deseja mesmo CANCELAR sua matrícula nesta turma?
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Voltar</button>
+                                                                <form asp-action="CancelarMatricula" method="post" role="form" id="cancelarMatricula_@turma.Id">
+                                                                    <input form="cancelarMatricula_@turma.Id" type="hidden" name="id" value="@turma.Id" />
+                                                                    <input type="submit" class="btn btn-danger" value="Cancelar Matrícula" />
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <form asp-action="Matricular" method="post" role="form" id="matricular_@turma.Id">
+                                                    <input form="matricular_@turma.Id" type="hidden" name="turmaId" value="@turma.Id" />
+                                                    <input form="matricular_@turma.Id" type="hidden" name="semestreId" value="@turma.SemestreId" />
+                                                    <input form="matricular_@turma.Id" type="hidden" name="disciplinaId" value="@turma.DisciplinaId" />
+                                                    <button form="matricular_@turma.Id" type="submit" class="btn @(matriculadoDisciplina ? "btn-outline-secondary" : "btn-outline-success")" disabled="@matriculadoDisciplina">Matricular</button>
+                                                </form>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
         </div>
     }
-    </div>
-}
-else
-{
-    <h4 class="text-light-gray text-center">
-        Nenhuma disciplina disponível para matrícula.
-    </h4>
-}
+    else
+    {
+        <h4 class="text-light-gray text-center">
+            Nenhuma disciplina disponível para matrícula.
+        </h4>
+    }
 </div>
