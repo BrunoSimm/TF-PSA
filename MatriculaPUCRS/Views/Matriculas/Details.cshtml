@@ -58,6 +58,8 @@
                 <tr>
                     <td>
                         <input type="hidden" name="turmaId" value="@item.Id" />
+                        <input type="hidden" name="disciplinaId" value="@item.DisciplinaId" />
+                        <input type="hidden" name="semestreId" value="@item.SemestreId" />
                         @Html.DisplayFor(modelItem => item.Id)
                     </td>
                     <td>
@@ -80,7 +82,7 @@
                         </div>
                     </td>
                 </tr>
-                <input type="hidden" name="disciplinaId" value="@item.DisciplinaId" />
+                
             </form>
         }
         </tbody>
