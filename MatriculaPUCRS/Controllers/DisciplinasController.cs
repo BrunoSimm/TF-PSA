@@ -44,20 +44,28 @@ namespace MatriculaPUCRS.Controllers
         [Authorize(Roles = "Estudante")]
         public async Task<IActionResult> HistoricoEscolar()
         {
-            // identificar estudante
-            // pegar curso e disciplinas
-            // atribuir status das disciplinas entre pendente e aprovado
-            // group by nivel (no front)
             // calcular coef de rendimento
             ApplicationUser loggedUser = await _userManager.GetUserAsync(User);
-            Estudante estudante = await _estudanteRepositorio.GetByIdAsync(loggedUser.EstudanteId);
+            Estudante estudante = await _estudanteRepositorio.GetEstudanteWithHistorico(loggedUser.EstudanteId);
 
             if (estudante is null)
             {
                 return NotFound();
             }
 
-            IEnumerable<MatriculaTurma> matriculasTurmas = estudante.Matriculas;
+            IEnumerable<MatriculaTurma> matriculasTurmas = estudante.Matriculas.Where(mt => (mt.Estado == EstadoMatriculaTurmaEnum.APROVADO) || (mt.Estado == EstadoMatriculaTurmaEnum.REPROVADO)).OrderBy(mt => mt.Estado);
+            IEnumerable<IGrouping<int, Disciplina>> disciplinas = estudante.Curriculo.Disciplinas.GroupBy(d => d.Nivel).OrderBy(n => n.Key);
+
+            float? coeficienteDeRendimento = matriculasTurmas.GroupBy(mt => mt.Turma.Disciplina).Average(gd => gd.First().Nota);
+            int chAprovado = estudante.Matriculas.Where(mt => mt.Estado == EstadoMatriculaTurmaEnum.APROVADO).Select(mt => mt.Turma.Disciplina).Distinct().Sum(d => d.CargaHoraria);
+            int chTotal = estudante.Curriculo.Disciplinas.Sum(d => d.CargaHoraria);
+            float percentualDeConclusao = (float) chAprovado / chTotal;
+
+            ViewBag.Matriculas = matriculasTurmas;
+            ViewBag.Disciplinas = disciplinas;
+            ViewBag.CoeficienteDeRendimento = coeficienteDeRendimento;
+            ViewBag.TotalDeHorasCursadas = chAprovado;
+            ViewBag.PercentualDeConclusao = percentualDeConclusao;
 
             return View(estudante);
         }
@@ -66,18 +74,13 @@ namespace MatriculaPUCRS.Controllers
         [Authorize(Roles = "Estudante")]
         public async Task<IActionResult> HistoricoMatriculas()
         {
-            // identificar estudante
-            // pegar curso e disciplinas e todas matriculas e estado
-            // calcular coef de rendimento??
             ApplicationUser loggedUser = await _userManager.GetUserAsync(User);
-            Estudante estudante = await _estudanteRepositorio.GetByIdAsync(loggedUser.EstudanteId);
+            Estudante estudante = await _estudanteRepositorio.GetEstudanteWithHistorico(loggedUser.EstudanteId);
 
             if (estudante is null)
             {
                 return NotFound();
             }
-
-            IEnumerable<MatriculaTurma> matriculasTurmas = estudante.Matriculas;
 
             return View(estudante);
         }

@@ -17,51 +17,44 @@ namespace MatriculaPUCRS.Data.Persistencia
             _matriculaContext = context;
         }
 
-        public Task<List<Disciplina>> GetDisciplinasFromCurrentSemester()
+        public IEnumerable<Disciplina> GetDisciplinasWithTurmasFromSemestre(long estudanteId, long semestreId)
         {
-            return _matriculaContext.Turmas
-                .Join(
-                    _matriculaContext.Disciplinas,
-                    turma => turma.DisciplinaId,
-                    disc => disc.Id,
-                    (turma, disc) => new { turma, disc })
-                .Join(
-                    _matriculaContext.Semestres,
-                    turmaDisc => turmaDisc.turma.SemestreId,
-                    semestre => semestre.Id,
-                    (turmaDisc, semestre) => new { turmaDisc, semestre})
-                .Where(result => DateTime.Now >= result.semestre.DataInicial && DateTime.Now <= result.semestre.DataFinal)
-                .Select(result => result.turmaDisc.disc)
-                .Include(d => d.Turmas).ThenInclude(t => t.Semestre)
-                .Include(d => d.Turmas).ThenInclude(t => t.Horarios)
-                .Include(d => d.Turmas).ThenInclude(t => t.Matriculas)
-                .Include(d => d.Requisitos)
-                .ToListAsync();
-        }
+            Estudante estudante = _matriculaContext.Estudantes
+                .Include(e => e.Matriculas)
+                    .ThenInclude(mt => mt.Turma)
+                    .ThenInclude(t => t.Disciplina)
+                .AsNoTracking()
+                .FirstOrDefault(e => e.Id == estudanteId);
 
-        public Task<List<Disciplina>> GetDisciplinasFromSemestre(long estudanteId, long semestreId)
-        {
-            var disciplinasComTurmas = _matriculaContext.Disciplinas
-                .Include(d => d.Turmas).ThenInclude(t => t.Semestre)
-                .Include(d => d.Turmas).ThenInclude(t => t.Horarios)
-                .Include(d => d.Turmas).ThenInclude(t => t.Matriculas)
-                .Where(d => d.Turmas.Any(t => t.SemestreId == semestreId));
+            if (estudante is null)
+            {
+                return null;
+            }
 
-            var tumasNoSemestre = _matriculaContext.Turmas
+            var disciplinasCursadas = estudante.Matriculas
+                .Where(mt => (mt.Estado == EstadoMatriculaTurmaEnum.APROVADO) ^ (mt.Estado == EstadoMatriculaTurmaEnum.CURSANDO))
+                .Select(mt => mt.Turma.Disciplina)
+                .Distinct();
+
+            var disciplinasAprovado = estudante.Matriculas
+                .Where(mt => mt.Aprovado)
+                .Select(mt => mt.Turma.Disciplina);
+
+            var disciplinasDisponiveis = _matriculaContext.Turmas
                 .Include(t => t.Semestre)
                 .Include(t => t.Horarios)
                 .Include(t => t.Matriculas)
                 .Include(t => t.Disciplina)
-                .Where(t => t.SemestreId == semestreId);
+                    .ThenInclude(d => d.Requisitos)
+                .Where(t => t.SemestreId == semestreId)
+                .AsNoTracking()
+                .AsEnumerable()
+                .Select(t => t.Disciplina)
+                .Distinct()
+                .Where(d => !disciplinasCursadas.Contains(d))
+                .Where(d => d.Requisitos.All(dr => disciplinasAprovado.Contains(dr)));
 
-            var disciplinasCursadasEstudante = _matriculaContext.MatriculaTurmas
-                .Where(mt =>
-                    mt.EstudanteId == estudanteId &&
-                    mt.Estado == (EstadoMatriculaTurmaEnum.APROVADO ^ EstadoMatriculaTurmaEnum.CURSANDO)
-                    )
-                .Select(mt => mt.Turma.Disciplina).Distinct();
-
-            return disciplinasComTurmas.Where(d => !disciplinasCursadasEstudante.Contains(d)).ToListAsync();
+            return disciplinasDisponiveis;
         }
 
         public Task<Disciplina> GetDisciplinaByIdWithMatriculasAndSemestre(long id)

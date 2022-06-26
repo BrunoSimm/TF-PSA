@@ -1,11 +1,6 @@
 ﻿@using Entidades.Modelos
 @model IEnumerable<Entidades.Modelos.Disciplina>
 
-@section Stylesheets {
-    <link rel="stylesheet" href="`/lib/bootstrap/dist/css/bootstrap.min.css">
-    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
-}
-
 @{
     bool matriculadoDisciplina;
     bool matriculadoTurma;
@@ -35,17 +30,38 @@
     }
 
         <div class="accordion" id="accordion">
-            <div class="modal-header font-weight-bold border-top border-bottom">
-                @Html.DisplayNameFor(model => model.Codigo) - @Html.DisplayNameFor(model => model.Nome)
+            <div class="card-body py-3 font-weight-bold border-top d-flex justify-content-start">
+                <div class="col-2">
+                    @Html.DisplayNameFor(model => model.Codigo)
+                </div>
+                <div class="col-6">
+                    @Html.DisplayNameFor(model => model.Nome)
+                </div>
+                <div class="col-1">
+                    @Html.DisplayNameFor(model => model.Nivel)
+                </div>
+                <div class="col-2">
+                    @Html.DisplayNameFor(model => model.CargaHoraria)
+                </div>
             </div>
             @foreach (var disciplina in Model)
             {
                 matriculadoDisciplina = disciplinasMatriculado.Contains(disciplina);
-                <div class="card-header" id="heading_@disciplina.Id">
+                <div class="card-footer" id="heading_@disciplina.Id">
                     <a class="dropdown-toggle d-flex align-items-center" type="button" data-toggle="collapse" data-target="#collapse_@disciplina.Id" aria-expanded="true" aria-controls="collapse_@disciplina.Id">
-                        <span class="flex-grow-1">
-                            @Html.DisplayFor(modelItem => disciplina.NomeParaLista)
+                        <span class="col-2">
+                            @Html.DisplayFor(modelItem => disciplina.Codigo)
                         </span>
+                        <span class="col-6">
+                            @Html.DisplayFor(modelItem => disciplina.Nome)
+                        </span>
+                        <span class="col-1">
+                            @Html.DisplayFor(modelItem => disciplina.Nivel)
+                        </span>
+                        <span class="col-2">
+                            @Html.DisplayFor(modelItem => disciplina.CargaHoraria)
+                        </span>
+                        <span class="flex-grow-1"></span>
                         <span class="font-weight-bold">
                             @Html.DisplayNameFor(model => model.Turmas)
                         </span>
@@ -53,7 +69,7 @@
                 </div>
                 <div id="collapse_@disciplina.Id" class="collapse" aria-labelledby="heading_@disciplina.Id" data-parent="#accordion">
                     <div class="card-body">
-                        <table class="table">
+                        <table class="table mb-0">
                             <thead>
                                 <tr>
                                     <th>
@@ -72,7 +88,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var turma in disciplina.Turmas)
+                                @foreach (var turma in disciplina.Turmas.Where(t => t.SemestreId == ViewBag.Semestre.Id))
                                 {
                                     matriculadoTurma = turmasMatriculado.Contains(turma);
                                     <tr>
@@ -142,6 +158,7 @@
                 </div>
             }
         </div>
+        <div class="border-top"/>
     }
     else
     {

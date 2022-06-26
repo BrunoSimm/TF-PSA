@@ -74,56 +74,26 @@ namespace MatriculaPUCRS.Controllers
 
             Semestre semestre = await _semestreRepositorio.GetSemestreAtualAsync();
 
-            IEnumerable<Disciplina> disciplinas = await _disciplinaRepositorio.GetDisciplinasFromCurrentSemester();
-            disciplinas = disciplinas.Distinct();
+            if (semestre is null)
+            {
+                return View(new List<Disciplina>());
+            }
 
             ApplicationUser loggedUser = await _userManager.GetUserAsync(User);
             Estudante estudante = await _estudanteRepositorio.GetByIdAsync(loggedUser.EstudanteId);
 
-            IEnumerable<Disciplina> disciplinasCursadas = estudante.Matriculas
-                .Where(mt => mt.Estado == (EstadoMatriculaTurmaEnum.APROVADO ^ EstadoMatriculaTurmaEnum.CURSANDO))
-                .Select(mt => mt.Turma.Disciplina).Distinct();
-
-            disciplinas = disciplinas.Where(d => !disciplinasCursadas.Contains(d));
-
-            //Remove as disciplinas que o estudante não possui pre-requisitos.
-            List<Disciplina> disciplinasComPreReq = new List<Disciplina>();
-            foreach (var disciplina in disciplinas)
+            if (estudante is null)
             {
-                if (disciplina.Requisitos.Any())
-                {
-                    int hasRequirements = 0;
-                    foreach (var preRequisito in disciplina.Requisitos)
-                    {
-                        if (estudante.Matriculas.Any(mt => mt.Turma.DisciplinaId == preRequisito.Id && mt.Aprovado == true))
-                        {
-                            hasRequirements++;
-                        }
-                    }
-                    //Possui todos os pre-requisitos.
-                    if (hasRequirements == disciplina.Requisitos.Count()) {
-                        disciplinasComPreReq.Add(disciplina);
-                    } 
-                }
-                else
-                {
-                    disciplinasComPreReq.Add(disciplina);
-                }
+                return NotFound();
             }
 
-            //IEnumerable<MatriculaTurma> turmasMatriculado = estudante.Matriculas.Where(mt => mt.Turma.SemestreId.Equals(semestre.Id));
-
-            //List<Disciplina> disciplinas2 = await _disciplinaRepositorio.GetDisciplinasFromSemester(estudante.Id, semestre.Id);
-
-            //IQueryable<Turma> turmas = _turmaRepositorio
-            //    .ListTurmasWithDisciplinaAndSemestreAndHorariosAndMatriculasAsQueryable()
-            //    .Where(t => t.DisciplinaId == id)
-            //    .Where(t => DateTime.Now >= t.Semestre.DataInicial && DateTime.Now <= t.Semestre.DataFinal);
+            IEnumerable<Disciplina> disciplinasComTurmasDisponiveisNoSemestre = _disciplinaRepositorio.GetDisciplinasWithTurmasFromSemestre(estudante.Id, semestre.Id);
 
             ViewBag.TurmasMatriculado = estudante.Matriculas.Where(mt => mt.Turma.SemestreId.Equals(semestre.Id)).Select(mt => mt.Turma);
             ViewBag.DisciplinasMatriculado = estudante.Matriculas.Where(mt => mt.Turma.SemestreId.Equals(semestre.Id)).Select(mt => mt.Turma.Disciplina).Distinct();
             ViewBag.Semestre = semestre;
-            return View(disciplinasComPreReq);
+            
+            return View(disciplinasComTurmasDisponiveisNoSemestre);
         }
 
         // GET: Matriculas/GradeDeHorario
