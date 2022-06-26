@@ -70,7 +70,9 @@ namespace MatriculaPUCRS.Controllers
         // GET: Matriculas/Disciplinas
         public async Task<IActionResult> Disciplinas()
         {
-            ViewBag.MatriculaSuccessMessage = TempData["ErrorMessageTemp"];
+            ViewBag.MatriculaSuccessMessage = TempData["SuccessMessageTemp"];
+            ViewBag.CancelarMatriculaStatus = TempData["CancelarMatriculaStatus"];
+            ViewBag.ErrorMessageTemp = TempData["ErrorMessageTemp"];
 
             Semestre semestre = await _semestreRepositorio.GetSemestreAtualAsync();
 
@@ -109,7 +111,6 @@ namespace MatriculaPUCRS.Controllers
                 return NotFound();
             }
 
-            ViewBag.MatriculaSuccessMessage = TempData["SuccessMessageTemp"];
             ViewBag.Semestre = semestre;
 
             IEnumerable<MatriculaTurma> matriculasTurmas = estudante.Matriculas.Where(mt => mt.Turma.SemestreId.Equals(semestre.Id));
@@ -157,7 +158,7 @@ namespace MatriculaPUCRS.Controllers
             ViewData["IdSortParm"] = "Id";
             ViewData["HorarioSortParm"] = "Horario";
 
-            Disciplina disciplina = await _disciplinaRepositorio.GetDisciplinaByIdWithMatriculasAndSemestre((long) id);
+            Disciplina disciplina = await _disciplinaRepositorio.GetDisciplinaByIdWithMatriculasAndSemestre((long)id);
 
             IEnumerable<Turma> turmas = disciplina.Turmas.Where(t => t.SemestreId == semestre.Id);
 
@@ -215,7 +216,7 @@ namespace MatriculaPUCRS.Controllers
                     if (!estudante.Matriculas.Any(mt => mt.Turma.DisciplinaId == preRequisito.Id && mt.Estado == EstadoMatriculaTurmaEnum.APROVADO))
                     {
                         TempData["ErrorMessageTemp"] = $"Você não cumpre o pré-requisito '{preRequisito.NomeParaLista}' para se matricular nesta disciplina.";
-                        return RedirectToAction("Details", new { id = disciplinaId });
+                        return RedirectToAction(nameof(Disciplinas));
                     }
                 }
             }
@@ -224,14 +225,14 @@ namespace MatriculaPUCRS.Controllers
             if (turma.VagasRemanescentes == 0)
             {
                 TempData["ErrorMessageTemp"] = "Não há vagas disponíveis para esta turma.";
-                return RedirectToAction("Details", new { id = disciplinaId });
+                return RedirectToAction(nameof(Disciplinas));
             }
 
             //verificar se o estudante já cursou esta disciplina
             if (estudante.Matriculas.Any(m => m.Turma.DisciplinaId == disciplinaId && m.Aprovado == true))
             {
                 TempData["ErrorMessageTemp"] = "Você já cursou e foi aprovado nesta disciplina.";
-                return RedirectToAction("Details", new { id = disciplinaId });
+                return RedirectToAction(nameof(Disciplinas));
             }
 
             //verificar se o estudante já está matriculado nesta disciplina no semestre atual.
@@ -241,13 +242,13 @@ namespace MatriculaPUCRS.Controllers
                 if (matriculaDisciplina.Any(md => md.Turma.Id == turma.Id))
                 {
                     TempData["ErrorMessageTemp"] = "Você já está matriculado nessa turma.";
-                    return RedirectToAction("Details", new { id = disciplinaId });
+                    return RedirectToAction(nameof(Disciplinas));
                 }
 
                 if (matriculaDisciplina.Any(md => md.Turma.DisciplinaId == disciplina.Id))
                 {
                     TempData["ErrorMessageTemp"] = "Você já está matriculado nesta disciplina neste semestre.";
-                    return RedirectToAction("Details", new { id = disciplinaId });
+                    return RedirectToAction(nameof(Disciplinas));
                 }
             }
 
@@ -273,13 +274,13 @@ namespace MatriculaPUCRS.Controllers
             if (hasConflict)
             {
                 TempData["ErrorMessageTemp"] = "Você já está matriculado em outra turma nos mesmos horários.";
-                return RedirectToAction("Details", new { id = disciplinaId });
+                return RedirectToAction(nameof(Disciplinas));
             }
 
             //Realiza a Matricula.
             await _matriculaTurmaRepositorio.MatricularEstudanteAsync(turma, estudante);
             TempData["SuccessMessageTemp"] = $"Matrícula na turma {turma.Id} realizada com sucesso!";
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Disciplinas));
         }
 
         // GET: Matricula/Turma/5
@@ -300,7 +301,7 @@ namespace MatriculaPUCRS.Controllers
                 return NotFound();
             }
 
-            Turma turma = await _turmaRepositorio.GetTurmaByIdAsync((long) id);
+            Turma turma = await _turmaRepositorio.GetTurmaByIdAsync((long)id);
 
             if (turma == null)
             {
@@ -346,8 +347,8 @@ namespace MatriculaPUCRS.Controllers
             }
 
             await _matriculaTurmaRepositorio.Delete(matriculaTurma);
-            TempData["CancelarMatriculaStatus"] = "Matrícula cancelada com sucesso.";
-            return RedirectToAction(nameof(Turma), new { id = turma.Id });
+            TempData["CancelarMatriculaStatus"] = $"Matrícula na turma {turma.Id} cancelada com sucesso!";
+            return RedirectToAction(nameof(Disciplinas));
         }
 
         // COORDENADOR PODE EDITAR E EXCLUIR MATRICULAS?
