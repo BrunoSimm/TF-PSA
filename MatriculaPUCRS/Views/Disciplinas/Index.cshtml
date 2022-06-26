@@ -1,69 +1,118 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using Entidades.Modelos
 @inject SignInManager<ApplicationUser> SignInManager;
-@model Entidades.Modelos.Curriculo
+@model List<Entidades.Modelos.Disciplina>
 
 @{
     ViewData["Title"] = "Cursos";
-    var disciplinas = Model.Disciplinas.OrderBy(d => d.Nivel).ThenBy(d => d.Codigo);
+    var disciplinas = Model.OrderBy(d => d.Nivel).ThenBy(d => d.Codigo);
     bool isCoordenador = SignInManager.IsSignedIn(User) && User.IsInRole("Coordenador");
 }
 
-<h1>Curso - @Model.NomeDoCurso</h1>
+<form asp-controller="Disciplinas" asp-action="Index" method="get">
+    <div class="input-group input-group-sm mb-3">
+        <div class="input-group-prepend mr-2">
+            <input placeholder="Código Disciplina" type="text" class="form-control" aria-describedby="inputGroup-sizing-sm" name="codigoDisciplina" value="@TempData["codigoDisciplinaInput"]">
+        </div>
+        <div class="input-group-prepend mr-2">
+            <input placeholder="Nome Disciplina" type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="nomeDisciplina" value="@TempData["nomeDisciplinaInput"]">
+        </div>
+        <div class="input-group-prepend mr-2">
+            <input placeholder="Horário" type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="horario" value="@TempData["horarioInput"]">
+        </div>
+        <div class="input-group-prepend">
+            <input type="submit" value="BUSCAR" class="btn btn-outline-success rounded" />
+        </div>
+    </div>
+</form>
 
-<h2>Currículo - @Model.Codigo</h2>
-
-@if (isCoordenador)
+@if (@Model.Count() > 0)
 {
-    <p>
-        <a asp-action="Create">Adicionar</a>
-    </p>
+    <h1>Curso - @Model.First().Curriculos.First().NomeDoCurso</h1>
+
+    <h2>Currículo - @Model.First().Curriculos.First().Codigo</h2>
+
+    @if (isCoordenador)
+    {
+        <p>
+            <a asp-action="Create">Adicionar</a>
+        </p>
+    }
+
+    <div class="accordion" id="accordion">
+        <div class="modal-header font-weight-bold border-top border-bottom">
+            Codigo - Nome
+        </div>
+        @foreach (var disciplina in Model)
+        {
+            
+            <div class="card-header" id="heading_@disciplina.Id">
+                <a class="dropdown-toggle d-flex align-items-center" type="button" data-toggle="collapse" data-target="#collapse_@disciplina.Id" aria-expanded="true" aria-controls="collapse_@disciplina.Id">
+                    <span class="flex-grow-1">
+                        @Html.DisplayFor(modelItem => disciplina.NomeParaLista)
+                    </span>
+                    <span class="font-weight-bold">
+                        @Html.DisplayNameFor(model => model.First().Turmas)
+                    </span>
+                </a>
+            </div>
+            <div id="collapse_@disciplina.Id" class="collapse" aria-labelledby="heading_@disciplina.Id" data-parent="#accordion">
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    @Html.DisplayNameForInnerType((Turma t) => t.Id)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameForInnerType((Turma t) => t.Horarios)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameForInnerType((Turma t) => t.NumeroDeVagas)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameForInnerType((Turma t) => t.VagasRemanescentes)
+                                </th>
+                                <th align="right"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var turma in disciplina.Turmas)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => turma.Id)
+                                    </td>
+                                    <td>
+                                        <p>
+                                            @foreach (var horario in turma.Horarios.OrderBy(h => h.Horario))
+                                            {
+                                                @Html.DisplayFor(modelItem => horario.Horario)
+                                            }
+                                        </p>
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => turma.NumeroDeVagas)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => turma.VagasRemanescentes)
+                                    </td>
+                                    
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+
+
+
 }
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameForInnerType((Disciplina d) => d.Codigo)
-            </th>
-            <th>
-                @Html.DisplayNameForInnerType((Disciplina d) => d.Nome)
-            </th>
-            <th>
-                @Html.DisplayNameForInnerType((Disciplina d) => d.Nivel)
-            </th>
-            <th>
-                @Html.DisplayNameForInnerType((Disciplina d) => d.CargaHoraria)
-            </th>
-            @if (isCoordenador)
-            {
-                <th  align="right"></th>
-            }
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in disciplinas) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Codigo)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nome)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nivel)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CargaHoraria)
-            </td>
-            @if (isCoordenador)
-            {
-                <td  align="right">
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                </td>
-            }
-        </tr>
+else
+{
+    <h3>Nenhuma disciplina encontrada para estes parâmetros de pesquisa :(</h3>
 }
-    </tbody>
-</table>
+
+

@@ -70,5 +70,10 @@ namespace MatriculaPUCRS.Data.Persistencia
         {
             return _matriculaContext.Curriculos.Include(c => c.Disciplinas).FirstOrDefaultAsync(c => c.Id == id);
         }
+
+        public IQueryable<Disciplina> GetDisciplinasIQueryable()
+        {
+            return _matriculaContext.Disciplinas;
+        }
     }
 }

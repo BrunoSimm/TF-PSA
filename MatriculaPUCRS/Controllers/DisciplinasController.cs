@@ -20,24 +20,59 @@ namespace MatriculaPUCRS.Controllers
         private readonly IDisciplinaRepositorio _disciplinaRepositorio;
         private readonly IMatriculaTurmaRepositorio _matriculaTurmaRepositorio;
         private readonly IEstudanteRepositorio _estudanteRepositorio;
+        private readonly ISemestreRepositorio _semestreRepositorio;
 
         public DisciplinasController(
             UserManager<ApplicationUser> userManager,
             IDisciplinaRepositorio disciplinaRepositorio,
             IMatriculaTurmaRepositorio matriculaTurmaRepositorio,
-            IEstudanteRepositorio estudanteRepositorio)
+            IEstudanteRepositorio estudanteRepositorio,
+            ISemestreRepositorio semestreRepositorio)
         {
+            _semestreRepositorio = semestreRepositorio;
             _userManager = userManager;
             _disciplinaRepositorio = disciplinaRepositorio;
             _matriculaTurmaRepositorio = matriculaTurmaRepositorio;
             _estudanteRepositorio = estudanteRepositorio;
         }
 
-    // GET: Disciplinas
-    public async Task<IActionResult> Index()
+        // GET: Disciplinas
+        public async Task<IActionResult> Index(string horario, string nomeDisciplina, string codigoDisciplina)
         {
-            Curriculo curso = await _disciplinaRepositorio.GetDisciplinasFromCurriculoId(1);
-            return View(curso);
+            var semestreAtual = await _semestreRepositorio.GetSemestreAtualAsync();
+            var disciplinasQuery = _disciplinaRepositorio.GetDisciplinasIQueryable()
+                .Include(d => d.Turmas)
+                    .ThenInclude(t => t.Semestre)
+                .Include(d => d.Turmas)
+                    .ThenInclude(t => t.Horarios)
+                .Include(d => d.Turmas)
+                    .ThenInclude(t => t.Matriculas)
+                .Include(d => d.Curriculos)
+                .Where(d => d.Curriculos.Any(c => c.Id == 1))
+                .Where(d => d.Turmas.Any(t => t.Semestre.Id == semestreAtual.Id));
+            if (horario is not null)
+            {
+                TempData["horarioInput"] = horario;
+                disciplinasQuery = disciplinasQuery.Where(d => d.Turmas.Any(t => t.Horarios.Any(h => h.Horario.Contains(horario))));
+            }
+
+            if (nomeDisciplina is not null)
+            {
+                TempData["nomeDisciplinaInput"] = nomeDisciplina;
+                disciplinasQuery = disciplinasQuery.Where(d => d.Nome.Contains(nomeDisciplina));
+            }
+
+            if (codigoDisciplina is not null)
+            {
+                TempData["codigoDisciplinaInput"] = codigoDisciplina;
+                disciplinasQuery = disciplinasQuery.Where(d => d.Codigo.Contains(codigoDisciplina));
+            }
+
+            List<Disciplina> disciplinasList = await disciplinasQuery.AsNoTracking().ToListAsync();
+
+            
+            //Curriculo curso = await _disciplinaRepositorio.GetDisciplinasFromCurriculoId(1);
+            return View(disciplinasList);
         }
 
         // GET: Disciplinas/HistoricoEscolar
@@ -94,7 +129,7 @@ namespace MatriculaPUCRS.Controllers
                 return NotFound();
             }
 
-            Disciplina disciplina = await _disciplinaRepositorio.GetDisciplinaByIdWithMatriculasAndSemestre((long) id);
+            Disciplina disciplina = await _disciplinaRepositorio.GetDisciplinaByIdWithMatriculasAndSemestre((long)id);
             if (disciplina == null)
             {
                 return NotFound();
