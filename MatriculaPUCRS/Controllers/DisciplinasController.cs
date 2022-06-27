@@ -35,10 +35,10 @@ namespace MatriculaPUCRS.Controllers
         }
 
         [HttpGet("/api/disciplinas")]
-        public async Task<ActionResult<List<DisciplinaDTO>>> IndexREST(string? horario, string? codigoDisciplina, string? nomeDisciplina, long? semestreId)
+        public async Task<ActionResult<List<DisciplinaDTO>>> IndexREST(string? horario, string? codigoDisciplina, string? nomeDisciplina)
         {
-            
-            var disciplinasQuery = _disciplinaRepositorio.GetDisciplinasIQueryable()
+            Semestre semestreAtual = await _semestreRepositorio.GetSemestreAtualAsync();
+            IQueryable<Disciplina> disciplinasQuery = _disciplinaRepositorio.GetDisciplinasIQueryable()
                 .Include(d => d.Turmas)
                     .ThenInclude(t => t.Semestre)
                 .Include(d => d.Turmas)
@@ -46,18 +46,8 @@ namespace MatriculaPUCRS.Controllers
                 .Include(d => d.Turmas)
                     .ThenInclude(t => t.Matriculas)
                 .Include(d => d.Curriculos)
-                .Where(d => d.Curriculos.Any(c => c.Id == 1));
-
-            if (semestreId is not null)
-            {
-                disciplinasQuery = disciplinasQuery.Where(d => d.Turmas.Any(t => t.Semestre.Id == semestreId));
-            }
-            else
-            {
-                var semestreAtual = await _semestreRepositorio.GetSemestreAtualAsync();
-                semestreId = semestreAtual.Id;
-                disciplinasQuery = disciplinasQuery.Where(d => d.Turmas.Any(t => t.Semestre.Id == semestreAtual.Id));
-            }
+                .Where(d => d.Curriculos.Any(c => c.Id == 1))
+                .Where(d => d.Turmas.Any(t => t.Semestre.Id == semestreAtual.Id));
 
             if (horario is not null)
             {
@@ -74,9 +64,11 @@ namespace MatriculaPUCRS.Controllers
                 disciplinasQuery = disciplinasQuery.Where(d => d.Codigo.Contains(codigoDisciplina));
             }
 
-            List<DisciplinaDTO> disciplinasList = await disciplinasQuery.AsNoTracking().Select(d => new DisciplinaDTO() { 
+            List<DisciplinaDTO> disciplinasList = await disciplinasQuery.AsNoTracking().Select(d => new DisciplinaDTO()
+            {
                 Id = d.Id,
-                Turmas = d.Turmas.Where(t => t.SemestreId == semestreId).Select(t => new TurmaDTO { 
+                Turmas = d.Turmas.Where(t => t.SemestreId == semestreAtual.Id).Select(t => new TurmaDTO
+                {
                     Horarios = t.Horarios.ToList(),
                     Id = t.Id,
                     Matriculas = t.Matriculas.ToList(),
@@ -102,10 +94,10 @@ namespace MatriculaPUCRS.Controllers
         }
 
         [HttpGet("/api/disciplinas/{id}")]
-        public async Task<ActionResult<DisciplinaDTO>> DetailsREST(long id, long? semestreId)
+        public async Task<ActionResult<DisciplinaDTO>> DetailsREST(long id)
         {
-            
-            var disciplinasQuery = _disciplinaRepositorio.GetDisciplinasIQueryable()
+            Semestre semestreAtual = await _semestreRepositorio.GetSemestreAtualAsync();
+            IQueryable<Disciplina> disciplinasQuery = _disciplinaRepositorio.GetDisciplinasIQueryable()
                 .Include(d => d.Turmas)
                     .ThenInclude(t => t.Semestre)
                 .Include(d => d.Turmas)
@@ -114,23 +106,14 @@ namespace MatriculaPUCRS.Controllers
                     .ThenInclude(t => t.Matriculas)
                 .Include(d => d.Curriculos)
                 .Where(d => d.Id == id)
-                .Where(d => d.Curriculos.Any(c => c.Id == 1));
-
-            if(semestreId is not null)
-            {
-                disciplinasQuery = disciplinasQuery.Where(d => d.Turmas.Any(t => t.Semestre.Id == semestreId)); 
-            } else
-            {
-                Semestre semestreAtual = await _semestreRepositorio.GetSemestreAtualAsync();
-                semestreId = semestreAtual.Id;
-                disciplinasQuery = disciplinasQuery.Where(d => d.Turmas.Any(t => t.Semestre.Id == semestreAtual.Id));
-            }
+                .Where(d => d.Curriculos.Any(c => c.Id == 1))
+                .Where(d => d.Turmas.Any(t => t.Semestre.Id == semestreAtual.Id));
 
             DisciplinaDTO? disciplina = await disciplinasQuery.AsNoTracking()
                 .Select(d => new DisciplinaDTO()
                 {
                     Id = d.Id,
-                    Turmas = d.Turmas.Where(t => t.SemestreId == semestreId).Select(t => new TurmaDTO
+                    Turmas = d.Turmas.Where(t => t.SemestreId == semestreAtual.Id).Select(t => new TurmaDTO
                     {
                         Horarios = t.Horarios.ToList(),
                         Id = t.Id,
@@ -155,7 +138,7 @@ namespace MatriculaPUCRS.Controllers
             }
 
             return disciplina;
-        }        
+        }
 
         // GET: Disciplinas
         public async Task<IActionResult> Index(string horario, string nomeDisciplina, string codigoDisciplina)
@@ -234,7 +217,7 @@ namespace MatriculaPUCRS.Controllers
             float coeficienteDeRendimento = matriculasTurmas.GroupBy(mt => mt.Turma.Disciplina).Average(gd => gd.First().Nota) ?? 0;
             int chAprovado = estudante.Matriculas.Where(mt => mt.Estado == EstadoMatriculaTurmaEnum.APROVADO).Select(mt => mt.Turma.Disciplina).Distinct().Sum(d => d.CargaHoraria);
             int chTotal = estudante.Curriculo.Disciplinas.Sum(d => d.CargaHoraria);
-            float percentualDeConclusao = (float) chAprovado / chTotal;
+            float percentualDeConclusao = (float)chAprovado / chTotal;
 
             ViewBag.Matriculas = matriculasTurmas;
             ViewBag.Disciplinas = disciplinas;
