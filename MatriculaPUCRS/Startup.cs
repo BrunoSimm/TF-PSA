@@ -4,18 +4,13 @@ using MatriculaPUCRS.Data.Persistencia;
 using MatriculaPUCRS.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Persistencia.Interfaces.Repositorios;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace MatriculaPUCRS
 {
@@ -41,7 +36,8 @@ namespace MatriculaPUCRS
              .AddDefaultUI()
              .AddDefaultTokenProviders();
 
-            services.Configure<IdentityOptions>(options => {
+            services.Configure<IdentityOptions>(options =>
+            {
                 options.Password.RequireDigit = false;
                 options.Password.RequireLowercase = false;
                 options.Password.RequireNonAlphanumeric = false;
@@ -51,8 +47,13 @@ namespace MatriculaPUCRS
             });
 
             services.AddDbContext<MatriculaContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("MatriculaPUCRS")));
-            
+
             services.AddControllersWithViews();
+
+            services.AddControllers().AddNewtonsoftJson(x =>
+                {
+                    x.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                });
 
             services.AddScoped<IDisciplinaRepositorio, DisciplinaRepositorio>();
             services.AddScoped<ITurmaRepositorio, TurmaRepositorio>();
