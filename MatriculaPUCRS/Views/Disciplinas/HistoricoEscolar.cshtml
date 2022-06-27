@@ -1,0 +1,89 @@
+﻿@using Entidades.Modelos
+@model Entidades.Modelos.Estudante
+
+@{
+    ViewData["Title"] = "Histórico Escolar";
+    IEnumerable<MatriculaTurma> matriculasTurmas = ViewBag.Matriculas;
+    IEnumerable<IGrouping<int, Disciplina>> disciplinas = ViewBag.Disciplinas;
+}
+
+<h1>@ViewData["Title"]</h1>
+<hr />
+
+<div class="card border-dark ml-3 mb-3 float-right">
+    <div class="d-flex">
+        <div class="card-body border-0 text-white bg-dark">
+            <p class="m-0">Total de horas concluídas</p>
+            <p class="m-0">Percentual de conlcusão</p>
+        </div>
+        <div class="card-body font-weight-bold">
+            <p class="m-0">@ViewBag.TotalDeHorasCursadas?.ToString("N0")</p>
+            <p class="m-0">@ViewBag.PercentualDeConclusao?.ToString("P02")</p>
+        </div>
+    </div>
+</div>
+
+<div class="card border-success ml-3 mb-3 float-right">
+    <div class="d-flex">
+        <div class="card-body border-0 text-white bg-success">Coeficiente de rendimento</div>
+        <div class="card-body font-weight-bold text-success">@ViewBag.CoeficienteDeRendimento?.ToString("F")</div>
+    </div>
+</div>
+
+<h6>Estudante: @Model.Nome</h6>
+<h6>Matrícula: @Model.NumeroMatricula</h6>
+<h6>Curso: @Model.Curriculo.NomeParaLista</h6>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameForInnerType((MatriculaTurma mt) => mt.Turma.Disciplina.Codigo)
+            </th>
+            <th>
+                @Html.DisplayNameForInnerType((MatriculaTurma mt) => mt.Turma.Disciplina)
+            </th>
+            <th>
+                @Html.DisplayNameForInnerType((MatriculaTurma mt) => mt.Turma.Disciplina.CargaHoraria)
+            </th>
+            <th>
+                @Html.DisplayNameForInnerType((MatriculaTurma mt) => mt.Estado)
+            </th>
+            <th>
+                @Html.DisplayNameForInnerType((MatriculaTurma mt) => mt.Nota)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var nivel in disciplinas) {
+        <tr>
+            <td colspan=5 class="card-header">
+                <span class="font-weight-bold">Nível @nivel.Key</span>
+            </td>
+        </tr>
+    @foreach (var disciplina in nivel)
+    {
+        MatriculaTurma matriculaTurma = matriculasTurmas.FirstOrDefault(mt => mt.Turma.DisciplinaId == disciplina.Id);
+        double? nota = matriculaTurma?.Nota;
+        EstadoMatriculaTurmaEnum estado = matriculaTurma?.Estado == EstadoMatriculaTurmaEnum.APROVADO ? matriculaTurma.Estado : EstadoMatriculaTurmaEnum.PENDENTE;
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => disciplina.Codigo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => disciplina.Nome)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => disciplina.CargaHoraria)
+            </td>
+            <td>
+                @estado.ToString()
+            </td>
+            <td>
+                @nota?.ToString("F")
+            </td>
+        </tr>
+    }
+}
+    </tbody>
+</table>

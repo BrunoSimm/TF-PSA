@@ -1,0 +1,77 @@
+﻿@using Entidades.Modelos
+@model Entidades.Modelos.Estudante
+
+@{
+    IEnumerable<IGrouping<Semestre, MatriculaTurma>> matriculasTurmas = Model.Matriculas.GroupBy(mt => mt.Turma.Semestre).OrderBy(s => s.Key.Titulo);
+    ViewData["Title"] = "Histórico de Matrículas";
+}
+
+<h1>@ViewData["Title"]</h1>
+<hr />
+
+<h6>Estudante: @Model.Nome</h6>
+<h6>Matrícula: @Model.NumeroMatricula</h6>
+<h6>Curso: @Model.Curriculo.NomeParaLista</h6>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameForInnerType((MatriculaTurma mt) => mt.Turma.Disciplina.Codigo)
+            </th>
+            <th>
+                @Html.DisplayNameForInnerType((MatriculaTurma mt) => mt.Turma.Disciplina)
+            </th>
+            <th>
+                @Html.DisplayNameForInnerType((MatriculaTurma mt) => mt.Turma.Disciplina.Nivel)
+            </th>
+            <th>
+                @Html.DisplayNameForInnerType((MatriculaTurma mt) => mt.Turma.Disciplina.CargaHoraria)
+            </th>
+            <th>
+                @Html.DisplayNameForInnerType((MatriculaTurma mt) => mt.Turma.Id)
+            </th>
+            <th>
+                @Html.DisplayNameForInnerType((MatriculaTurma mt) => mt.Estado)
+            </th>
+            <th>
+                @Html.DisplayNameForInnerType((MatriculaTurma mt) => mt.Nota)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var semestre in matriculasTurmas) {
+        <tr>
+            <td colspan=10 class="card-header">
+                <span class="font-weight-bold">Semestre @semestre.Key.Titulo</span>
+            </td>
+        </tr>
+    @foreach (var matricula in semestre)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => matricula.Turma.Disciplina.Codigo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => matricula.Turma.Disciplina.Nome)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => matricula.Turma.Disciplina.Nivel)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => matricula.Turma.Disciplina.CargaHoraria)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => matricula.Turma.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => matricula.Estado)
+            </td>
+            <td>
+                @matricula.Nota?.ToString("F")
+            </td>
+        </tr>
+    }
+}
+    </tbody>
+</table>

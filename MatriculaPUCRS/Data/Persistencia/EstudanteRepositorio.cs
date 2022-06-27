@@ -32,6 +32,23 @@ namespace MatriculaPUCRS.Data.Persistencia
                 .SingleOrDefaultAsync(e => e.Id == id);
         }
 
+        public Task<Estudante> GetEstudanteWithHistorico(long? id)
+        {
+            return _matriculaContext.Estudantes
+                .Include(e => e.Curriculo)
+                    .ThenInclude(c => c.Disciplinas)
+                .Include(e => e.Matriculas)
+                    .ThenInclude(m => m.Turma)
+                    .ThenInclude(t => t.Disciplina)
+                .Include(e => e.Matriculas)
+                    .ThenInclude(m => m.Turma)
+                    .ThenInclude(t => t.Horarios)
+                    .Include(e => e.Matriculas)
+                    .ThenInclude(m => m.Turma)
+                    .ThenInclude(t => t.Semestre)
+                .SingleOrDefaultAsync(e => e.Id == id);
+        }
+
         public async Task<EstadoMatriculaTurmaEnum?> GetStatusDisciplina(long estudanteId, long disciplinaId)
         {
             // Verifica se existe a disciplina no currículo
