@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Entidades.Modelos;
-using Infraestrutura.Data;
 using Microsoft.AspNetCore.Authorization;
 using Persistencia.Interfaces.Repositorios;
 
@@ -12,14 +11,11 @@ namespace MatriculaPUCRS.Controllers
     [Authorize(Roles ="Coordenador")]
     public class SemestresController : Controller
     {
-        private readonly MatriculaContext _context;
         private readonly ISemestreRepositorio _semestreRepositorio;
 
         public SemestresController(
-            MatriculaContext context, 
             ISemestreRepositorio semestreRepositorio)
         {
-            _context = context;
             _semestreRepositorio = semestreRepositorio;
         }
 
@@ -149,7 +145,7 @@ namespace MatriculaPUCRS.Controllers
 
         private bool SemestreExists(long id)
         {
-            return _context.Semestres.Any(e => e.Id == id);
+            return _semestreRepositorio.GetEntityById(id) != null;
         }
     }
 }
