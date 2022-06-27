@@ -131,7 +131,7 @@
                             <tbody>
                                 @foreach (var turma in disciplina.Turmas.Where(t => t.SemestreId == ViewBag.Semestre.Id))
                                 {
-                                    matriculadoTurma = turmasMatriculado.Contains(turma);
+                                    matriculadoTurma = turmasMatriculado.Any(t => t.Id == turma.Id);
                                     <tr>
                                         <td>
                                             @Html.DisplayFor(modelItem => turma.Id)

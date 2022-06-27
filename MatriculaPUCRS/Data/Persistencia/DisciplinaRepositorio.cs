@@ -40,20 +40,22 @@ namespace MatriculaPUCRS.Data.Persistencia
                 .Where(mt => mt.Aprovado)
                 .Select(mt => mt.Turma.Disciplina);
 
-            var disciplinasDisponiveis = _matriculaContext.Turmas
-                .Include(t => t.Semestre)
-                .Include(t => t.Horarios)
-                .Include(t => t.Matriculas)
-                .Include(t => t.Disciplina)
-                    .ThenInclude(d => d.Requisitos)
-                .Where(t => t.SemestreId == semestreId)
+            var disciplinasDisponiveis = _matriculaContext.Disciplinas
+                .Include(d => d.Turmas)
+                    .ThenInclude(t => t.Semestre)
+                .Include(d => d.Turmas)
+                    .ThenInclude(t => t.Horarios)
+                .Include(d => d.Turmas)
+                    .ThenInclude(t => t.Matriculas)
+                .Include(d => d.Turmas)
+                    .ThenInclude(t => t.Semestre)
+                .Include(d => d.Requisitos)
+                .Where(d => d.Turmas.Any(t => t.SemestreId == semestreId))
                 .AsNoTracking()
                 .AsEnumerable()
-                .Select(t => t.Disciplina)
-                .Distinct()
                 .Where(d => !disciplinasCursadas.Contains(d))
                 .Where(d => d.Requisitos.All(dr => disciplinasAprovado.Contains(dr)));
-
+            
             return disciplinasDisponiveis;
         }
 
