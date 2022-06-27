@@ -1,5 +1,40 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model RelatorioAlunosViewModel
+@using System.Collections.Generic
+@using MatriculaPUCRS.Models
+@using System.Globalization
+
 @{
 }
+<h1>@Model.NomeDoCurso</h1>
+<hr>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameForInnerType((AlunoViewModel a) => a.NomeDoAluno)
+            </th>
+            <th>
+                @Html.DisplayNameForInnerType((AlunoViewModel a) => a.NumeroDeCreditosComAprovacao)
+            </th>
+            <th>
+                @Html.DisplayNameForInnerType((AlunoViewModel a) => a.CoeficienteDeRendimento)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var aluno in @Model.Alunos)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => aluno.NomeDoAluno)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => aluno.NumeroDeCreditosComAprovacao)
+                </td>
+                <td>
+                    @aluno.CoeficienteDeRendimento.ToString("F")
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

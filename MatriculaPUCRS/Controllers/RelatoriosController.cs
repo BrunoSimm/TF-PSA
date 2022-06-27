@@ -22,7 +22,12 @@ namespace MatriculaPUCRS.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> IndexCursos()
+        {
+            return View(await _context.Curriculos.ToListAsync());
+        }
+
+        public async Task<IActionResult> IndexAlunos()
         {
             return View(await _context.Curriculos.ToListAsync());
         }
@@ -78,6 +83,58 @@ namespace MatriculaPUCRS.Controllers
             relatorio.PercentualDeMatriculas = (double) qtdAlunosMatriculados / relatorio.QuantidadeDeAlunos;
 
             relatorio.MediaDeCreditosPorAluno = (double) totalDeCreditosMatriculados / qtdAlunosMatriculados;
+
+            return View(relatorio);
+        }
+
+        public IActionResult Alunos(long? id)
+        {
+            if (id is null)
+            {
+                return NotFound();
+            }
+
+            RelatorioAlunosViewModel relatorio = new RelatorioAlunosViewModel() {
+                Alunos = new List<AlunoViewModel>(),
+                NomeDoCurso = _context.Curriculos.Find(id).NomeParaLista
+            };
+
+            var estudantesDoCurso = _context.Estudantes.Include(e => e.Curriculo)
+                .Include(e => e.Matriculas)
+                .ThenInclude(m => m.Turma)
+                .ThenInclude(t => t.Disciplina)
+                .Where(e => e.Curriculo.Id == id);
+
+            foreach(var estudante in estudantesDoCurso)
+            {
+                AlunoViewModel aluno = new AlunoViewModel();
+                aluno.NomeDoAluno = estudante.Nome;
+                float notas = 0;
+                int qtdDisciplinasCursadas = 0;
+
+                foreach (var matricula in estudante.Matriculas)
+                {
+                    if (matricula.Estado == EstadoMatriculaTurmaEnum.APROVADO 
+                        || matricula.Estado == EstadoMatriculaTurmaEnum.REPROVADO)
+                    {
+                        notas +=  matricula.Nota ?? 0;
+                        qtdDisciplinasCursadas++;
+
+                        if (matricula.Estado == EstadoMatriculaTurmaEnum.APROVADO)
+                            aluno.NumeroDeCreditosComAprovacao += int.Parse(matricula.Turma.Disciplina.Codigo.Substring(6));
+                    }
+                }
+                if(qtdDisciplinasCursadas > 0)
+                {
+                    aluno.CoeficienteDeRendimento = (double)(notas / qtdDisciplinasCursadas);
+                }
+                else
+                {
+                    aluno.CoeficienteDeRendimento = 0;
+                }
+                
+                relatorio.Alunos.Add(aluno);
+            }
 
             return View(relatorio);
         }
