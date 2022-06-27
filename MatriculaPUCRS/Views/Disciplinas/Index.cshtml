@@ -6,28 +6,33 @@
     var disciplinas = Model.OrderBy(d => d.Nivel).ThenBy(d => d.Codigo);
 }
 
-<form asp-controller="Disciplinas" asp-action="Index" method="get">
-    <div class="input-group input-group-sm mb-3">
-        <div class="input-group-prepend mr-2">
-            <input placeholder="Código Disciplina" type="text" class="form-control" aria-describedby="inputGroup-sizing-sm" name="codigoDisciplina" value="@TempData["codigoDisciplinaInput"]">
-        </div>
-        <div class="input-group-prepend mr-2">
-            <input placeholder="Nome Disciplina" type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="nomeDisciplina" value="@TempData["nomeDisciplinaInput"]">
-        </div>
-        <div class="input-group-prepend mr-2">
-            <input placeholder="Horário" type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="horario" value="@TempData["horarioInput"]">
-        </div>
-        <div class="input-group-prepend">
-            <input type="submit" value="BUSCAR" class="btn btn-outline-success rounded" />
-        </div>
-    </div>
-</form>
-
 @if (Model.Any())
 {
     <h1>Curso - @Model.First().Curriculos.First().NomeDoCurso</h1>
 
     <h2>Currículo - @Model.First().Curriculos.First().Codigo</h2>
+
+    <form asp-controller="Disciplinas" asp-action="Index" method="get">
+        <div class="container">
+            <div class="input-group input-group-sm mb-3">
+                <div class="row">
+                    <div class="col-sm-3 input-group-prepend p-1">
+                        <input placeholder="Código Disciplina" type="text" class="form-control" aria-describedby="inputGroup-sizing-sm" name="codigoDisciplina" value="@TempData["codigoDisciplinaInput"]">
+                    </div>
+                    <div class="col-sm-5 input-group-prepend p-1">
+                        <input placeholder="Nome Disciplina" type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="nomeDisciplina" value="@TempData["nomeDisciplinaInput"]">
+                    </div>
+                    <div class="col-sm-3 input-group-prepend p-1">
+                        <input placeholder="Horário" type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="horario" value="@TempData["horarioInput"]">
+                    </div>
+                    <div class="col-sm-1 input-group-prepend p-1">
+                        <input type="submit" value="BUSCAR" class="btn btn-group-sm btn-outline-success rounded" />
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </form>
 
     <div class="accordion" id="accordion">
         <div class="card-body py-3 font-weight-bold border-top d-flex justify-content-start">
@@ -114,12 +119,34 @@
             </div>
         }
     </div>
-    <div class="border-top"/>
+    <div class="border-top" />
 
 }
 else
 {
-    <h3>Nenhuma disciplina encontrada para estes parâmetros de pesquisa :(</h3>
+    <form asp-controller="Disciplinas" asp-action="Index" method="get">
+        <div class="container">
+            <div class="input-group input-group-sm mb-3">
+                <div class="row">
+                    <div class="col-sm-3 input-group-prepend p-1">
+                        <input placeholder="Código Disciplina" type="text" class="form-control" aria-describedby="inputGroup-sizing-sm" name="codigoDisciplina" value="@TempData["codigoDisciplinaInput"]">
+                    </div>
+                    <div class="col-sm-5 input-group-prepend p-1">
+                        <input placeholder="Nome Disciplina" type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="nomeDisciplina" value="@TempData["nomeDisciplinaInput"]">
+                    </div>
+                    <div class="col-sm-3 input-group-prepend p-1">
+                        <input placeholder="Horário" type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="horario" value="@TempData["horarioInput"]">
+                    </div>
+                    <div class="col-sm-1 input-group-prepend p-1">
+                        <input type="submit" value="BUSCAR" class="btn btn-group-sm btn-outline-success rounded" />
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </form>
+
+    <h4 class="d-flex justify-content-center text-muted">Nenhuma disciplina encontrada :(</h4>
 }
 
 
