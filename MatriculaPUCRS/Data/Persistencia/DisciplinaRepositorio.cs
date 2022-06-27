@@ -52,17 +52,20 @@ namespace MatriculaPUCRS.Data.Persistencia
                 .GroupBy(t => t.Disciplina)
                 .Where(d => !disciplinasCursadas.Contains(d.Key))
                 .Where(d => d.Key.Requisitos.All(dr => disciplinasAprovado.Contains(dr)));
-            
+
             return disciplinasDisponiveis;
         }
 
         public Task<Disciplina> GetDisciplinaByIdWithMatriculasAndSemestre(long id)
         {
             return _matriculaContext.Disciplinas
+                .Include(d => d.Curriculos)
                 .Include(d => d.Turmas).ThenInclude(t => t.Semestre)
                 .Include(d => d.Turmas).ThenInclude(t => t.Horarios)
                 .Include(d => d.Turmas).ThenInclude(t => t.Matriculas)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .Include(d => d.Turmas)
+                    .ThenInclude(t => t.Matriculas).ThenInclude(mt => mt.Estudante).ThenInclude(e => e.Curriculo)
+                .FirstOrDefaultAsync(d => d.Id == id);
         }
 
         public Task<Curriculo> GetDisciplinasFromCurriculoId(long id)
@@ -76,6 +79,19 @@ namespace MatriculaPUCRS.Data.Persistencia
         public IQueryable<Disciplina> GetDisciplinasIQueryable()
         {
             return _matriculaContext.Disciplinas;
+        }
+
+        public Task<Curriculo> GetDisciplinasWithTurmasFromSemesterId(long id)
+        {
+            return _matriculaContext.Curriculos
+                .Include(c => c.Disciplinas)
+                    .ThenInclude(d => d.Turmas)
+                    .ThenInclude(t => t.Matriculas)
+                    .ThenInclude(mt => mt.Estudante)
+                .Include(c => c.Disciplinas)
+                    .ThenInclude(d => d.Turmas)
+                    .ThenInclude(t => t.Semestre)
+                .FirstOrDefaultAsync(c => c.Disciplinas.Any(d => d.Turmas.Any(t => t.SemestreId == id)));
         }
     }
 }

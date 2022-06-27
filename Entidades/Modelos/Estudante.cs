@@ -8,6 +8,8 @@ namespace Entidades.Modelos
         [Display(Name = "Matrícula")]
         public long Id { get; set; } // Id Matricula
         public int DigitoVerificador { get; }
+
+        [Display(Name = "Matrícula")]
         public string NumeroMatricula => Id + "-" + DigitoVerificador; // Matricula = "Id-DV"
         public string Nome { get; set; }
         public string CPF { get; set; }
