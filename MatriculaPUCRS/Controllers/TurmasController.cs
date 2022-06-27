@@ -9,9 +9,7 @@ using Persistencia.Interfaces.Repositorios;
 using Microsoft.AspNetCore.Authorization;
 using MatriculaPUCRS.Models;
 using Microsoft.AspNetCore.Identity;
-using MatriculaPUCRS.Areas.Roles;
 using System;
-using System.Diagnostics;
 
 namespace MatriculaPUCRS.Controllers
 {
