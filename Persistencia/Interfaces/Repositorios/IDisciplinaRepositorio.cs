@@ -13,5 +13,6 @@ namespace Persistencia.Interfaces.Repositorios
         public IEnumerable<IGrouping<Disciplina, Turma>> GetDisciplinasWithTurmasFromSemestre(long estudanteId, long semestreId);
         public Task<Curriculo> GetDisciplinasFromCurriculoId(long id);
         public IQueryable<Disciplina> GetDisciplinasIQueryable();
+        Task<Curriculo> GetDisciplinasWithTurmasFromSemesterId(long id);
     }
 }

@@ -277,7 +277,7 @@ namespace MatriculaPUCRS.Data
                 new Estudante { Id = 22222222, Nome = "Aluno2", CPF = "222.222.222-22", Estado = EstadoEstudanteEnum.ATIVO, Curriculo = curriculos[0] },
                 // Estudantes sem login
                 new Estudante { Id = 20103549, Nome = "Cleber", CPF = "000.000.000-01", Estado = EstadoEstudanteEnum.SUSPENSO, Curriculo = curriculos[0] },
-                new Estudante { Id = 20160982, Nome = "Wesley", CPF = "000.000.000-02", Estado = EstadoEstudanteEnum.GRADUADO },
+                new Estudante { Id = 20160982, Nome = "Wesley", CPF = "000.000.000-02", Estado = EstadoEstudanteEnum.GRADUADO, Curriculo = curriculos[0] },
                 new Estudante { Id = 20104575, Nome = "Valdomir", CPF = "000.000.000-03", Estado = EstadoEstudanteEnum.ATIVO, Curriculo = curriculos[0] },
                 new Estudante { Id = 20189345, Nome = "Vilmar", CPF = "000.000.000-04", Estado = EstadoEstudanteEnum.ATIVO, Curriculo = curriculos[0] },
                 new Estudante { Id = 20123586, Nome = "Gertrudes", CPF = "000.000.000-05", Estado = EstadoEstudanteEnum.ATIVO, Curriculo = curriculos[0] },
