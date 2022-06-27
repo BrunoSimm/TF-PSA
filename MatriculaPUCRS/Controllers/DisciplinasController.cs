@@ -153,7 +153,7 @@ namespace MatriculaPUCRS.Controllers
                     .ThenInclude(t => t.Matriculas)
                 .Include(d => d.Curriculos)
                 .Where(d => d.Curriculos.Any(c => c.Id == 1L))
-                .Where(d => d.Turmas.Any(t => t.Semestre.Id == semestreAtual.Id));
+                .Where(d => d.Turmas.Any(t => t.SemestreId == semestreAtual.Id));
 
             if (horario is not null)
             {
@@ -173,8 +173,12 @@ namespace MatriculaPUCRS.Controllers
                 disciplinasQuery = disciplinasQuery.Where(d => d.Codigo.Contains(codigoDisciplina));
             }
 
-            List<Disciplina> disciplinasList = await disciplinasQuery.AsNoTracking().ToListAsync();
-
+            List<Disciplina> disciplinasList = disciplinasQuery.AsNoTracking().ToList();
+            disciplinasList.ForEach(d =>
+            {
+                d.Turmas = d.Turmas.Where(t => t.SemestreId == semestreAtual.Id);
+            });
+      
             return View(disciplinasList);
         }
 
