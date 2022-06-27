@@ -30,9 +30,9 @@
     </div>
 </div>
 
-<h6>Estudante: @Model.Nome</h6>
-<h6>Matrícula: @Model.NumeroMatricula</h6>
-<h6>Curso: @Model.Curriculo.NomeParaLista</h6>
+<h5>Estudante: @Model.Nome</h5>
+<h5>Matrícula: @Model.NumeroMatricula</h5>
+<h5>Currículo: @Model.Curriculo.NomeParaLista</h5>
 
 <table class="table">
     <thead>
@@ -68,7 +68,9 @@
         EstadoMatriculaTurmaEnum estado = matriculaTurma?.Estado == EstadoMatriculaTurmaEnum.APROVADO ? matriculaTurma.Estado : EstadoMatriculaTurmaEnum.PENDENTE;
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => disciplina.Codigo)
+                <a asp-action="Disciplina" asp-route-id="@disciplina.Id">
+                    @Html.DisplayFor(modelItem => disciplina.Codigo)
+                </a>
             </td>
             <td>
                 @Html.DisplayFor(modelItem => disciplina.Nome)

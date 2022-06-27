@@ -48,8 +48,9 @@ namespace MatriculaPUCRS.Controllers
                 .Include(d => d.Turmas)
                     .ThenInclude(t => t.Matriculas)
                 .Include(d => d.Curriculos)
-                .Where(d => d.Curriculos.Any(c => c.Id == 1))
+                .Where(d => d.Curriculos.Any(c => c.Id == 1L))
                 .Where(d => d.Turmas.Any(t => t.Semestre.Id == semestreAtual.Id));
+
             if (horario is not null)
             {
                 TempData["horarioInput"] = horario;
@@ -70,9 +71,27 @@ namespace MatriculaPUCRS.Controllers
 
             List<Disciplina> disciplinasList = await disciplinasQuery.AsNoTracking().ToListAsync();
 
-            
-            //Curriculo curso = await _disciplinaRepositorio.GetDisciplinasFromCurriculoId(1);
             return View(disciplinasList);
+        }
+
+        // GET: Disciplinas/Curriculo
+        public async Task<IActionResult> Curriculo(string nomeDisciplina, string codigoDisciplina)
+        {
+            Curriculo curriculo = await _disciplinaRepositorio.GetDisciplinasFromCurriculoId(1L);
+
+            if (nomeDisciplina is not null)
+            {
+                TempData["nomeDisciplinaInput"] = nomeDisciplina;
+                curriculo.Disciplinas = curriculo.Disciplinas.Where(d => d.Nome.Contains(nomeDisciplina, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (codigoDisciplina is not null)
+            {
+                TempData["codigoDisciplinaInput"] = codigoDisciplina;
+                curriculo.Disciplinas = curriculo.Disciplinas.Where(d => d.Codigo.Contains(codigoDisciplina, StringComparison.OrdinalIgnoreCase));
+            }
+
+            return View(curriculo);
         }
 
         // GET: Disciplinas/HistoricoEscolar
@@ -91,7 +110,7 @@ namespace MatriculaPUCRS.Controllers
             IEnumerable<MatriculaTurma> matriculasTurmas = estudante.Matriculas.Where(mt => (mt.Estado == EstadoMatriculaTurmaEnum.APROVADO) || (mt.Estado == EstadoMatriculaTurmaEnum.REPROVADO)).OrderBy(mt => mt.Estado);
             IEnumerable<IGrouping<int, Disciplina>> disciplinas = estudante.Curriculo.Disciplinas.GroupBy(d => d.Nivel).OrderBy(n => n.Key);
 
-            float? coeficienteDeRendimento = matriculasTurmas.GroupBy(mt => mt.Turma.Disciplina).Average(gd => gd.First().Nota);
+            float coeficienteDeRendimento = matriculasTurmas.GroupBy(mt => mt.Turma.Disciplina).Average(gd => gd.First().Nota) ?? 0;
             int chAprovado = estudante.Matriculas.Where(mt => mt.Estado == EstadoMatriculaTurmaEnum.APROVADO).Select(mt => mt.Turma.Disciplina).Distinct().Sum(d => d.CargaHoraria);
             int chTotal = estudante.Curriculo.Disciplinas.Sum(d => d.CargaHoraria);
             float percentualDeConclusao = (float) chAprovado / chTotal;
@@ -118,6 +137,36 @@ namespace MatriculaPUCRS.Controllers
             }
 
             return View(estudante);
+        }
+
+        // GET: Disciplinas/Disciplina/5
+        [Authorize(Roles = "Estudante")]
+        public async Task<IActionResult> Disciplina(long? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            ApplicationUser loggedUser = await _userManager.GetUserAsync(User);
+            Estudante estudante = await _estudanteRepositorio.GetEstudanteWithHistorico(loggedUser.EstudanteId);
+
+            if (estudante is null)
+            {
+                return NotFound();
+            }
+
+            Disciplina disciplina = estudante.Curriculo.Disciplinas.FirstOrDefault(d => d.Id == (long)id);
+
+            if (disciplina == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.Estado = await _estudanteRepositorio.GetStatusDisciplina(estudante.Id, disciplina.Id);
+            ViewBag.Matriculas = estudante.Matriculas.Where(mt => mt.Estado == EstadoMatriculaTurmaEnum.APROVADO);
+
+            return View(disciplina);
         }
 
         // GET: Disciplinas/Details/5

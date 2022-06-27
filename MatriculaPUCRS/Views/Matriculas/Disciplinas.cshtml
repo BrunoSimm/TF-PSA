@@ -1,5 +1,5 @@
 ﻿@using Entidades.Modelos
-@model IEnumerable<Entidades.Modelos.Disciplina>
+@model IEnumerable<IGrouping<Disciplina, Turma>>
 
 @{
     bool matriculadoDisciplina;
@@ -73,42 +73,42 @@
         <div class="accordion" id="accordion">
             <div class="card-body py-3 font-weight-bold border-top d-flex justify-content-start">
                 <div class="col-2">
-                    @Html.DisplayNameFor(model => model.Codigo)
+                    @Html.DisplayNameForInnerType((Disciplina d) => d.Codigo)
                 </div>
                 <div class="col-6">
-                    @Html.DisplayNameFor(model => model.Nome)
+                    @Html.DisplayNameForInnerType((Disciplina d) => d.Nome)
                 </div>
                 <div class="col-1">
-                    @Html.DisplayNameFor(model => model.Nivel)
+                    @Html.DisplayNameForInnerType((Disciplina d) => d.Nivel)
                 </div>
                 <div class="col-2">
-                    @Html.DisplayNameFor(model => model.CargaHoraria)
+                    @Html.DisplayNameForInnerType((Disciplina d) => d.CargaHoraria)
                 </div>
             </div>
             @foreach (var disciplina in Model)
             {
-                matriculadoDisciplina = disciplinasMatriculado.Contains(disciplina);
-                <div class="card-footer" id="heading_@disciplina.Id">
-                    <a class="dropdown-toggle d-flex align-items-center" type="button" data-toggle="collapse" data-target="#collapse_@disciplina.Id" aria-expanded="true" aria-controls="collapse_@disciplina.Id">
+                matriculadoDisciplina = disciplinasMatriculado.Contains(disciplina.Key);
+                <div class="card-footer" id="heading_@disciplina.Key.Id">
+                    <a class="dropdown-toggle d-flex align-items-center" type="button" data-toggle="collapse" data-target="#collapse_@disciplina.Key.Id" aria-expanded="true" aria-controls="collapse_@disciplina.Key.Id">
                         <span class="col-2">
-                            @Html.DisplayFor(modelItem => disciplina.Codigo)
+                            @Html.DisplayFor(modelItem => disciplina.Key.Codigo)
                         </span>
                         <span class="col-6">
-                            @Html.DisplayFor(modelItem => disciplina.Nome)
+                            @Html.DisplayFor(modelItem => disciplina.Key.Nome)
                         </span>
                         <span class="col-1">
-                            @Html.DisplayFor(modelItem => disciplina.Nivel)
+                            @Html.DisplayFor(modelItem => disciplina.Key.Nivel)
                         </span>
                         <span class="col-2">
-                            @Html.DisplayFor(modelItem => disciplina.CargaHoraria)
+                            @Html.DisplayFor(modelItem => disciplina.Key.CargaHoraria)
                         </span>
                         <span class="flex-grow-1"></span>
                         <span class="font-weight-bold">
-                            @Html.DisplayNameFor(model => model.Turmas)
+                            @Html.DisplayNameFor(model => model.Key.Turmas)
                         </span>
                     </a>
                 </div>
-                <div id="collapse_@disciplina.Id" class="collapse" aria-labelledby="heading_@disciplina.Id" data-parent="#accordion">
+                <div id="collapse_@disciplina.Key.Id" class="collapse" aria-labelledby="heading_@disciplina.Key.Id" data-parent="#accordion">
                     <div class="card-body">
                         <table class="table mb-0">
                             <thead>
@@ -129,7 +129,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var turma in disciplina.Turmas.Where(t => t.SemestreId == ViewBag.Semestre.Id))
+                                @foreach (var turma in disciplina)
                                 {
                                     matriculadoTurma = turmasMatriculado.Any(t => t.Id == turma.Id);
                                     <tr>

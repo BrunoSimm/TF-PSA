@@ -8,14 +8,14 @@
 
 <h1>@Model.NomeDoCurso</h1>
 <hr/>
-<div class="row justify-content-sm-around">
+<div class="d-flex align-items-start justify-content-around">
     <div class="card text-bg-primary mb-3 shadow-sm" style="max-width: 16rem;">
         <div class="border-radius-5">
             <h5 class="mb-2 pt-3" align="center">@Html.DisplayNameFor(model => model.QuantidadeDeAlunos)</h5>
             <div class="card-body pt-0 pb-0">
                 <h1 class="card-title" align="center">@Model.QuantidadeDeAlunos</h1>
             </div>
-        <div class="card-footer" align="center">Representa o total de alunos ativos na úniversidade</div>
+        <div class="card-footer" align="center">Representa o total de alunos ativos no curso</div>
         </div>
     </div>
     <div class="card text-bg-primary mb-3 shadow-sm" style="max-width: 16rem;">

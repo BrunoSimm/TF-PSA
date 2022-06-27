@@ -17,7 +17,7 @@ namespace MatriculaPUCRS.Data.Persistencia
             _matriculaContext = context;
         }
 
-        public IEnumerable<Disciplina> GetDisciplinasWithTurmasFromSemestre(long estudanteId, long semestreId)
+        public IEnumerable<IGrouping<Disciplina, Turma>> GetDisciplinasWithTurmasFromSemestre(long estudanteId, long semestreId)
         {
             Estudante estudante = _matriculaContext.Estudantes
                 .Include(e => e.Matriculas)
@@ -40,21 +40,18 @@ namespace MatriculaPUCRS.Data.Persistencia
                 .Where(mt => mt.Aprovado)
                 .Select(mt => mt.Turma.Disciplina);
 
-            var disciplinasDisponiveis = _matriculaContext.Disciplinas
-                .Include(d => d.Turmas)
-                    .ThenInclude(t => t.Semestre)
-                .Include(d => d.Turmas)
-                    .ThenInclude(t => t.Horarios)
-                .Include(d => d.Turmas)
-                    .ThenInclude(t => t.Matriculas)
-                .Include(d => d.Turmas)
-                    .ThenInclude(t => t.Semestre)
-                .Include(d => d.Requisitos)
-                .Where(d => d.Turmas.Any(t => t.SemestreId == semestreId))
+            var disciplinasDisponiveis = _matriculaContext.Turmas
+                .Include(t => t.Semestre)
+                .Include(t => t.Horarios)
+                .Include(t => t.Matriculas)
+                .Include(t => t.Disciplina)
+                    .ThenInclude(d => d.Requisitos)
+                .Where(t => t.SemestreId == semestreId)
                 .AsNoTracking()
                 .AsEnumerable()
-                .Where(d => !disciplinasCursadas.Contains(d))
-                .Where(d => d.Requisitos.All(dr => disciplinasAprovado.Contains(dr)));
+                .GroupBy(t => t.Disciplina)
+                .Where(d => !disciplinasCursadas.Contains(d.Key))
+                .Where(d => d.Key.Requisitos.All(dr => disciplinasAprovado.Contains(dr)));
             
             return disciplinasDisponiveis;
         }
@@ -70,7 +67,10 @@ namespace MatriculaPUCRS.Data.Persistencia
 
         public Task<Curriculo> GetDisciplinasFromCurriculoId(long id)
         {
-            return _matriculaContext.Curriculos.Include(c => c.Disciplinas).FirstOrDefaultAsync(c => c.Id == id);
+            return _matriculaContext.Curriculos
+                .Include(c => c.Disciplinas)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.Id == id);
         }
 
         public IQueryable<Disciplina> GetDisciplinasIQueryable()

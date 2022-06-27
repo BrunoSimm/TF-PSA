@@ -1,12 +1,9 @@
-﻿@using Microsoft.AspNetCore.Identity
-@using Entidades.Modelos
-@inject SignInManager<ApplicationUser> SignInManager;
-@model List<Entidades.Modelos.Disciplina>
+﻿@using Entidades.Modelos
+@model IEnumerable<Entidades.Modelos.Disciplina>
 
 @{
     ViewData["Title"] = "Cursos";
     var disciplinas = Model.OrderBy(d => d.Nivel).ThenBy(d => d.Codigo);
-    bool isCoordenador = SignInManager.IsSignedIn(User) && User.IsInRole("Coordenador");
 }
 
 <form asp-controller="Disciplinas" asp-action="Index" method="get">
@@ -26,33 +23,46 @@
     </div>
 </form>
 
-@if (@Model.Count() > 0)
+@if (Model.Any())
 {
     <h1>Curso - @Model.First().Curriculos.First().NomeDoCurso</h1>
 
     <h2>Currículo - @Model.First().Curriculos.First().Codigo</h2>
 
-    @if (isCoordenador)
-    {
-        <p>
-            <a asp-action="Create">Adicionar</a>
-        </p>
-    }
-
     <div class="accordion" id="accordion">
-        <div class="modal-header font-weight-bold border-top border-bottom">
-            Codigo - Nome
+        <div class="card-body py-3 font-weight-bold border-top d-flex justify-content-start">
+            <div class="col-2">
+                @Html.DisplayNameForInnerType((Disciplina d) => d.Codigo)
+            </div>
+            <div class="col-6">
+                @Html.DisplayNameForInnerType((Disciplina d) => d.Nome)
+            </div>
+            <div class="col-1">
+                @Html.DisplayNameForInnerType((Disciplina d) => d.Nivel)
+            </div>
+            <div class="col-2">
+                @Html.DisplayNameForInnerType((Disciplina d) => d.CargaHoraria)
+            </div>
         </div>
-        @foreach (var disciplina in Model)
+        @foreach (var disciplina in disciplinas)
         {
-            
-            <div class="card-header" id="heading_@disciplina.Id">
+            <div class="card-footer" id="heading_@disciplina.Id">
                 <a class="dropdown-toggle d-flex align-items-center" type="button" data-toggle="collapse" data-target="#collapse_@disciplina.Id" aria-expanded="true" aria-controls="collapse_@disciplina.Id">
-                    <span class="flex-grow-1">
-                        @Html.DisplayFor(modelItem => disciplina.NomeParaLista)
+                    <span class="col-2">
+                        @Html.DisplayFor(modelItem => disciplina.Codigo)
                     </span>
+                    <span class="col-6">
+                        @Html.DisplayFor(modelItem => disciplina.Nome)
+                    </span>
+                    <span class="col-1">
+                        @Html.DisplayFor(modelItem => disciplina.Nivel)
+                    </span>
+                    <span class="col-2">
+                        @Html.DisplayFor(modelItem => disciplina.CargaHoraria)
+                    </span>
+                    <span class="flex-grow-1"></span>
                     <span class="font-weight-bold">
-                        @Html.DisplayNameFor(model => model.First().Turmas)
+                        @Html.DisplayNameFor(model => model.Turmas)
                     </span>
                 </a>
             </div>
@@ -73,7 +83,6 @@
                                 <th>
                                     @Html.DisplayNameForInnerType((Turma t) => t.VagasRemanescentes)
                                 </th>
-                                <th align="right"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -97,7 +106,6 @@
                                     <td>
                                         @Html.DisplayFor(modelItem => turma.VagasRemanescentes)
                                     </td>
-                                    
                                 </tr>
                             }
                         </tbody>
@@ -106,8 +114,7 @@
             </div>
         }
     </div>
-
-
+    <div class="border-top"/>
 
 }
 else

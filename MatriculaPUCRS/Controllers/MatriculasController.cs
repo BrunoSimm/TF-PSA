@@ -89,7 +89,7 @@ namespace MatriculaPUCRS.Controllers
                 return NotFound();
             }
 
-            IEnumerable<Disciplina> disciplinasComTurmasDisponiveisNoSemestre = _disciplinaRepositorio.GetDisciplinasWithTurmasFromSemestre(estudante.Id, semestre.Id);
+            IEnumerable<IGrouping<Disciplina, Turma>> disciplinasComTurmasDisponiveisNoSemestre = _disciplinaRepositorio.GetDisciplinasWithTurmasFromSemestre(estudante.Id, semestre.Id);
 
             ViewBag.TurmasMatriculado = estudante.Matriculas.Where(mt => mt.Turma.SemestreId.Equals(semestre.Id)).Select(mt => mt.Turma);
             ViewBag.DisciplinasMatriculado = estudante.Matriculas.Where(mt => mt.Turma.SemestreId.Equals(semestre.Id)).Select(mt => mt.Turma.Disciplina).Distinct();

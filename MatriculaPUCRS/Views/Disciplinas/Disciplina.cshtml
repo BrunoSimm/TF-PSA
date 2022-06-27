@@ -1,0 +1,91 @@
+﻿@using Entidades.Modelos
+@model Entidades.Modelos.Disciplina
+
+@{
+    ViewData["Title"] = $"Disciplina { Model.Codigo }";
+    IEnumerable<MatriculaTurma> matriculasTurmas = ViewBag.Matriculas;
+}
+
+<h1>Disciplina</h1>
+
+<div>
+    <h4>@Model.NomeParaLista</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Codigo)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Codigo)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Nome)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Nome)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Nivel)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Nivel)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.CargaHoraria)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.CargaHoraria)
+        </dd>
+        <dt class="col-sm-2">
+            Status
+        </dt>
+        <dd class="col-sm-10">
+            @(ViewBag.Estado ?? "PENDENTE")
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Requisitos)
+        </dt>
+        <dd class="col-sm-10">
+        @if (Model.Requisitos.Any())
+        {
+            <table class="table">
+                <tr>
+                    <th>@Html.DisplayNameFor(model => model.Codigo)</th>
+                    <th>@Html.DisplayNameFor(model => model.Nome)</th>
+                    <th>@Html.DisplayNameFor(model => model.Nivel)</th>
+                    <th>@Html.DisplayNameFor(model => model.CargaHoraria)</th>
+                    <th>Estado</th>
+                </tr>
+                @foreach (Disciplina requisito in Model.Requisitos)
+                {
+                    EstadoMatriculaTurmaEnum estado = matriculasTurmas.FirstOrDefault(mt => mt.Turma.DisciplinaId == requisito.Id)?.Estado ?? EstadoMatriculaTurmaEnum.PENDENTE;
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => requisito.Id)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => requisito.Nome)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => requisito.Nivel)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => requisito.CargaHoraria)
+                        </td>
+                        <td>
+                            @estado.ToString()
+                        </td>
+                    </tr>
+                }
+            </table>
+        }
+        else
+        {
+            <p>Disciplina sem pré-requisitos</p>
+        }
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="HistoricoEscolar">Voltar</a>
+</div>
