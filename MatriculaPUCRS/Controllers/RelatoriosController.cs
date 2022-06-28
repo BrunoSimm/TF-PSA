@@ -16,28 +16,31 @@ namespace MatriculaPUCRS.Controllers
     [Authorize(Roles = "Coordenador")]
     public class RelatoriosController : Controller
     {
-        private readonly MatriculaContext _context;
+        private readonly ICurriculoRepositorio curriculoRepositorio;
         private readonly IDisciplinaRepositorio disciplinaRepositorio;
         private readonly ISemestreRepositorio semestreRepositorio;
+        private readonly IEstudanteRepositorio estudanteRepositorio;
 
-        public RelatoriosController(MatriculaContext context, IDisciplinaRepositorio disciplinaRepositorio, ISemestreRepositorio semestreRepositorio)
+        public RelatoriosController(ICurriculoRepositorio curriculoRepositorio, IDisciplinaRepositorio disciplinaRepositorio,
+            ISemestreRepositorio semestreRepositorio, IEstudanteRepositorio estudanteRepositorio)
         {
-            _context = context;
+            this.curriculoRepositorio = curriculoRepositorio;
             this.disciplinaRepositorio = disciplinaRepositorio;
             this.semestreRepositorio = semestreRepositorio;
+            this.estudanteRepositorio = estudanteRepositorio;
         }
 
         public async Task<IActionResult> IndexCursos()
         {
-            return View(await _context.Curriculos.ToListAsync());
+            return View(await curriculoRepositorio.GetActiveCurriculosAsync());
         }
 
         public async Task<IActionResult> IndexAlunos()
         {
-            return View(await _context.Curriculos.ToListAsync());
+            return View(await curriculoRepositorio.GetActiveCurriculosAsync());
         }
 
-        public IActionResult Cursos(long? id)
+        public async Task<IActionResult> Cursos(long? id)
         {
             if (id is null)
             {
@@ -46,32 +49,25 @@ namespace MatriculaPUCRS.Controllers
 
             RelatorioCursosViewModel relatorio = new RelatorioCursosViewModel();
 
-            var cursos = _context.Curriculos.Where(c => c.Ativo).AsEnumerable();
+            var cursos = await curriculoRepositorio.GetActiveCurriculosAsync();
             ViewBag.Cursos = new SelectList(cursos, nameof(Curriculo.Id), nameof(Curriculo.NomeDoCurso), (long)id);
 
-            var nomeDoCurso = _context.Curriculos.Find((long)id);
-            if (nomeDoCurso is null)
+            var curso = await curriculoRepositorio.GetEntityById((long)id);
+            if (curso is null)
             {
                 return NotFound();
             }
 
-            relatorio.NomeDoCurso = _context.Curriculos.Find((long)id).NomeParaLista;
+            relatorio.NomeDoCurso = curso.NomeParaLista;
 
-            relatorio.QuantidadeDeAlunos = _context.Estudantes.Include(e => e.Curriculo)
-                .Where(e => e.Curriculo.Id == (long)id && e.Estado == EstadoEstudanteEnum.ATIVO)
-                .Distinct()
-                .Count();
+            relatorio.QuantidadeDeAlunos = estudanteRepositorio.GetQuantidadeDeEstudantesAtivosByCurriculoId((long)id);
 
-            var estudantes = _context.Estudantes.Include(e => e.Curriculo)
-                .Include(e => e.Matriculas)
-                .ThenInclude(m => m.Turma)
-                .ThenInclude(d => d.Disciplina)
-                .Where(e => e.Curriculo.Id == (long)id);
+            var estudantesDoCurso = estudanteRepositorio.GetEstudantesWithDisciplinasAndCurriculoByCurriculoId((long)id);
 
             int qtdAlunosMatriculados = 0;
             int totalDeCreditosMatriculados = 0;
 
-            foreach (var estudante in estudantes)
+            foreach (var estudante in estudantesDoCurso)
             {
                 var matriculas = estudante.Matriculas.Where(m => m.Estado == EstadoMatriculaTurmaEnum.MATRICULADO);
 
@@ -194,24 +190,22 @@ namespace MatriculaPUCRS.Controllers
             return View(disciplina);
         }
 
-        public IActionResult Alunos(long? id)
+        public async Task<IActionResult> Alunos(long? id)
         {
             if (id is null)
             {
                 return NotFound();
             }
 
+            var curso = await curriculoRepositorio.GetEntityById((long)id);
+
             RelatorioAlunosViewModel relatorio = new RelatorioAlunosViewModel()
             {
                 Alunos = new List<AlunoViewModel>(),
-                NomeDoCurso = _context.Curriculos.Find(id).NomeParaLista
+                NomeDoCurso = curso.NomeParaLista
             };
 
-            var estudantesDoCurso = _context.Estudantes.Include(e => e.Curriculo)
-                .Include(e => e.Matriculas)
-                .ThenInclude(m => m.Turma)
-                .ThenInclude(t => t.Disciplina)
-                .Where(e => e.Curriculo.Id == id);
+            var estudantesDoCurso = estudanteRepositorio.GetEstudantesWithDisciplinasAndCurriculoByCurriculoId((long)id);
 
             foreach (var estudante in estudantesDoCurso)
             {

@@ -2,6 +2,7 @@
 using Infraestrutura.Data;
 using Microsoft.EntityFrameworkCore;
 using Persistencia.Interfaces.Repositorios;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -75,6 +76,24 @@ namespace MatriculaPUCRS.Data.Persistencia
                 .OrderBy(mt => mt.Estado)
                 .FirstOrDefault(mt => mt.Turma.DisciplinaId == disciplinaId);
             return matricula?.Estado ?? EstadoMatriculaTurmaEnum.PENDENTE;
+        }
+
+        public long GetQuantidadeDeEstudantesAtivosByCurriculoId(long curriculoId)
+        {
+            return _context.Estudantes.Include(e => e.Curriculo)
+                    .Where(e => e.Curriculo.Id == curriculoId && e.Estado == EstadoEstudanteEnum.ATIVO)
+                    .Count();
+        }
+
+        public IEnumerable<Estudante> GetEstudantesWithDisciplinasAndCurriculoByCurriculoId(long id)
+        {
+            return _context.Estudantes.Include(e => e.Curriculo)
+                .Include(e => e.Matriculas)
+                .ThenInclude(m => m.Turma)
+                .ThenInclude(d => d.Disciplina)
+                .Where(e => e.Curriculo.Id == id)
+                .AsNoTracking()
+                .AsEnumerable();
         }
     }
 }
