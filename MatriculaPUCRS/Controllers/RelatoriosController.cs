@@ -70,11 +70,7 @@ namespace MatriculaPUCRS.Controllers
 
             foreach (var estudante in estudantesDoCurso)
             {
-                var matriculas = estudante.Matriculas.Where(m => m.Estado == EstadoMatriculaTurmaEnum.MATRICULADO ||
-                        m.Estado == EstadoMatriculaTurmaEnum.CURSANDO ||
-                        m.Estado == EstadoMatriculaTurmaEnum.APROVADO ||
-                        m.Estado == EstadoMatriculaTurmaEnum.REPROVADO)
-                    .Where(m => m.Turma.SemestreId == semestre.Id);
+                var matriculas = estudante.Matriculas.Where(m => m.Turma.SemestreId == semestre.Id);
 
                 if (matriculas.Any())
                 {

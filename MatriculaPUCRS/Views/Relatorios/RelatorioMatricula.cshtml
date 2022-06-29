@@ -33,7 +33,7 @@
         <div class="border-radius-5">
             <h5 class="mb-2 pt-3" align="center">@Html.DisplayNameFor(model => model.MediaDeCreditosPorAluno)</h5>
             <div class="card-body pt-0 pb-0">
-                <h1 class="card-title" align="center">@Model.MediaDeCreditosPorAluno</h1>
+                <h1 class="card-title" align="center">@Model.MediaDeCreditosPorAluno.ToString("F02", CultureInfo.CreateSpecificCulture("pt-BR"))</h1>
             </div>
         <div class="card-footer" align="center">Representa a média de créditos por aluno matriculado no semestre atual</div>
         </div>
