@@ -247,8 +247,7 @@ namespace MatriculaPUCRS.Controllers
             Estudante estudante = null;
             if (semestre is not null && estudanteId is not null)
             {
-                estudante = await _estudanteRepositorio.GetEstudanteByIdAsync(estudanteId);
-                estudante.Matriculas = estudante.Matriculas.Where(mt => mt.Turma.SemestreId == semestre.Id);
+                estudante = await _estudanteRepositorio.GetEstudanteWithGradeDeHorarioBySemestreIdAsync((long)estudanteId, semestre.Id);
             }
 
             ViewBag.Semestre = semestre;

@@ -30,8 +30,23 @@ namespace MatriculaPUCRS.Data.Persistencia
                 .Include(e => e.Matriculas)
                     .ThenInclude(m => m.Turma)
                     .ThenInclude(t => t.Horarios)
-                .AsNoTracking()
                 .SingleOrDefaultAsync(e => e.Id == id);
+        }
+
+        public async Task<Estudante> GetEstudanteWithGradeDeHorarioBySemestreIdAsync(long estudanteId, long semestreId)
+        {
+            Estudante estudante = await _matriculaContext.Estudantes
+                .Include(e => e.Matriculas)
+                    .ThenInclude(m => m.Turma)
+                    .ThenInclude(t => t.Disciplina)
+                .Include(e => e.Matriculas)
+                    .ThenInclude(m => m.Turma)
+                    .ThenInclude(t => t.Horarios)
+                    .AsNoTracking()
+                .SingleOrDefaultAsync(e => e.Id == estudanteId);
+            
+            estudante.Matriculas = estudante.Matriculas.Where(mt => mt.Turma.SemestreId == semestreId);
+            return estudante;
         }
 
         public Task<Estudante> GetEstudanteWithHistorico(long? id)

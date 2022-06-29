@@ -12,6 +12,6 @@ namespace Persistencia.Interfaces.Repositorios
         public Task<EstadoMatriculaTurmaEnum?> GetStatusDisciplina(long estudanteId, long disciplinaId);
         public long GetQuantidadeDeEstudantesAtivosByCurriculoId(long curriculoId);
         public IEnumerable<Estudante> GetEstudantesWithDisciplinasAndCurriculoByCurriculoId(long id);
-
+        public Task<Estudante> GetEstudanteWithGradeDeHorarioBySemestreIdAsync(long estudanteId, long semestreId);
     }
 }
