@@ -1,0 +1,49 @@
+﻿@model RelatorioAlunosViewModel
+@using System.Collections.Generic
+@using MatriculaPUCRS.Models
+@using System.Globalization
+
+@{
+      ViewData["Title"] = $"Relatório de Alunos - { Model.NomeDoCurso }";
+}
+
+<h1>Relatório de Alunos</h1>
+<h2>@Model.NomeDoCurso</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameForInnerType((AlunoViewModel a) => a.Matricula)
+            </th>
+            <th>
+                @Html.DisplayNameForInnerType((AlunoViewModel a) => a.NomeDoAluno)
+            </th>
+            <th>
+                @Html.DisplayNameForInnerType((AlunoViewModel a) => a.CreditosComAprovacao)
+            </th>
+            <th>
+                @Html.DisplayNameForInnerType((AlunoViewModel a) => a.CoeficienteDeRendimento)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var aluno in @Model.Alunos)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => aluno.Matricula)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => aluno.NomeDoAluno)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => aluno.CreditosComAprovacao)
+                </td>
+                <td>
+                    @aluno.CoeficienteDeRendimento.ToString("F")
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

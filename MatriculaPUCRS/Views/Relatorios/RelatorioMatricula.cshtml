@@ -3,11 +3,13 @@
 @model RelatorioCursosViewModel
 
 @{
-    ViewData["Title"] = $"Relatório de Curso - {@Model.NomeDoCurso}";
+    ViewData["Title"] = $"Relatório de Matrículas - {@Model.NomeDoCurso}";
 }
 
-<h1>@Model.NomeDoCurso</h1>
+<h1>Relatório de Matrículas</h1>
+<h2>@Model.NomeDoCurso</h2>
 <hr/>
+
 <div class="d-flex align-items-start justify-content-around">
     <div class="card text-bg-primary mb-3 shadow-sm" style="max-width: 16rem;">
         <div class="border-radius-5">
@@ -38,5 +40,5 @@
     </div>
 </div>
 
-<a asp-action="Index">Voltar para o Relarório de Cursos</a>
+<a asp-action="Index">Voltar para o Relarório de Matrículas</a>
 

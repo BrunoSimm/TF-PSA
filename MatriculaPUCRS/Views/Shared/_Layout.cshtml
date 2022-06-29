@@ -73,9 +73,10 @@
                                         Relatórios
                                     </a>
                                     <div class="dropdown-menu" aria-labelledby="relatoriosDropdownMenuLink">
-                                        <a class="text-dark dropdown-item" asp-area="" asp-controller="Relatorios" asp-action="IndexAlunos">Alunos</a>
-                                        <a class="text-dark dropdown-item" asp-area="" asp-controller="Relatorios" asp-action="IndexCursos">Cursos</a>
+                                        <a class="text-dark dropdown-item" asp-area="" asp-controller="Relatorios" asp-action="Index">Matrículas</a>
+                                        <a class="text-dark dropdown-item" asp-area="" asp-controller="Relatorios" asp-action="Alunos">Alunos</a>
                                         <a class="text-dark dropdown-item" asp-area="" asp-controller="Relatorios" asp-action="Disciplinas">Disciplinas</a>
+                                        <a class="text-dark dropdown-item" asp-area="" asp-controller="Relatorios" asp-action="GradesDeHorario">Grades de horários</a>
                                     </div>
                                 </li>
                             }
@@ -87,7 +88,7 @@
                                     Cursos
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="cursosDropdownMenuLink">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Disciplinas" asp-action="Index">Disciplinas no semestre</a>
+                                    <a class="text-dark dropdown-item" asp-area="" asp-controller="Disciplinas" asp-action="Index">Disciplinas no semestre</a>
                                     <a class="text-dark dropdown-item" asp-area="" asp-controller="Disciplinas" asp-action="Curriculo">Currículo</a>
                                 </div>
                             </li>

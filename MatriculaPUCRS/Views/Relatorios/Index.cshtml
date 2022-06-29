@@ -1,15 +1,16 @@
 ﻿@model IEnumerable<Entidades.Modelos.Curriculo>
 
 @{
-    ViewData["Title"] = "Relatório de Cursos";
+    ViewData["Title"] = "Relatório de Matrículas";
 }
 
-<h1>Relatório de Cursos</h1>
+<h1>@ViewData["Title"]</h1>
+
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.NomeDoCurso)
+                @Html.DisplayNameFor(model => model.NomeParaLista)
             </th>
             <th></th>
         </tr>
@@ -21,7 +22,7 @@
                 @Html.DisplayFor(modelItem => item.NomeParaLista)
             </td>
             <td align="right">
-                <a  class="btn btn-outline-primary" asp-action="Cursos" asp-route-id="@item.Id">Gerar Relatório</a>
+                <a  class="btn btn-outline-primary" asp-action="RelatorioMatricula" asp-route-id="@item.Id">Gerar Relatório</a>
             </td>
         </tr>
 }

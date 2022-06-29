@@ -21,7 +21,7 @@ namespace MatriculaPUCRS.Data.Persistencia
             return _matriculaContext.Estudantes.SingleOrDefaultAsync(e => e.CPF.Equals(cpf));
         }
 
-        public Task<Estudante> GetByIdAsync(long? id)
+        public Task<Estudante> GetEstudanteByIdAsync(long? id)
         {
             return _matriculaContext.Estudantes
                 .Include(e => e.Matriculas)
@@ -30,6 +30,7 @@ namespace MatriculaPUCRS.Data.Persistencia
                 .Include(e => e.Matriculas)
                     .ThenInclude(m => m.Turma)
                     .ThenInclude(t => t.Horarios)
+                .AsNoTracking()
                 .SingleOrDefaultAsync(e => e.Id == id);
         }
 
@@ -71,7 +72,7 @@ namespace MatriculaPUCRS.Data.Persistencia
             Disciplina disciplinaCurriculo = estudante.Curriculo.Disciplinas.FirstOrDefault(d => d.Id == disciplinaId);
             if (disciplinaCurriculo is null) return null;
 
-            // Verifica se existe matricula na disciplina e retorna o Estado
+            // Verifica se existe matrícula na disciplina e retorna o Estado
             MatriculaTurma matricula = estudante.Matriculas
                 .OrderBy(mt => mt.Estado)
                 .FirstOrDefault(mt => mt.Turma.DisciplinaId == disciplinaId);
@@ -81,16 +82,17 @@ namespace MatriculaPUCRS.Data.Persistencia
         public long GetQuantidadeDeEstudantesAtivosByCurriculoId(long curriculoId)
         {
             return _context.Estudantes.Include(e => e.Curriculo)
-                    .Where(e => e.Curriculo.Id == curriculoId && e.Estado == EstadoEstudanteEnum.ATIVO)
-                    .Count();
+                .Where(e => e.Curriculo.Id == curriculoId && e.Estado == EstadoEstudanteEnum.ATIVO)
+                .Count();
         }
 
         public IEnumerable<Estudante> GetEstudantesWithDisciplinasAndCurriculoByCurriculoId(long id)
         {
-            return _context.Estudantes.Include(e => e.Curriculo)
+            return _context.Estudantes
+                .Include(e => e.Curriculo)
                 .Include(e => e.Matriculas)
-                .ThenInclude(m => m.Turma)
-                .ThenInclude(d => d.Disciplina)
+                    .ThenInclude(m => m.Turma)
+                    .ThenInclude(d => d.Disciplina)
                 .Where(e => e.Curriculo.Id == id)
                 .AsNoTracking()
                 .AsEnumerable();

@@ -45,7 +45,7 @@ namespace MatriculaPUCRS.Controllers
                 return NotFound();
             }
 
-            Estudante estudante = await _estudanteRepositorio.GetByIdAsync(loggedUser.EstudanteId);
+            Estudante estudante = await _estudanteRepositorio.GetEstudanteByIdAsync(loggedUser.EstudanteId);
 
             Semestre semestre = await _semestreRepositorio.GetSemestreAtualAsync();
 
@@ -78,7 +78,7 @@ namespace MatriculaPUCRS.Controllers
             }
 
             ApplicationUser loggedUser = await _userManager.GetUserAsync(User);
-            Estudante estudante = await _estudanteRepositorio.GetByIdAsync(loggedUser.EstudanteId);
+            Estudante estudante = await _estudanteRepositorio.GetEstudanteByIdAsync(loggedUser.EstudanteId);
 
             if (estudante is null)
             {
@@ -98,7 +98,7 @@ namespace MatriculaPUCRS.Controllers
         public async Task<IActionResult> GradeDeHorario()
         {
             ApplicationUser loggedUser = await _userManager.GetUserAsync(User);
-            Estudante estudante = await _estudanteRepositorio.GetByIdAsync(loggedUser.EstudanteId);
+            Estudante estudante = await _estudanteRepositorio.GetEstudanteByIdAsync(loggedUser.EstudanteId);
 
             Semestre semestre = await _semestreRepositorio.GetSemestreAtualAsync();
 
@@ -119,7 +119,7 @@ namespace MatriculaPUCRS.Controllers
         public async Task<IActionResult> Comprovante()
         {
             ApplicationUser loggedUser = await _userManager.GetUserAsync(User);
-            Estudante estudante = await _estudanteRepositorio.GetByIdAsync(loggedUser.EstudanteId);
+            Estudante estudante = await _estudanteRepositorio.GetEstudanteByIdAsync(loggedUser.EstudanteId);
 
             var semestre = await _semestreRepositorio.GetSemestreAtualAsync();
 
@@ -197,7 +197,7 @@ namespace MatriculaPUCRS.Controllers
 
             //verificar se usuário logado pode fazer a matricula
             ApplicationUser loggedUser = await _userManager.GetUserAsync(User);
-            Estudante estudante = await _estudanteRepositorio.GetByIdAsync(loggedUser.EstudanteId);
+            Estudante estudante = await _estudanteRepositorio.GetEstudanteByIdAsync(loggedUser.EstudanteId);
 
             if (estudante is null)
             {
@@ -288,7 +288,7 @@ namespace MatriculaPUCRS.Controllers
             }
 
             ApplicationUser loggedUser = await _userManager.GetUserAsync(User);
-            Estudante estudante = await _estudanteRepositorio.GetByIdAsync(loggedUser.EstudanteId);
+            Estudante estudante = await _estudanteRepositorio.GetEstudanteByIdAsync(loggedUser.EstudanteId);
 
             Semestre semestre = await _semestreRepositorio.GetSemestreAtualAsync();
 
@@ -306,7 +306,8 @@ namespace MatriculaPUCRS.Controllers
 
             //ViewBag.CancelarMatriculaStatus = TempData["CancelarMatriculaStatus"];
 
-            //Verifica se o usuário logado está matriculado nesta turma.
+            //Verificar se o usuário logado está matriculado nesta turma.
+
             IEnumerable<MatriculaTurma> matriculasTurmas = estudante.Matriculas.Where(mt => mt.Turma.SemestreId.Equals(semestre.Id));
             MatriculaTurma matriculaTurma = matriculasTurmas.FirstOrDefault(mt => mt.TurmaId == turma.Id);
 
@@ -325,7 +326,7 @@ namespace MatriculaPUCRS.Controllers
         {
             //Verifica se o usuário logado está matriculado nesta turma.
             ApplicationUser loggedUser = await _userManager.GetUserAsync(User);
-            Estudante estudante = await _estudanteRepositorio.GetByIdAsync(loggedUser.EstudanteId);
+            Estudante estudante = await _estudanteRepositorio.GetEstudanteByIdAsync(loggedUser.EstudanteId);
 
             Semestre semestre = await _semestreRepositorio.GetSemestreAtualAsync();
 

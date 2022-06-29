@@ -17,5 +17,6 @@ namespace Entidades.Modelos
         public long? CurriculoId { get; set; }
         public Curriculo Curriculo { get; set; }
         public IEnumerable<MatriculaTurma> Matriculas { get; set; }
+        public string NomeParaLista => string.Concat(NumeroMatricula, " - ", Nome);
     }
 }

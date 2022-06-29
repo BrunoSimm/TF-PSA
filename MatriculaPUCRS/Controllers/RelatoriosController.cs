@@ -16,31 +16,26 @@ namespace MatriculaPUCRS.Controllers
     [Authorize(Roles = "Coordenador")]
     public class RelatoriosController : Controller
     {
-        private readonly ICurriculoRepositorio curriculoRepositorio;
-        private readonly IDisciplinaRepositorio disciplinaRepositorio;
-        private readonly ISemestreRepositorio semestreRepositorio;
-        private readonly IEstudanteRepositorio estudanteRepositorio;
+        private readonly ICurriculoRepositorio _curriculoRepositorio;
+        private readonly IDisciplinaRepositorio _disciplinaRepositorio;
+        private readonly ISemestreRepositorio _semestreRepositorio;
+        private readonly IEstudanteRepositorio _estudanteRepositorio;
 
         public RelatoriosController(ICurriculoRepositorio curriculoRepositorio, IDisciplinaRepositorio disciplinaRepositorio,
             ISemestreRepositorio semestreRepositorio, IEstudanteRepositorio estudanteRepositorio)
         {
-            this.curriculoRepositorio = curriculoRepositorio;
-            this.disciplinaRepositorio = disciplinaRepositorio;
-            this.semestreRepositorio = semestreRepositorio;
-            this.estudanteRepositorio = estudanteRepositorio;
+            this._curriculoRepositorio = curriculoRepositorio;
+            this._disciplinaRepositorio = disciplinaRepositorio;
+            this._semestreRepositorio = semestreRepositorio;
+            this._estudanteRepositorio = estudanteRepositorio;
         }
 
-        public async Task<IActionResult> IndexCursos()
+        public async Task<IActionResult> Index()
         {
-            return View(await curriculoRepositorio.GetActiveCurriculosAsync());
+            return View(await _curriculoRepositorio.GetActiveCurriculosAsync());
         }
 
-        public async Task<IActionResult> IndexAlunos()
-        {
-            return View(await curriculoRepositorio.GetActiveCurriculosAsync());
-        }
-
-        public async Task<IActionResult> Cursos(long? id)
+        public async Task<IActionResult> RelatorioMatricula(long? id)
         {
             if (id is null)
             {
@@ -49,10 +44,10 @@ namespace MatriculaPUCRS.Controllers
 
             RelatorioCursosViewModel relatorio = new RelatorioCursosViewModel();
 
-            var cursos = await curriculoRepositorio.GetActiveCurriculosAsync();
+            var cursos = await _curriculoRepositorio.GetActiveCurriculosAsync();
             ViewBag.Cursos = new SelectList(cursos, nameof(Curriculo.Id), nameof(Curriculo.NomeDoCurso), (long)id);
 
-            var curso = await curriculoRepositorio.GetEntityById((long)id);
+            var curso = await _curriculoRepositorio.GetEntityById((long)id);
             if (curso is null)
             {
                 return NotFound();
@@ -60,9 +55,9 @@ namespace MatriculaPUCRS.Controllers
 
             relatorio.NomeDoCurso = curso.NomeParaLista;
 
-            relatorio.QuantidadeDeAlunos = estudanteRepositorio.GetQuantidadeDeEstudantesAtivosByCurriculoId((long)id);
+            relatorio.QuantidadeDeAlunos = _estudanteRepositorio.GetQuantidadeDeEstudantesAtivosByCurriculoId((long)id);
 
-            var estudantesDoCurso = estudanteRepositorio.GetEstudantesWithDisciplinasAndCurriculoByCurriculoId((long)id);
+            var estudantesDoCurso = _estudanteRepositorio.GetEstudantesWithDisciplinasAndCurriculoByCurriculoId((long)id);
 
             int qtdAlunosMatriculados = 0;
             int totalDeCreditosMatriculados = 0;
@@ -90,8 +85,8 @@ namespace MatriculaPUCRS.Controllers
 
         public async Task<IActionResult> Disciplinas(string nomeDisciplina, string codigoDisciplina)
         {
-            var semestreAtual = await semestreRepositorio.GetSemestreAtualAsync();
-            var disciplinasQuery = disciplinaRepositorio.GetDisciplinasIQueryable()
+            //var semestreAtual = await _semestreRepositorio.GetSemestreAtualAsync();
+            var disciplinasQuery = _disciplinaRepositorio.GetDisciplinasIQueryable()
                 .Include(d => d.Turmas)
                     .ThenInclude(t => t.Semestre)
                 .Include(d => d.Turmas)
@@ -101,7 +96,8 @@ namespace MatriculaPUCRS.Controllers
                     .ThenInclude(mt => mt.Estudante)
                 .Include(d => d.Curriculos)
                 .Where(d => d.Curriculos.Any(c => c.Id == 1L))
-                .Where(d => d.Turmas.Any(t => t.SemestreId == semestreAtual.Id));
+                //.Where(d => d.Turmas.Any(t => t.SemestreId == semestreAtual.Id))
+                ;
 
             if (nomeDisciplina is not null)
             {
@@ -116,22 +112,24 @@ namespace MatriculaPUCRS.Controllers
             }
 
             List<Disciplina> disciplinasList = disciplinasQuery.AsNoTracking().ToList();
-            disciplinasList.ForEach(d =>
-            {
-                d.Turmas = d.Turmas.Where(t => t.SemestreId == semestreAtual.Id);
-            });
+            //disciplinasList.ForEach(d =>
+            //{
+            //    d.Turmas = d.Turmas.Where(t => t.SemestreId == semestreAtual.Id);
+            //});
+            
+            ViewBag.Curriculo = await _curriculoRepositorio.GetEntityById(1L);
 
             return View(disciplinasList);
         }
 
-        public async Task<IActionResult> DisciplinaRelatorio(long id, string? nomeAluno, string? matriculaAluno,
+        public async Task<IActionResult> RelatorioDisciplina(long id, string? nomeAluno, string? matriculaAluno,
             string? estado, string? curriculo, string? semestreInput)
         {
-            Disciplina disciplina = await disciplinaRepositorio.GetDisciplinaByIdWithMatriculasAndSemestre(id);
+            Disciplina disciplina = await _disciplinaRepositorio.GetDisciplinaByIdWithMatriculasAndSemestre(id);
             ViewBag.Curriculos = new SelectList(disciplina.Curriculos.Select(c => c.Codigo));
-            ViewBag.Estados = new SelectList(Enum.GetValues(typeof(EstadoEstudanteEnum)));
+            ViewBag.Estados = new SelectList(Enum.GetValues(typeof(EstadoMatriculaTurmaEnum)));
 
-            IEnumerable<Semestre> semestres = await semestreRepositorio.List();
+            IEnumerable<Semestre> semestres = await _semestreRepositorio.List();
             ViewBag.Semestres = new SelectList(semestres.Select(s => s.Titulo));
 
             if (disciplina is null)
@@ -139,24 +137,16 @@ namespace MatriculaPUCRS.Controllers
                 return NotFound();
             }
 
-            Semestre semestreAtual = await semestreRepositorio.GetSemestreAtualAsync();
-            ViewBag.SemestreAtual = semestreAtual;
-
-            Semestre semestre;
+            Semestre semestre = null;
             if (semestreInput is not null)
             {
                 semestre = semestres.Where(s => s.Titulo.Equals(semestreInput)).FirstOrDefault();
-                if (semestre is null)
-                {
-                    return NotFound();
-                }
             }
-            else
+
+            if (semestre is not null)
             {
-                semestre = semestreAtual;
+                disciplina.Turmas = disciplina.Turmas.Where(t => t.SemestreId == semestre.Id);
             }
-            ViewBag.SemestreSelecionado = semestre;
-            disciplina.Turmas = disciplina.Turmas.Where(t => t.SemestreId == semestre.Id);
 
             List<MatriculaTurma> matriculas = disciplina.Turmas.SelectMany(t => t.Matriculas).ToList();
 
@@ -176,7 +166,7 @@ namespace MatriculaPUCRS.Controllers
 
             if (estado is not null && !estado.Equals("todos"))
             {
-                matriculas = matriculas.Where(mt => mt.Estudante.Estado == (EstadoEstudanteEnum)Enum.Parse(typeof(EstadoEstudanteEnum), estado)).ToList();
+                matriculas = matriculas.Where(mt => mt.Estado == (EstadoMatriculaTurmaEnum)Enum.Parse(typeof(EstadoMatriculaTurmaEnum), estado)).ToList();
             }
 
             if (curriculo is not null && !curriculo.Equals("todos"))
@@ -190,14 +180,19 @@ namespace MatriculaPUCRS.Controllers
             return View(disciplina);
         }
 
-        public async Task<IActionResult> Alunos(long? id)
+        public async Task<IActionResult> Alunos()
+        {
+            return View(await _curriculoRepositorio.GetActiveCurriculosAsync());
+        }
+
+        public async Task<IActionResult> RelatorioAlunos(long? id)
         {
             if (id is null)
             {
                 return NotFound();
             }
 
-            var curso = await curriculoRepositorio.GetEntityById((long)id);
+            var curso = await _curriculoRepositorio.GetEntityById((long)id);
 
             RelatorioAlunosViewModel relatorio = new RelatorioAlunosViewModel()
             {
@@ -205,11 +200,12 @@ namespace MatriculaPUCRS.Controllers
                 NomeDoCurso = curso.NomeParaLista
             };
 
-            var estudantesDoCurso = estudanteRepositorio.GetEstudantesWithDisciplinasAndCurriculoByCurriculoId((long)id);
+            var estudantesDoCurso = _estudanteRepositorio.GetEstudantesWithDisciplinasAndCurriculoByCurriculoId((long)id);
 
             foreach (var estudante in estudantesDoCurso)
             {
                 AlunoViewModel aluno = new AlunoViewModel();
+                aluno.Matricula = estudante.NumeroMatricula;
                 aluno.NomeDoAluno = estudante.Nome;
                 float notas = 0;
                 int qtdDisciplinasCursadas = 0;
@@ -223,7 +219,7 @@ namespace MatriculaPUCRS.Controllers
                         qtdDisciplinasCursadas++;
 
                         if (matricula.Estado == EstadoMatriculaTurmaEnum.APROVADO)
-                            aluno.NumeroDeCreditosComAprovacao += int.Parse(matricula.Turma.Disciplina.Codigo.Substring(6));
+                            aluno.CreditosComAprovacao += int.Parse(matricula.Turma.Disciplina.Codigo.Substring(6));
                     }
                 }
                 if (qtdDisciplinasCursadas > 0)
@@ -239,6 +235,25 @@ namespace MatriculaPUCRS.Controllers
             }
 
             return View(relatorio);
+        }
+
+        public async Task<IActionResult> GradesDeHorario(long? estudanteId)
+        {
+            Semestre semestre = await _semestreRepositorio.GetSemestreAtualAsync();
+
+            Estudante estudante = null;
+            if (semestre is not null && estudanteId is not null)
+            {
+                estudante = await _estudanteRepositorio.GetEstudanteByIdAsync(estudanteId);
+                estudante.Matriculas = estudante.Matriculas.Where(mt => mt.Turma.SemestreId == semestre.Id);
+            }
+
+            ViewBag.Semestre = semestre;
+            IEnumerable<Estudante> estudantes = _estudanteRepositorio.List().Result.Where(e => e.Estado == EstadoEstudanteEnum.ATIVO);
+
+            ViewBag.Estudantes = new SelectList(estudantes, nameof(Estudante.Id), nameof(Estudante.NomeParaLista), estudanteId);
+
+            return View(estudante);
         }
     }
 }

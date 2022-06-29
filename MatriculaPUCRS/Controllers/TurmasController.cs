@@ -39,7 +39,7 @@ namespace MatriculaPUCRS.Controllers
         }
 
         // GET: Turmas
-        public async Task<IActionResult> Index(string sortOrder)
+        public IActionResult Index(string sortOrder)
         {
             ViewData["CurrentSort"] = sortOrder;
             ViewData["TurmaSortParm"] = "Turma";
@@ -73,8 +73,8 @@ namespace MatriculaPUCRS.Controllers
         {
             var turma = new Turma();
             PopularHorariosTurma(turma);
-            ViewData["Disciplinas"] = new SelectList(_disciplinaRepositorio.List().Result, nameof(Disciplina.Id), nameof(Disciplina.NomeParaLista));
-            ViewData["Semestres"] = new SelectList(_semestreRepositorio.List().Result, nameof(Semestre.Id), nameof(Semestre.Titulo));
+            ViewBag.Disciplinas = new SelectList(_disciplinaRepositorio.List().Result, nameof(Disciplina.Id), nameof(Disciplina.NomeParaLista));
+            ViewBag.Semestres = new SelectList(_semestreRepositorio.List().Result, nameof(Semestre.Id), nameof(Semestre.Titulo));
             return View();
         }
 
@@ -95,8 +95,8 @@ namespace MatriculaPUCRS.Controllers
                 await _turmaRepositorio.Add(turma);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["Disciplinas"] = new SelectList(await _disciplinaRepositorio.List(), nameof(Disciplina.Id), nameof(Disciplina.NomeParaLista), turma.DisciplinaId);
-            ViewData["Semestres"] = new SelectList(await _semestreRepositorio.List(), nameof(Semestre.Id), nameof(Semestre.Titulo), turma.SemestreId);
+            ViewBag.Disciplinas = new SelectList(await _disciplinaRepositorio.List(), nameof(Disciplina.Id), nameof(Disciplina.NomeParaLista), turma.DisciplinaId);
+            ViewBag.Semestres = new SelectList(await _semestreRepositorio.List(), nameof(Semestre.Id), nameof(Semestre.Titulo), turma.SemestreId);
             return View(turma);
         }
 
