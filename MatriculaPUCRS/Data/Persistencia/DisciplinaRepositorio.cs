@@ -65,6 +65,7 @@ namespace MatriculaPUCRS.Data.Persistencia
                 .Include(d => d.Turmas).ThenInclude(t => t.Matriculas)
                 .Include(d => d.Turmas)
                     .ThenInclude(t => t.Matriculas).ThenInclude(mt => mt.Estudante).ThenInclude(e => e.Curriculo)
+                .Include(d => d.Requisitos)
                 .FirstOrDefaultAsync(d => d.Id == id);
         }
 

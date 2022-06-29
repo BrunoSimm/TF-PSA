@@ -6,49 +6,47 @@
     var disciplinas = Model.OrderBy(d => d.Nivel).ThenBy(d => d.Codigo);
 }
 
-@if (Model.Any())
-{
-    <h1>Curso - @Model.First().Curriculos.First().NomeDoCurso</h1>
+<h1>Curso - @ViewBag.Curriculo.NomeDoCurso</h1>
 
-    <h2>Currículo - @Model.First().Curriculos.First().Codigo</h2>
+<h2>Currículo - @ViewBag.Curriculo.Codigo</h2>
 
-    <form asp-controller="Disciplinas" asp-action="Index" method="get">
-        <div class="container">
-            <div class="input-group input-group-sm mb-3">
-                <div class="row">
-                    <div class="col-sm-3 input-group-prepend p-1">
-                        <input placeholder="Código Disciplina" type="text" class="form-control" aria-describedby="inputGroup-sizing-sm" name="codigoDisciplina" value="@TempData["codigoDisciplinaInput"]">
-                    </div>
-                    <div class="col-sm-5 input-group-prepend p-1">
-                        <input placeholder="Nome Disciplina" type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="nomeDisciplina" value="@TempData["nomeDisciplinaInput"]">
-                    </div>
-                    <div class="col-sm-3 input-group-prepend p-1">
-                        <input placeholder="Horário" type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="horario" value="@TempData["horarioInput"]">
-                    </div>
-                    <div class="col-sm-1 input-group-prepend p-1">
-                        <input type="submit" value="Buscar" class="btn btn-group-sm btn-primary rounded" />
-                    </div>
+<form asp-controller="Disciplinas" asp-action="Index" method="get">
+        <div class="input-group input-group-sm mb-3">
+            <div class="d-flex">
+                <div class="col-3 input-group-prepend p-1">
+                    <input placeholder="Código" type="search" class="form-control" aria-describedby="inputGroup-sizing-sm" name="codigoDisciplina" value="@TempData["codigoDisciplinaInput"]">
                 </div>
+                <div class="col-6 input-group-prepend p-1">
+                    <input placeholder="Disciplina" type="search" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="nomeDisciplina" value="@TempData["nomeDisciplinaInput"]">
+                </div>
+                <div class="col-3 input-group-prepend p-1">
+                    <input placeholder="Horário" type="search" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="horario" value="@TempData["horarioInput"]">
+                </div>
+                <div class="input-group-prepend p-1">
+                    <input type="submit" value="Buscar" class="btn btn-group-sm btn-primary rounded" />
+                </div>
+            </div>
 
-            </div>
         </div>
-    </form>
+</form>
 
-    <div class="accordion" id="accordion">
-        <div class="card-body py-3 font-weight-bold border-top d-flex justify-content-start">
-            <div class="col-2">
-                @Html.DisplayNameForInnerType((Disciplina d) => d.Codigo)
-            </div>
-            <div class="col-6">
-                @Html.DisplayNameForInnerType((Disciplina d) => d.Nome)
-            </div>
-            <div class="col-1">
-                @Html.DisplayNameForInnerType((Disciplina d) => d.Nivel)
-            </div>
-            <div class="col-2">
-                @Html.DisplayNameForInnerType((Disciplina d) => d.CargaHoraria)
-            </div>
+<div class="accordion" id="accordion">
+    <div class="card-body py-3 font-weight-bold border-top d-flex justify-content-start">
+        <div class="col-2">
+            @Html.DisplayNameForInnerType((Disciplina d) => d.Codigo)
         </div>
+        <div class="col-6">
+            @Html.DisplayNameForInnerType((Disciplina d) => d.Nome)
+        </div>
+        <div class="col-1">
+            @Html.DisplayNameForInnerType((Disciplina d) => d.Nivel)
+        </div>
+        <div class="col-2">
+            @Html.DisplayNameForInnerType((Disciplina d) => d.CargaHoraria)
+        </div>
+    </div>
+    @if (Model.Any())
+    {
         @foreach (var disciplina in disciplinas)
         {
             <div class="card-footer" id="heading_@disciplina.Id">
@@ -118,35 +116,12 @@
                 </div>
             </div>
         }
-    </div>
     <div class="border-top" />
-
-}
-else
-{
-    <form asp-controller="Disciplinas" asp-action="Index" method="get">
-        <div class="container">
-            <div class="input-group input-group-sm mb-3">
-                <div class="row">
-                    <div class="col-sm-3 input-group-prepend p-1">
-                        <input placeholder="Código Disciplina" type="text" class="form-control" aria-describedby="inputGroup-sizing-sm" name="codigoDisciplina" value="@TempData["codigoDisciplinaInput"]">
-                    </div>
-                    <div class="col-sm-5 input-group-prepend p-1">
-                        <input placeholder="Nome Disciplina" type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="nomeDisciplina" value="@TempData["nomeDisciplinaInput"]">
-                    </div>
-                    <div class="col-sm-3 input-group-prepend p-1">
-                        <input placeholder="Horário" type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="horario" value="@TempData["horarioInput"]">
-                    </div>
-                    <div class="col-sm-1 input-group-prepend p-1">
-                        <input type="submit" value="Buscar" class="btn btn-group-sm btn-primary rounded" />
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </form>
-
-    <h4 class="d-flex justify-content-center text-muted">Nenhuma disciplina encontrada :(</h4>
-}
+    }
+    else
+    {
+        <h4 class="d-flex justify-content-center text-muted">Nenhuma disciplina encontrada :(</h4>
+    }
+</div>
 
 

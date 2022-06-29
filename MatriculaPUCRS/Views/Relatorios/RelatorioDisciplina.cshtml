@@ -12,39 +12,35 @@
 
 
 <form asp-controller="Relatorios" asp-action="RelatorioDisciplina" method="get">
-    <div class="container">
-
-        <div class="input-group input-group-sm mb-3">
-            <div class="row">
-                <div class="col-sm-2 input-group-prepend p-1">
-                    <input placeholder="Matrícula" type="text" class="form-control" aria-describedby="inputGroup-sizing-sm" name="matriculaAluno" value="@TempData["matriculaAlunoInput"]">
-                </div>
-                <div class="col-sm-3 input-group-prepend p-1">
-                    <input placeholder="Nome" type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="nomeAluno" value="@TempData["nomeAlunoInput"]">
-                </div>
-                <div class="col-sm-2 input-group-prepend p-1">
-                    <select class="form-control" asp-items="@ViewBag.Estados" name="estado">
-                        <option disabled selected>Estado...</option>
-                        <option value="todos">TODOS</option>
-                    </select>
-                </div>
-                <div class="col-sm-2 input-group-prepend p-1">
-                    <select class="form-control" asp-items="@ViewBag.Semestres" name="semestreInput">
-                        <option disabled selected>Semestre...</option>
-                        <option value="todos">Todos</option>
-                    </select>
-                </div>
-                <div class="col-sm-2 input-group-prepend p-1">
-                    <select class="form-control" asp-items="@ViewBag.Curriculos" name="curriculo">
-                        <option disabled selected>Curriculo...</option>
-                        <option value="todos">Todos</option>
-                    </select>
-                </div>
-                <div class="col-sm-1 input-group-prepend p-1">
-                    <input type="submit" value="Buscar" class="btn btn-group-sm btn-primary rounded" />
-                </div>
+    <div class="input-group input-group-sm mb-3">
+        <div class="d-flex">
+            <div class="col-2 input-group-prepend p-1">
+                <input placeholder="Matrícula" type="search" class="form-control" aria-describedby="inputGroup-sizing-sm" name="matriculaAluno" value="@TempData["matriculaAlunoInput"]">
             </div>
-
+            <div class="col-3 input-group-prepend p-1">
+                <input placeholder="Nome" type="search" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="nomeAluno" value="@TempData["nomeAlunoInput"]">
+            </div>
+            <div class="col-2 input-group-prepend p-1">
+                <select class="form-control" asp-items="@ViewBag.Estados" name="estado">
+                    <option disabled selected>Estado...</option>
+                    <option value="todos">TODOS</option>
+                </select>
+            </div>
+            <div class="col-2 input-group-prepend p-1">
+                <select class="form-control" asp-items="@ViewBag.Semestres" name="semestreId">
+                    <option disabled selected>Semestre...</option>
+                    <option value="todos">Todos</option>
+                </select>
+            </div>
+            <div class="col-2 input-group-prepend p-1">
+                <select class="form-control" asp-items="@ViewBag.Curriculos" name="curriculo">
+                    <option disabled selected>Curriculo...</option>
+                    <option value="todos">Todos</option>
+                </select>
+            </div>
+            <div class="col-1 input-group-prepend p-1">
+                <input type="submit" value="Buscar" class="btn btn-group-sm btn-primary rounded" />
+            </div>
         </div>
     </div>
 </form>

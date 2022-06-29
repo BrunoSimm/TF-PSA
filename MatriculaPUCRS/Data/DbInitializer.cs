@@ -199,14 +199,14 @@ namespace MatriculaPUCRS.Data
 
             var semestres = new Semestre[]
             {
-                new Semestre { Titulo = "2020/1", DataInicial = new DateTime(2020,1,1), DataFinal = new DateTime(2020,6,30) },
-                new Semestre { Titulo = "2020/2", DataInicial = new DateTime(2020,7,1), DataFinal = new DateTime(2020,12,31) },
-                new Semestre { Titulo = "2021/1", DataInicial = new DateTime(2021,1,1), DataFinal = new DateTime(2021,6,30) },
-                new Semestre { Titulo = "2021/2", DataInicial = new DateTime(2021,7,1), DataFinal = new DateTime(2021,12,31) },
-                new Semestre { Titulo = "2022/1", DataInicial = new DateTime(2022,1,1), DataFinal = new DateTime(2022,6,30) },
-                new Semestre { Titulo = "2022/2", DataInicial = new DateTime(2022,7,1), DataFinal = new DateTime(2022,12,31) },
-                new Semestre { Titulo = "2023/1", DataInicial = new DateTime(2023,1,1), DataFinal = new DateTime(2023,6,30) },
-                new Semestre { Titulo = "2023/2", DataInicial = new DateTime(2023,7,1), DataFinal = new DateTime(2023,12,31) },
+                new Semestre { Titulo = "2020/1", DataInicial = new DateTime(2020,1,1), DataFinal = new DateTime(2020,7,19) },
+                new Semestre { Titulo = "2020/2", DataInicial = new DateTime(2020,7,20), DataFinal = new DateTime(2020,12,31) },
+                new Semestre { Titulo = "2021/1", DataInicial = new DateTime(2021,1,1), DataFinal = new DateTime(2021,7,19) },
+                new Semestre { Titulo = "2021/2", DataInicial = new DateTime(2021,7,20), DataFinal = new DateTime(2021,12,31) },
+                new Semestre { Titulo = "2022/1", DataInicial = new DateTime(2022,1,1), DataFinal = new DateTime(2022,7,19) },
+                new Semestre { Titulo = "2022/2", DataInicial = new DateTime(2022,7,20), DataFinal = new DateTime(2022,12,31) },
+                new Semestre { Titulo = "2023/1", DataInicial = new DateTime(2023,1,1), DataFinal = new DateTime(2023,7,19) },
+                new Semestre { Titulo = "2023/2", DataInicial = new DateTime(2023,7,20), DataFinal = new DateTime(2023,12,31) },
             };
             context.Semestres.AddRange(semestres);
             await context.SaveChangesAsync();

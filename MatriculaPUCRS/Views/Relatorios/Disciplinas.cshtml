@@ -10,18 +10,16 @@
 <h2>@ViewBag.Curriculo.NomeParaLista</h2>
 
 <form asp-controller="Relatorios" asp-action="Disciplinas" method="get">
-    <div class="container">
-        <div class="input-group input-group-sm mb-3">
-            <div class="row">
-                <div class="col-sm-5 input-group-prepend p-1">
-                    <input placeholder="Código Disciplina" type="text" class="form-control" aria-describedby="inputGroup-sizing-sm" name="codigoDisciplina" value="@TempData["codigoDisciplinaInput"]">
-                </div>
-                <div class="col-sm-6 input-group-prepend p-1">
-                    <input placeholder="Nome Disciplina" type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="nomeDisciplina" value="@TempData["nomeDisciplinaInput"]">
-                </div>
-                <div class="col-sm-1 input-group-prepend p-1">
-                    <input type="submit" value="Buscar" class="btn btn-group-sm btn-primary rounded" />
-                </div>
+    <div class="input-group input-group-sm mb-3">
+        <div class="d-flex">
+            <div class="col-3 input-group-prepend p-1">
+                <input placeholder="Código" type="search" class="form-control" aria-describedby="inputGroup-sizing-sm" name="codigoDisciplina" value="@TempData["codigoDisciplinaInput"]">
+            </div>
+            <div class="col-10 input-group-prepend p-1">
+                <input placeholder="Disciplina" type="search" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="nomeDisciplina" value="@TempData["nomeDisciplinaInput"]">
+            </div>
+            <div class="input-group-prepend p-1">
+                <input type="submit" value="Buscar" class="btn btn-group-sm btn-primary rounded" />
             </div>
         </div>
     </div>

@@ -61,7 +61,7 @@
                     EstadoMatriculaTurmaEnum estado = matriculasTurmas.FirstOrDefault(mt => mt.Turma.DisciplinaId == requisito.Id)?.Estado ?? EstadoMatriculaTurmaEnum.PENDENTE;
                     <tr>
                         <td>
-                            @Html.DisplayFor(modelItem => requisito.Id)
+                            @Html.DisplayFor(modelItem => requisito.Codigo)
                         </td>
                         <td>
                             @Html.DisplayFor(modelItem => requisito.Nome)

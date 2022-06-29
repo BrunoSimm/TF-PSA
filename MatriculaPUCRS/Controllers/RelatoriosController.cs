@@ -123,14 +123,17 @@ namespace MatriculaPUCRS.Controllers
         }
 
         public async Task<IActionResult> RelatorioDisciplina(long id, string? nomeAluno, string? matriculaAluno,
-            string? estado, string? curriculo, string? semestreInput)
+            string? estado, long? curriculo, long? semestreId)
         {
             Disciplina disciplina = await _disciplinaRepositorio.GetDisciplinaByIdWithMatriculasAndSemestre(id);
-            ViewBag.Curriculos = new SelectList(disciplina.Curriculos.Select(c => c.Codigo));
-            ViewBag.Estados = new SelectList(Enum.GetValues(typeof(EstadoMatriculaTurmaEnum)));
+            IEnumerable<Curriculo> curriculos = disciplina.Curriculos;
+            ViewBag.Curriculos = new SelectList(curriculos, nameof(Curriculo.Id), nameof(Curriculo.NomeParaLista), curriculo);
 
-            IEnumerable<Semestre> semestres = await _semestreRepositorio.List();
-            ViewBag.Semestres = new SelectList(semestres.Select(s => s.Titulo));
+            IEnumerable<string> estados = Enum.GetValues(typeof(EstadoMatriculaTurmaEnum)).Cast<EstadoMatriculaTurmaEnum>().Select(e => e.ToString());
+            ViewBag.Estados = new SelectList(estados, estado);
+
+            IEnumerable<Semestre> semestres = _semestreRepositorio.List().Result.Where(s => DateTime.Today >= s.DataInicial);
+            ViewBag.Semestres = new SelectList(semestres, nameof(Semestre.Id), nameof(Semestre.Titulo), semestreId);
 
             if (disciplina is null)
             {
@@ -138,9 +141,9 @@ namespace MatriculaPUCRS.Controllers
             }
 
             Semestre semestre = null;
-            if (semestreInput is not null)
+            if (semestreId is not null)
             {
-                semestre = semestres.Where(s => s.Titulo.Equals(semestreInput)).FirstOrDefault();
+                semestre = semestres.FirstOrDefault(s => s.Id == semestreId);
             }
 
             if (semestre is not null)
@@ -166,12 +169,12 @@ namespace MatriculaPUCRS.Controllers
 
             if (estado is not null && !estado.Equals("todos"))
             {
-                matriculas = matriculas.Where(mt => mt.Estado == (EstadoMatriculaTurmaEnum)Enum.Parse(typeof(EstadoMatriculaTurmaEnum), estado)).ToList();
+                matriculas = matriculas.Where(mt => mt.Estado.ToString().Equals(estado)).ToList();
             }
 
             if (curriculo is not null && !curriculo.Equals("todos"))
             {
-                matriculas = matriculas.Where(mt => mt.Estudante.Curriculo.Codigo == curriculo).ToList();
+                matriculas = matriculas.Where(mt => mt.Estudante.Curriculo.Id == curriculo).ToList();
             }
 
             IEnumerable<IGrouping<Turma, MatriculaTurma>> matriculasAgrupadas = matriculas.GroupBy(mt => mt.Turma);

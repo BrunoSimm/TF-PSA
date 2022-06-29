@@ -13,7 +13,7 @@
 <h1>@ViewData["Title"]</h1>
 
 <form asp-action="GradesDeHorario" method="get">
-        <div class="input-group">
+    <div class="input-group">
         <select class="form-control custom-select" id="inputGroupSelect" asp-items="ViewBag.Estudantes" name="estudanteId">
             <option value="">-- Selecione um Aluno --</option>
         </select>
@@ -51,7 +51,7 @@
     List<HorarioGrade> horarios = Model.Matriculas.SelectMany(mt => mt.Turma.Horarios).Distinct().ToList();
     List<string> periodos = horarios.Select(h => h.Periodo).Distinct().OrderBy(s => s).ToList();
 
-    <hr/>
+    <hr />
     <h5>Aluno: @Model.Nome</h5>
     <h5>Matrícula: @Model.NumeroMatricula</h5>
     <h5>Grade de Horários @complemento</h5>
@@ -100,6 +100,28 @@
                                     <td class="bg-light-gray" style="width: 18%"></td>
                                 }
                             }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div>
+            <h2>Disciplinas</h2>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th scope="col">Disciplina</th>
+                        <th scope="col">Código</th>
+                        <th scope="col">Turma</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var matricula in Model.Matriculas)
+                    {
+                        <tr>
+                            <td scope="row">@matricula.Turma.Disciplina.Nome</td>
+                            <td scope="row">@matricula.Turma.Disciplina.Codigo</td>
+                            <td scope="row">@matricula.Turma.Id</td>
                         </tr>
                     }
                 </tbody>

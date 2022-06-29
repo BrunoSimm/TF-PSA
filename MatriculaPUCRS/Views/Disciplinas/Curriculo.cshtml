@@ -23,10 +23,10 @@
 <form asp-controller="Disciplinas" asp-action="Curriculo" method="get">
     <div class="input-group input-group-sm mb-3">
         <div class="input-group-prepend mr-2">
-            <input placeholder="Código Disciplina" type="text" class="form-control" aria-describedby="inputGroup-sizing-sm" name="codigoDisciplina" value="@TempData["codigoDisciplinaInput"]">
+            <input placeholder="Código Disciplina" type="search" class="form-control" aria-describedby="inputGroup-sizing-sm" name="codigoDisciplina" value="@TempData["codigoDisciplinaInput"]">
         </div>
         <div class="input-group-prepend mr-2">
-            <input placeholder="Nome Disciplina" type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="nomeDisciplina" value="@TempData["nomeDisciplinaInput"]">
+            <input placeholder="Nome Disciplina" type="search" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" name="nomeDisciplina" value="@TempData["nomeDisciplinaInput"]">
         </div>
         <div class="input-group-prepend">
             <input type="submit" value="Buscar" class="btn btn-primary rounded" />

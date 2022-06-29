@@ -143,6 +143,9 @@ namespace MatriculaPUCRS.Controllers
         // GET: Disciplinas
         public async Task<IActionResult> Index(string horario, string nomeDisciplina, string codigoDisciplina)
         {
+            Curriculo curriculo = await _disciplinaRepositorio.GetDisciplinasFromCurriculoId(1L);
+            ViewBag.Curriculo = curriculo;
+
             var semestreAtual = await _semestreRepositorio.GetSemestreAtualAsync();
             var disciplinasQuery = _disciplinaRepositorio.GetDisciplinasIQueryable()
                 .Include(d => d.Turmas)
@@ -152,7 +155,7 @@ namespace MatriculaPUCRS.Controllers
                 .Include(d => d.Turmas)
                     .ThenInclude(t => t.Matriculas)
                 .Include(d => d.Curriculos)
-                .Where(d => d.Curriculos.Any(c => c.Id == 1L))
+                .Where(d => d.Curriculos.Any(c => c.Id == curriculo.Id))
                 .Where(d => d.Turmas.Any(t => t.SemestreId == semestreAtual.Id));
 
             if (horario is not null)
