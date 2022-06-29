@@ -53,6 +53,12 @@ namespace MatriculaPUCRS.Controllers
                 return NotFound();
             }
 
+            Semestre semestre = await _semestreRepositorio.GetSemestreAtualAsync();
+            if (semestre is null)
+            {
+                return NotFound();
+            }
+
             relatorio.NomeDoCurso = curso.NomeParaLista;
 
             relatorio.QuantidadeDeAlunos = _estudanteRepositorio.GetQuantidadeDeEstudantesAtivosByCurriculoId((long)id);
@@ -64,7 +70,11 @@ namespace MatriculaPUCRS.Controllers
 
             foreach (var estudante in estudantesDoCurso)
             {
-                var matriculas = estudante.Matriculas.Where(m => m.Estado == EstadoMatriculaTurmaEnum.MATRICULADO);
+                var matriculas = estudante.Matriculas.Where(m => m.Estado == EstadoMatriculaTurmaEnum.MATRICULADO ||
+                        m.Estado == EstadoMatriculaTurmaEnum.CURSANDO ||
+                        m.Estado == EstadoMatriculaTurmaEnum.APROVADO ||
+                        m.Estado == EstadoMatriculaTurmaEnum.REPROVADO)
+                    .Where(m => m.Turma.SemestreId == semestre.Id);
 
                 if (matriculas.Any())
                 {
@@ -85,7 +95,6 @@ namespace MatriculaPUCRS.Controllers
 
         public async Task<IActionResult> Disciplinas(string nomeDisciplina, string codigoDisciplina)
         {
-            //var semestreAtual = await _semestreRepositorio.GetSemestreAtualAsync();
             var disciplinasQuery = _disciplinaRepositorio.GetDisciplinasIQueryable()
                 .Include(d => d.Turmas)
                     .ThenInclude(t => t.Semestre)
@@ -95,9 +104,7 @@ namespace MatriculaPUCRS.Controllers
                     .ThenInclude(t => t.Matriculas)
                     .ThenInclude(mt => mt.Estudante)
                 .Include(d => d.Curriculos)
-                .Where(d => d.Curriculos.Any(c => c.Id == 1L))
-                //.Where(d => d.Turmas.Any(t => t.SemestreId == semestreAtual.Id))
-                ;
+                .Where(d => d.Curriculos.Any(c => c.Id == 1L));
 
             if (nomeDisciplina is not null)
             {
@@ -112,10 +119,6 @@ namespace MatriculaPUCRS.Controllers
             }
 
             List<Disciplina> disciplinasList = disciplinasQuery.AsNoTracking().ToList();
-            //disciplinasList.ForEach(d =>
-            //{
-            //    d.Turmas = d.Turmas.Where(t => t.SemestreId == semestreAtual.Id);
-            //});
             
             ViewBag.Curriculo = await _curriculoRepositorio.GetEntityById(1L);
 
